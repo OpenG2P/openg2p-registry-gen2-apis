@@ -6,7 +6,14 @@ from openg2p_fastapi_common.controller import BaseController
 
 from openg2p_registry_core.controller_services import G2PDocumentControllerService
 from openg2p_registry_core.schemas import (
-    UploadDocumentsResponse, UploadDocumentsResponseData
+    UploadDocumentsResponse, UploadDocumentsResponseData,
+    UploadRecordImageResponse, UploadRecordImageData,
+    GetDocumentLabelsForSectionRequest,
+    GetSectionDocumentsRequest,
+    GetSectionDocumentsForChangeRequestRequest,
+    DocumentLabelsForSectionResponse, DocumentLabelsForSectionData,
+    SectionDocumentsResponse, SectionDocumentsData,
+    ChangeRequestDocumentsResponse, ChangeRequestDocumentsData
 )
 
 from ..helpers import RequestResponseHelper
@@ -34,6 +41,34 @@ class G2PDocumentController(BaseController):
             "/upload",
             self.upload_documents,
             responses={200: {"model": UploadDocumentsResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_document_labels_for_section",
+            self.get_document_labels_for_section,
+            responses={200: {"model": DocumentLabelsForSectionResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_section_documents",
+            self.get_section_documents,
+            responses={200: {"model": SectionDocumentsResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_section_documents_for_change_request",
+            self.get_section_documents_for_change_request,
+            responses={200: {"model": ChangeRequestDocumentsResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/upload_record_image",
+            self.upload_record_image,
+            responses={200: {"model": UploadRecordImageResponse}},
             methods=["POST"],
         )
 
@@ -71,3 +106,90 @@ class G2PDocumentController(BaseController):
             error_response: UploadDocumentsResponse = self.helper.construct_upload_documents_error_response(error_exception)
             return error_response
 
+    async def upload_record_image(
+        self,
+        section_id: str = Form(..., description="Section ID for organizing storage path"),
+        file: UploadFile = File(..., description="The image file to upload")
+    ) -> UploadRecordImageResponse:
+        """
+        Upload a record image to MinIO storage.
+
+        The image is uploaded with a hardcoded RECORD_IMAGE label.
+        Returns the document_store_id that can be used when creating a change request.
+        """
+        try:
+            upload_response_data: UploadRecordImageData = await self.g2p_document_controller_service.upload_record_image(
+                section_id=section_id,
+                file=file
+            )
+            upload_response: UploadRecordImageResponse = self.helper.construct_upload_record_image_success_response(
+                upload_record_image_data=upload_response_data
+            )
+            return upload_response
+        except Exception as error_exception:
+            _logger.error(f"Error in upload_record_image: {str(error_exception)}")
+            error_response: UploadRecordImageResponse = self.helper.construct_upload_record_image_error_response(error_exception)
+            return error_response
+
+    async def get_document_labels_for_section(
+        self,
+        request: GetDocumentLabelsForSectionRequest
+    ) -> DocumentLabelsForSectionResponse:
+        """
+        Get document labels for a section.
+
+        Returns the list of document labels configured for the specified section.
+        """
+        try:
+            document_labels_data: DocumentLabelsForSectionData = await self.g2p_document_controller_service.get_document_labels_for_section(request)
+            response: DocumentLabelsForSectionResponse = self.helper.construct_document_labels_for_section_success_response(
+                document_labels_data=document_labels_data,
+                g2p_request=request
+            )
+            return response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_document_labels_for_section: {str(error_exception)}")
+            error_response: DocumentLabelsForSectionResponse = self.helper.construct_document_labels_for_section_error_response(error_exception)
+            return error_response
+
+    async def get_section_documents(
+        self,
+        request: GetSectionDocumentsRequest
+    ) -> SectionDocumentsResponse:
+        """
+        Get documents for a section record.
+
+        Returns the list of documents (label, document_store_id) for the specified record and section.
+        """
+        try:
+            section_documents_data: SectionDocumentsData = await self.g2p_document_controller_service.get_section_documents(request)
+            response: SectionDocumentsResponse = self.helper.construct_section_documents_success_response(
+                section_documents_data=section_documents_data,
+                g2p_request=request
+            )
+            return response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_section_documents: {str(error_exception)}")
+            error_response: SectionDocumentsResponse = self.helper.construct_section_documents_error_response(error_exception)
+            return error_response
+
+    async def get_section_documents_for_change_request(
+        self,
+        request: GetSectionDocumentsForChangeRequestRequest
+    ) -> ChangeRequestDocumentsResponse:
+        """
+        Get documents for a change request.
+
+        Returns the list of documents (label, document_store_id) attached to the specified change request.
+        """
+        try:
+            change_request_documents_data: ChangeRequestDocumentsData = await self.g2p_document_controller_service.get_section_documents_for_change_request(request)
+            response: ChangeRequestDocumentsResponse = self.helper.construct_change_request_documents_success_response(
+                change_request_documents_data=change_request_documents_data,
+                g2p_request=request
+            )
+            return response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_section_documents_for_change_request: {str(error_exception)}")
+            error_response: ChangeRequestDocumentsResponse = self.helper.construct_change_request_documents_error_response(error_exception)
+            return error_response

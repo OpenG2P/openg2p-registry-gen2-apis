@@ -36,9 +36,13 @@ from openg2p_registry_core.schemas import (
     SectionRecordsDataResponse, SectionRecordsDataResponseBody,
     RegisterTabRecordData, RegisterTabRecordsDataResponse, RegisterTabRecordsDataResponseBody,
     UploadDocumentsResponseData, UploadDocumentsResponse, UploadDocumentsResponseBody,
+    UploadRecordImageData, UploadRecordImageResponse, UploadRecordImageResponseBody,
     RegistryConfigurationData, RegistryConfigurationDataResponse, RegistryConfigurationDataResponseBody,
     NumberOfRequestsPendingData, NumberOfRequestsPendingResponse, NumberOfRequestsPendingResponseBody,
     EarliestPendingChangeRequestData, EarliestPendingChangeRequestResponse, EarliestPendingChangeRequestResponseBody,
+    DocumentLabelsForSectionData, DocumentLabelsForSectionResponse, DocumentLabelsForSectionResponseBody,
+    SectionDocumentsData, SectionDocumentsResponse, SectionDocumentsResponseBody,
+    ChangeRequestDocumentsData, ChangeRequestDocumentsResponse, ChangeRequestDocumentsResponseBody,
 )
 from openg2p_registry_core.errors import G2PRegistryException
 
@@ -869,3 +873,204 @@ class RequestResponseHelper(BaseService):
             response_body=response_body
         )
         return response
+
+    # =========================================================================
+    # Document APIs Helper Methods
+    # =========================================================================
+
+    def construct_document_labels_for_section_success_response(
+        self,
+        document_labels_data: DocumentLabelsForSectionData,
+        g2p_request: G2PRequest = None
+    ) -> DocumentLabelsForSectionResponse:
+        """Construct success response for get_document_labels_for_section endpoint."""
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: DocumentLabelsForSectionResponseBody = DocumentLabelsForSectionResponseBody(
+            response_payload=document_labels_data
+        )
+
+        response: DocumentLabelsForSectionResponse = DocumentLabelsForSectionResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return response
+
+    def construct_document_labels_for_section_error_response(
+        self,
+        error_exception: Exception
+    ) -> DocumentLabelsForSectionResponse:
+        """Construct error response for get_document_labels_for_section endpoint."""
+        error_code = ""
+        error_message = str(error_exception)
+        if isinstance(error_exception, G2PRegistryException):
+            error_code = error_exception.code
+            error_message = error_exception.message
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id="",
+            response_status=G2PResponseStatus.ERROR,
+            response_error_code=error_code,
+            response_error_message=error_message,
+            response_timestamp=datetime.now()
+        )
+
+        return DocumentLabelsForSectionResponse(
+            response_header=g2p_response_header,
+            response_body=None
+        )
+
+    def construct_section_documents_success_response(
+        self,
+        section_documents_data: SectionDocumentsData,
+        g2p_request: G2PRequest = None
+    ) -> SectionDocumentsResponse:
+        """Construct success response for get_section_documents endpoint."""
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: SectionDocumentsResponseBody = SectionDocumentsResponseBody(
+            response_payload=section_documents_data
+        )
+
+        response: SectionDocumentsResponse = SectionDocumentsResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return response
+
+    def construct_section_documents_error_response(
+        self,
+        error_exception: Exception
+    ) -> SectionDocumentsResponse:
+        """Construct error response for get_section_documents endpoint."""
+        error_code = ""
+        error_message = str(error_exception)
+        if isinstance(error_exception, G2PRegistryException):
+            error_code = error_exception.code
+            error_message = error_exception.message
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id="",
+            response_status=G2PResponseStatus.ERROR,
+            response_error_code=error_code,
+            response_error_message=error_message,
+            response_timestamp=datetime.now()
+        )
+
+        return SectionDocumentsResponse(
+            response_header=g2p_response_header,
+            response_body=None
+        )
+
+    def construct_change_request_documents_success_response(
+        self,
+        change_request_documents_data: ChangeRequestDocumentsData,
+        g2p_request: G2PRequest = None
+    ) -> ChangeRequestDocumentsResponse:
+        """Construct success response for get_section_documents_for_change_request endpoint."""
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: ChangeRequestDocumentsResponseBody = ChangeRequestDocumentsResponseBody(
+            response_payload=change_request_documents_data
+        )
+
+        response: ChangeRequestDocumentsResponse = ChangeRequestDocumentsResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return response
+
+    def construct_change_request_documents_error_response(
+        self,
+        error_exception: Exception
+    ) -> ChangeRequestDocumentsResponse:
+        """Construct error response for get_section_documents_for_change_request endpoint."""
+        error_code = ""
+        error_message = str(error_exception)
+        if isinstance(error_exception, G2PRegistryException):
+            error_code = error_exception.code
+            error_message = error_exception.message
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id="",
+            response_status=G2PResponseStatus.ERROR,
+            response_error_code=error_code,
+            response_error_message=error_message,
+            response_timestamp=datetime.now()
+        )
+
+        return ChangeRequestDocumentsResponse(
+            response_header=g2p_response_header,
+            response_body=None
+        )
+
+    def construct_upload_record_image_success_response(
+        self,
+        upload_record_image_data: UploadRecordImageData
+    ) -> UploadRecordImageResponse:
+        """Construct success response for upload_record_image endpoint."""
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id="",
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: UploadRecordImageResponseBody = UploadRecordImageResponseBody(
+            response_payload=upload_record_image_data
+        )
+
+        response: UploadRecordImageResponse = UploadRecordImageResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return response
+
+    def construct_upload_record_image_error_response(
+        self,
+        error_exception: Exception
+    ) -> UploadRecordImageResponse:
+        """Construct error response for upload_record_image endpoint."""
+        error_code = ""
+        error_message = str(error_exception)
+        if isinstance(error_exception, G2PRegistryException):
+            error_code = error_exception.code
+            error_message = error_exception.message
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id="",
+            response_status=G2PResponseStatus.ERROR,
+            response_error_code=error_code,
+            response_error_message=error_message,
+            response_timestamp=datetime.now()
+        )
+
+        return UploadRecordImageResponse(
+            response_header=g2p_response_header,
+            response_body=None
+        )
