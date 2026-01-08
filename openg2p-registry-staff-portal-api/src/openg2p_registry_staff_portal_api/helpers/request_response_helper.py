@@ -12,6 +12,7 @@ from openg2p_registry_core.schemas import (
     SearchResultData, SearchResultsResponse, SearchResultsResponseBody,
     ChangeRequestSearchResultData, ChangeRequestSearchResultsResponse, ChangeRequestSearchResultsResponseBody,
     NumberOfVersionsData, NumberOfVersionsResponse, NumberOfVersionsResponseBody,
+    RecordHistoryListData, RecordHistoryDataResponse, RecordHistoryDataResponseBody,
     NumberOfPendingChangeRequestsData, NumberOfPendingChangeRequestsResponse, NumberOfPendingChangeRequestsResponseBody,
     NumberOfCrossRegisterChangesData, NumberOfCrossRegisterChangesResponse, NumberOfCrossRegisterChangesResponseBody,
     CrossRegisterChangeRequestData, CrossRegisterChangesData, CrossRegisterChangesDataResponse, CrossRegisterChangesDataResponseBody,
@@ -259,6 +260,25 @@ class RequestResponseHelper(BaseService):
             response_body=response_body
         )
         return number_of_versions_response
+
+    def construct_record_history_success_response(self, record_history_data: RecordHistoryListData, g2p_request: G2PRequest = None) -> RecordHistoryDataResponse:
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id if g2p_request else "",
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: RecordHistoryDataResponseBody = RecordHistoryDataResponseBody(
+            response_payload=record_history_data
+        )
+
+        record_history_response: RecordHistoryDataResponse = RecordHistoryDataResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return record_history_response
 
     def construct_number_of_pending_change_requests_success_response(self, number_of_pending_change_requests_data: NumberOfPendingChangeRequestsData, g2p_request: G2PRequest = None) -> NumberOfPendingChangeRequestsResponse:
         g2p_response_header: G2PResponseHeader = G2PResponseHeader(
