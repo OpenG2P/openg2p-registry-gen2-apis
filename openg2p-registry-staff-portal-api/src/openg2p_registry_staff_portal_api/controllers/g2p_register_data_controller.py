@@ -4,10 +4,12 @@ from openg2p_fastapi_common.controller import BaseController
 from openg2p_registry_core.controller_services import G2PRegisterDataControllerService
 from openg2p_registry_core.schemas import (
     GetNumberOfVersionsRequest,
+    GetRecordHistoryRequest,
     GetSubjectRecordRequest,
     GetDeduplicationRegisterResultsRequest,
     GetDeduplicationChangerequestResultsRequest,
     NumberOfVersionsResponse, NumberOfVersionsData,
+    RecordHistoryDataResponse, RecordHistoryListData,
     RecordDataResponse, RecordData, RegisterTabRecordData,
     DeduplicationRegisterResultsDataResponse,
     DeduplicationChangerequestResultsDataResponse,
@@ -37,6 +39,13 @@ class G2PRegisterDataController(BaseController):
             "/get_number_of_versions",
             self.get_number_of_versions,
             responses={200: {"model": NumberOfVersionsResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_record_history",
+            self.get_record_history,
+            responses={200: {"model": RecordHistoryDataResponse}},
             methods=["POST"],
         )
 
@@ -92,6 +101,22 @@ class G2PRegisterDataController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in get_number_of_versions: {str(error_exception)}")
             error_response: NumberOfVersionsResponse = self.helper.construct_error_response(error_exception, get_number_of_versions_request)
+            return error_response
+
+    async def get_record_history(self, get_record_history_request: GetRecordHistoryRequest) -> RecordHistoryDataResponse:
+        """
+        Get the history records for a given register, internal_record_id and tab_id.
+        Returns all historical versions of the record, ordered by approved_at descending.
+        """
+        try:
+            record_history_data: RecordHistoryListData = await self.g2p_register_data_controller_service.get_record_history(get_record_history_request)
+            record_history_response: RecordHistoryDataResponse = self.helper.construct_record_history_success_response(
+                record_history_data=record_history_data, g2p_request=get_record_history_request
+            )
+            return record_history_response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_record_history: {str(error_exception)}")
+            error_response: RecordHistoryDataResponse = self.helper.construct_error_response(error_exception, get_record_history_request)
             return error_response
 
     async def get_subject_record(self, get_subject_record_request: GetSubjectRecordRequest) -> RecordDataResponse:
