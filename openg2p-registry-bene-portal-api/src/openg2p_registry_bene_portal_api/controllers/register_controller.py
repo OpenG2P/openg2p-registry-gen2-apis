@@ -24,7 +24,7 @@ _config = Settings.get_config()
 _logger = logging.getLogger(_config.logging_default_logger_name)
 
 
-class BenePortalController(BaseController):
+class RegisterController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
