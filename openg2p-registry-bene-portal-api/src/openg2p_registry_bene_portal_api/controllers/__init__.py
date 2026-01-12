@@ -1,1 +1,1 @@
-from .bene_portal_controller import BenePortalController
+from .register_controller import RegisterController

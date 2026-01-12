@@ -6,3 +6,4 @@ from .ingestion_configuration_controller import IngestionConfigurationController
 from .outgestion_configuration_controller import OutgestionConfigurationController
 from .g2p_document_controller import G2PDocumentController
 from .g2p_registry_controller import G2PRegistryController
+from .g2p_attribute_controller import G2PAttributeController

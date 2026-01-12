@@ -205,3 +205,4 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+openg2p-registry-staff-portal-api/src/openg2p_registry_staff_portal_api/register_seeder.py
