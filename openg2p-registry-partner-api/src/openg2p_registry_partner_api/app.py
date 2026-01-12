@@ -38,9 +38,9 @@ class Initializer(BaseInitializer):
         DciRequestResponseHelper()
 
     def migrate_database(self, args):
-        _logger.info("Starting partner database migration")
-        
+        _logger.info("Starting database migration")
+
         CoreInitializer().get_component().migrate_database(args)
         ExtensionsInitializer().get_component().migrate_database(args)
-        
-        _logger.info("Partner database migration completed")
+
+        _logger.info("Database migration completed")
