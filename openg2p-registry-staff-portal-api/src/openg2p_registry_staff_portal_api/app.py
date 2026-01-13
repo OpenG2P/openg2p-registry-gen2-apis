@@ -15,7 +15,7 @@ from .controllers import (
     G2PRegisterDataController, G2PRegisterChangerequestController,
     G2PRegisterSummaryController, G2PRegisterMetadataController,
     IngestionConfigurationController, OutgestionConfigurationController,
-    G2PDocumentController, G2PAttributeController
+    G2PDocumentController, G2PAttributeController, G2PIngestionDataController
 )
 
 _logger = logging.getLogger(_config.logging_default_logger_name)
@@ -31,6 +31,7 @@ class Initializer(BaseInitializer):
         G2PRegisterSummaryController().post_init()
         G2PRegisterMetadataController().post_init()
         IngestionConfigurationController().post_init()
+        G2PIngestionDataController().post_init()
         OutgestionConfigurationController().post_init()
         G2PDocumentController().post_init()
         G2PAttributeController().post_init()
