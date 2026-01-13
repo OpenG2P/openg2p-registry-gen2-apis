@@ -45,8 +45,10 @@ from openg2p_registry_core.schemas import (
     SectionDocumentsData, SectionDocumentsResponse, SectionDocumentsResponseBody,
     ChangeRequestDocumentsData, ChangeRequestDocumentsResponse, ChangeRequestDocumentsResponseBody,
     GetG2PAttributeValuesResponse, GetG2PAttributeValuesResponseBody, GetIngestionSummaryDataRequest, GetIngestionSummaryDataRequestBody,
-    IngestionSummaryData, IngestionSummaryDataResponse, IngestionSummaryDataResponseBody, IncomingDataPayloadResponse,
-    IncomingDataPayloadResponseBody, IncomingDataPayload
+    IngestionSummaryData, IngestionSummaryDataResponse, IngestionSummaryDataResponseBody,
+    IngestionDataPayloadResponse, IngestionDataPayloadResponseBody,
+    IngestionDataSearchResultsResponse, IngestionDataSearchResultsResponseBody, IngestionDataSearchResultData,
+    IngestionDataPayload,
 )
 
 from openg2p_registry_core.errors import G2PRegistryException
@@ -240,7 +242,7 @@ class RequestResponseHelper(BaseService):
         )
         return search_results_response
 
-    def construct_ingestion_data_payload_success_response(self, data_payload: IncomingDataPayload, g2p_request: G2PRequest = None) -> IncomingDataPayloadResponse:
+    def construct_ingestion_data_payload_success_response(self, data_payload: IngestionDataPayload, g2p_request: G2PRequest = None) -> IngestionDataPayloadResponse:
         request_id = g2p_request.request_header.request_id if g2p_request else ""
 
         g2p_response_header: G2PResponseHeader = G2PResponseHeader(
@@ -251,17 +253,17 @@ class RequestResponseHelper(BaseService):
             response_timestamp=datetime.now()
         )
 
-        response_body: IncomingDataPayloadResponseBody = IncomingDataPayloadResponseBody(
+        response_body: IngestionDataPayloadResponseBody = IngestionDataPayloadResponseBody(
             response_payload=data_payload
         )
 
-        incoming_data_payload_response: IncomingDataPayloadResponse = IncomingDataPayloadResponse(
+        ingestion_data_payload_response: IngestionDataPayloadResponse = IngestionDataPayloadResponse(
             response_header=g2p_response_header,
             response_body=response_body
         )
-        return incoming_data_payload_response
+        return ingestion_data_payload_response
 
-    def construct_ingestion_data_search_results_success_response(self, search_results_list: List[ChangeRequestSearchResultData], g2p_request: G2PRequest = None, number_of_items: int = None, number_of_pages: int = None) -> ChangeRequestSearchResultsResponse:
+    def construct_ingestion_data_search_results_success_response(self, search_results_list: List[IngestionDataSearchResultData], g2p_request: G2PRequest = None, number_of_items: int = None, number_of_pages: int = None) -> IngestionDataSearchResultsResponse:
         g2p_response_header: G2PResponseHeader = G2PResponseHeader(
             request_id=g2p_request.request_header.request_id if g2p_request else "",
             response_status=G2PResponseStatus.SUCCESS,
@@ -277,16 +279,16 @@ class RequestResponseHelper(BaseService):
                 number_of_pages=number_of_pages
             )
 
-        response_body: ChangeRequestSearchResultsResponseBody = ChangeRequestSearchResultsResponseBody(
+        response_body: IngestionDataSearchResultsResponseBody = IngestionDataSearchResultsResponseBody(
             response_payload=search_results_list,
             pagination_response=pagination_response
         )
 
-        change_request_search_results_response: ChangeRequestSearchResultsResponse = ChangeRequestSearchResultsResponse(
+        ingestion_data_search_results_response: IngestionDataSearchResultsResponse = IngestionDataSearchResultsResponse(
             response_header=g2p_response_header,
             response_body=response_body
         )
-        return change_request_search_results_response
+        return ingestion_data_search_results_response
 
     def construct_change_request_search_results_success_response(self, search_results_list: List[ChangeRequestSearchResultData], g2p_request: G2PRequest = None, number_of_items: int = None, number_of_pages: int = None) -> ChangeRequestSearchResultsResponse:
         g2p_response_header: G2PResponseHeader = G2PResponseHeader(
