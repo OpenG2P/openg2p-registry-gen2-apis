@@ -1,4 +1,3 @@
-from typing import JSON
 import logging
 from openg2p_fastapi_common.controller import BaseController
 

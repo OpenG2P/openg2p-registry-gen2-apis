@@ -7,3 +7,4 @@ from .outgestion_configuration_controller import OutgestionConfigurationControll
 from .g2p_document_controller import G2PDocumentController
 from .g2p_registry_controller import G2PRegistryController
 from .g2p_attribute_controller import G2PAttributeController
+from .ingestion_data_controller import G2PIngestionDataController
