@@ -18,9 +18,7 @@ _logger = logging.getLogger(_config.logging_default_logger_name)
 
 class Initializer(BaseInitializer):
     def initialize(self, **kwargs):
-        CoreInitializer().initialize()
-        ExtensionsInitializer().initialize()
-        
+
         RequestResponseHelper()
         BenePortalController().post_init()
 
