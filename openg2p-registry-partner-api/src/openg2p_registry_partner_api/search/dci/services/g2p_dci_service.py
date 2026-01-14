@@ -23,6 +23,7 @@ from ..schemas import (
     DciSearchRequest,
     DciSearchResultData,
     DciPagination,
+    DciSearchResultPagination,
     DciStatusCode,
 )
 from ....config import Settings
@@ -57,22 +58,20 @@ class G2PDciService(BaseService):
             )
             dci_search_result_data = DciSearchResultData(
                 reg_type = search_criteria.reg_type,
-                reg_event_type = search_criteria.reg_event_type,
+                reg_record_type = search_criteria.reg_record_type,
                 reg_records = [
                     self._render_reg_record_with_template(search_result_datum, template_file_id) 
                     for search_result_datum in search_result_data
                 ]
             )
-            dci_search_result_data.reg_record_type = dci_search_result_data.reg_records[0].get("@type")
-
-            pagination = DciPagination(
+            pagination = DciSearchResultPagination(
                 page_number = current_page,
                 page_size = page_size,
                 total_count = total_count
             )
             dci_search_response_item = DciSearchResponseItem(
                 reference_id = search_request_item.reference_id,
-                timestamp = datetime.now(),
+                timestamp = datetime.now().isoformat(),
                 status = DciStatusCode.SUCCESS.value,
                 data = dci_search_result_data,
                 pagination = pagination,
@@ -85,21 +84,55 @@ class G2PDciService(BaseService):
         _logger.info(f"Search completed for transaction_id: {message.transaction_id}, found {len(dci_search_response_items)} items")
         return dci_search_response_items
         
-
     def _render_reg_record_with_template(
         self,
-        search_result_data: Dict[str, Any],
+        search_result_data: Any,
         template_file_id: str
     ) -> Dict[str, Any]:
         template_helper = TemplateHelper.get_component()
         minio_client = MinioClient.get_component()
 
+        # Normalize SearchResultData → dict[str, Any]
+        search_result_dict = self._search_result_data_to_dict(search_result_data)
+
         reg_record: Dict[str, Any] = template_helper.render_with_template(
             minio_client=minio_client,
             template_file_id=template_file_id,
-            data=search_result_data
+            data=search_result_dict,
+            expand_data=False
         )
+
         return reg_record
+    
+    def _search_result_data_to_dict(
+        self,
+        search_result_data: Any
+    ) -> Dict[str, Any]:
+        """
+        Convert SearchResultData object into a dict[str, Any]
+        suitable for template rendering.
+        """
+
+        result: Dict[str, Any] = {
+            "internal_record_id": search_result_data.internal_record_id,
+            "functional_record_id": search_result_data.functional_record_id,
+            "link_internal_record_id": search_result_data.link_internal_record_id,
+            "foundational_id": search_result_data.foundational_id,
+            "link_foundational_id": search_result_data.link_foundational_id,
+            "record_name": search_result_data.record_name,
+            "record_image_url": search_result_data.record_image_url,
+            "created_by": search_result_data.created_by,
+            "created_at": search_result_data.created_at,
+            "last_approved_at": search_result_data.last_approved_at,
+            "last_approved_by": search_result_data.last_approved_by,
+            "display_fields": {
+                df.field_name: df.value
+                for df in (search_result_data.display_fields or [])
+            },
+        }
+
+        return result
+
     
     def _get_registry_search_parameters(
         self,
