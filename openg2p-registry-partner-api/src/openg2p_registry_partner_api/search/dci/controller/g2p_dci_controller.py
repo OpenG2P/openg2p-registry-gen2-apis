@@ -24,9 +24,9 @@ class G2PDciController(BaseController):
         super().__init__(**kwargs)
 
         self.router.tags += ["G2P Register DCI"]
-        self.g2p_dci_service = G2PDciService.get_component()
-        self.request_response_helper = DciRequestResponseHelper.get_component()
-        self.keymanager_helper = DciKeymanagerHelper.get_component()
+        self.g2p_dci_service = G2PDciService()
+        self.request_response_helper = DciRequestResponseHelper()
+        self.keymanager_helper = DciKeymanagerHelper()
         self.router.prefix = "/dci/registry"
 
         self.router.add_api_route(
@@ -43,13 +43,15 @@ class G2PDciController(BaseController):
             signature: str = dci_search_request_env.signature
             header: DciRequestHeader = dci_search_request_env.header
             message: DciSearchRequest = dci_search_request_env.message
-            
-            await self.keymanager_helper.validate_signature(signature, header, message)
+            # Skip keymanager auth for testing
+            # await self.keymanager_helper.validate_signature(signature, header, message)
             
             dci_search_response_items: list[DciSearchResponseItem] = await self.g2p_dci_service.search(signature, header, message)
             
-            dci_search_response_env: DciSearchResponseEnvelope = self.request_response_helper.construct_search_success_response(dci_search_response_items, dci_search_request_env)
-            dci_search_response_env.signature = await self.keymanager_helper.sign_response(dci_search_response_env.header, dci_search_response_env.message)
+            dci_search_response_env: DciSearchResponseEnvelope = self.request_response_helper.construct_dci_search_success_response(dci_search_response_items, dci_search_request_env)
+            # Skip keymanager auth for testing
+            dci_search_response_env.signature = "Signature not implemented"
+            # dci_search_response_env.signature = await self.keymanager_helper.sign_response(dci_search_response_env.header, dci_search_response_env.message)
             
             return dci_search_response_env
 

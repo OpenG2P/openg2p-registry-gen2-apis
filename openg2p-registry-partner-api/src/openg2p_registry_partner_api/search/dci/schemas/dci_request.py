@@ -1,87 +1,144 @@
-from typing import List, Optional, Literal, Dict, Any
+from typing import List, Optional, Literal, Dict, Any, Union
 from pydantic import BaseModel, Field
 
 
+# ----------------------------
+# Query models
+# ----------------------------
+
 class DciQueryValue(BaseModel):
-    expression: str = Field(..., description="Query expression, e.g. GraphQL string used for registry search",)
+    expression: str
+
 
 class DciQuery(BaseModel):
-    type: str = Field(..., description='Type of query, e.g. "ns:org:QueryType:graphql"',)
+    type: str
     value: DciQueryValue
+
+
+# ----------------------------
+# Sort & Pagination
+# ----------------------------
 
 class DciSortItem(BaseModel):
     attribute_name: str
     sort_order: Literal["asc", "desc"]
 
+
 class DciPagination(BaseModel):
     page_size: int = Field(..., ge=1)
     page_number: int = Field(..., ge=1)
 
+
+# ----------------------------
+# Purpose (PERMISSIVE BY DESIGN)
+# Accepts schema-like objects:
+# { "type": "string" }, etc.
+# ----------------------------
+
 class DciPurpose(BaseModel):
-    text: Optional[str] = None
-    code: Optional[str] = Field(None, description="From a fixed set, documented at ref_uri",)
-    ref_uri: Optional[str] = Field(None, description="URI to provide more info on codes",)
+    text: Optional[Any] = None
+    code: Optional[Any] = None
+    ref_uri: Optional[Any] = None
+
+    class Config:
+        extra = "allow"
+
+
+# ----------------------------
+# Consent / Authorize (JSON-LD friendly)
+# Allows:
+# ts = string OR { "$ref": ... }
+# ----------------------------
 
 class DciConsent(BaseModel):
-    # In spec this is actually JSON-LD; we just capture useful fields here
-    context: Optional[str] = Field(None, alias="@context", description="JSON-LD context, e.g. Consent.jsonld URI",)
-    type_: Optional[str] = Field(None, alias="@type", description='JSON-LD type, typically "Consent"',)
-    ts: Optional[str] = Field(None, description="Timestamp, same type as MsgHeader.message_ts",)
+    context: Optional[str] = Field(None, alias="@context")
+    type_: Optional[str] = Field(None, alias="@type")
+    ts: Optional[Union[str, Dict[str, Any]]] = None
     purpose: Optional[DciPurpose] = None
 
     class Config:
         validate_by_name = True
+        extra = "allow"
+
 
 class DciAuthorize(BaseModel):
-    context: Optional[str] = Field(None, alias="@context", description="JSON-LD context, e.g. Authorize.jsonld URI",)
-    type_: Optional[str] = Field(None, alias="@type", description='JSON-LD type, typically "Authorize"',)
-    ts: Optional[str] = Field(None, description="Timestamp, same type as MsgHeader.message_ts",)
+    context: Optional[str] = Field(None, alias="@context")
+    type_: Optional[str] = Field(None, alias="@type")
+    ts: Optional[Union[str, Dict[str, Any]]] = None
     purpose: Optional[DciPurpose] = None
 
     class Config:
         validate_by_name = True
+        extra = "allow"
+
+
+# ----------------------------
+# Search Criteria
+# NOTE:
+# - reg_event_type intentionally NOT required
+# - extra fields allowed
+# ----------------------------
 
 class DciSearchCriteria(BaseModel):
     version: str = "1.0.0"
-    reg_type: str = Field(..., description='Registry type, e.g. "ns:org:RegistryType:Civil"',)
-    reg_event_type: str = Field(..., description='Registry event type, e.g. "spdci-common:RegistryEventType:LiveBirth"',)
-    query_type: str = Field(..., description='e.g. "expression"',)
+    reg_type: str
+    reg_record_type: str
+    query_type: str
     query: DciQuery
     sort: Optional[List[DciSortItem]] = None
     pagination: Optional[DciPagination] = None
     consent: Optional[DciConsent] = None
     authorize: Optional[DciAuthorize] = None
 
+    class Config:
+        extra = "allow"
+
+
+# ----------------------------
+# Search Request Item
+# ----------------------------
 
 class DciSearchRequestItem(BaseModel):
-    reference_id: str = Field(..., max_length=99, description="Unique reference for this individual search within the txn")
-    timestamp: Optional[str] = Field(None, description="Timestamp of this individual request (format per implementation)")
+    reference_id: str = Field(..., max_length=99)
+    timestamp: Optional[str] = None
     search_criteria: DciSearchCriteria
-    locale: Optional[str] = Field("en", description="Locale for response, e.g. 'en'",)
+    locale: Optional[str] = "eng"
 
+
+# ----------------------------
+# Message Body
+# ----------------------------
 
 class DciSearchRequest(BaseModel):
-    transaction_id: str = Field(..., max_length=99, description=(
-        "Transaction id set by the initiating system to correlate all related "
-        "requests in a business transaction."
-    ))
-    search_request: List[DciSearchRequestItem] = Field(..., description="Batch of individual search requests", min_items=1)
+    transaction_id: str = Field(..., max_length=99)
+    search_request: List[DciSearchRequestItem]
 
+
+# ----------------------------
+# Header
+# ----------------------------
 
 class DciRequestHeader(BaseModel):
-    version: str = Field(..., description="API header version")
-    message_id: str = Field(..., max_length=99, description="Unique ID for this message")
-    message_ts: str = Field(..., description="Timestamp of the message, ISO-8601 or epoch")
-    action: str = Field(..., description="Action being performed, e.g., 'search'")
-    sender_id: str = Field(..., description="Unique ID of the sender system")
-    sender_uri: Optional[str] = Field(None, description="Callback or endpoint URI of the sender")
-    receiver_id: str = Field(..., description="Unique ID of the receiver system")
-    total_count: Optional[int] = Field(None, description="Total number of messages in this transaction if batched")
-    is_msg_encrypted: bool = Field(False, description="Indicates if the message body is encrypted")
-    meta: Optional[Dict[str, Any]] = Field(default=None, description="Optional metadata object")
+    version: str
+    message_id: str
+    message_ts: str
+    action: str
+    sender_id: str
+    sender_uri: Optional[str] = None
+    receiver_id: str
+    total_count: Optional[int] = None
+    is_msg_encrypted: bool = False
+    meta: Optional[Dict[str, Any]] = None
 
 
-class DciSearchRequestEnvelope(BaseModel): # This class already has the Dci prefix.
-    signature: str = Field(..., description="Signature of {header}+{message} body verified using sender's signing public key")
+# ----------------------------
+# Envelope
+# ----------------------------
+
+class DciSearchRequestEnvelope(BaseModel):
+    signature: str
     header: DciRequestHeader
     message: DciSearchRequest
+
+    class Config:
+        extra = "allow"
