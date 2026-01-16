@@ -48,7 +48,7 @@ from openg2p_registry_core.schemas import (
     IngestionSummaryData, IngestionSummaryDataResponse, IngestionSummaryDataResponseBody,
     IngestionDataPayloadResponse, IngestionDataPayloadResponseBody,
     IngestionDataSearchResultsResponse, IngestionDataSearchResultsResponseBody, IngestionDataSearchResultData,
-    IngestionDataPayload,
+    IngestionDataPayload, FileUrlData, FileUrlResponse, FileUrlResponseBody,
 )
 
 from openg2p_registry_core.errors import G2PRegistryException
@@ -1119,6 +1119,56 @@ class RequestResponseHelper(BaseService):
         )
 
         return ChangeRequestDocumentsResponse(
+            response_header=g2p_response_header,
+            response_body=None
+        )
+    
+    def construct_file_url_success_response(
+        self,
+        file_url_data: FileUrlData,
+        g2p_request: G2PRequest = None
+    ) -> FileUrlResponse:
+        """Construct success response for get_file_url endpoint."""
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: FileUrlResponseBody = FileUrlResponseBody(
+            response_payload=file_url_data
+        )
+
+        response: FileUrlResponse = FileUrlResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return response
+
+    def construct_file_url_error_response(
+        self,
+        error_exception: Exception
+    ) -> FileUrlResponse:
+        """Construct error response for get_file_url endpoint."""
+        error_code = ""
+        error_message = str(error_exception)
+        if isinstance(error_exception, G2PRegistryException):
+            error_code = error_exception.code
+            error_message = error_exception.message
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id="",
+            response_status=G2PResponseStatus.ERROR,
+            response_error_code=error_code,
+            response_error_message=error_message,
+            response_timestamp=datetime.now()
+        )
+
+        return FileUrlResponse(
             response_header=g2p_response_header,
             response_body=None
         )
