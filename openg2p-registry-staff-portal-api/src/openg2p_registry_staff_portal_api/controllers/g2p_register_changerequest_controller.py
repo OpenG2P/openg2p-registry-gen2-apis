@@ -125,6 +125,7 @@ class G2PRegisterChangerequestController(BaseController):
             )
             return change_request_response
         except Exception as error_exception:
+            raise error_exception
             _logger.error(f"Error in create_change_request: {str(error_exception)}")
             error_response: G2PResponse = self.helper.construct_error_response(error_exception, change_request_request)
             return error_response

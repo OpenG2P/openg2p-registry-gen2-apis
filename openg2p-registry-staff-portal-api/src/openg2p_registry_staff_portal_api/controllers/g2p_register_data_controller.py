@@ -85,8 +85,8 @@ class G2PRegisterDataController(BaseController):
         )
 
         self.router.add_api_route(
-            "/get_register_tab_records",
-            self.get_register_tab_records,
+            "/get_tab_records",
+            self.get_tab_records,
             responses={200: {"model": RegisterTabRecordsDataResponse}},
             methods=["POST"],
         )
@@ -202,7 +202,7 @@ class G2PRegisterDataController(BaseController):
             )
             return error_response
 
-    async def get_register_tab_records(
+    async def get_tab_records(
         self,
         get_register_tab_records_request: GetRegisterTabRecordsRequest
     ) -> RegisterTabRecordsDataResponse:

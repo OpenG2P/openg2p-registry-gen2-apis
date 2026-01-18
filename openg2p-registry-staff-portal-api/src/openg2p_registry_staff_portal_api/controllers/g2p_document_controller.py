@@ -11,7 +11,6 @@ from openg2p_registry_core.schemas import (
     GetDocumentLabelsForSectionRequest,
     GetSectionDocumentsRequest,
     GetSectionDocumentsForChangeRequestRequest,
-    DocumentLabelsForSectionResponse, DocumentLabelsForSectionData,
     SectionDocumentsResponse, SectionDocumentsData,
     ChangeRequestDocumentsResponse, ChangeRequestDocumentsData
 )
@@ -38,16 +37,16 @@ class G2PDocumentController(BaseController):
         self.router.prefix = "/documents"
 
         self.router.add_api_route(
-            "/upload",
+            "/upload_documents",
             self.upload_documents,
             responses={200: {"model": UploadDocumentsResponse}},
             methods=["POST"],
         )
 
         self.router.add_api_route(
-            "/get_document_labels_for_section",
-            self.get_document_labels_for_section,
-            responses={200: {"model": DocumentLabelsForSectionResponse}},
+            "/upload",
+            self.upload_documents,
+            responses={200: {"model": UploadDocumentsResponse}},
             methods=["POST"],
         )
 
@@ -59,8 +58,8 @@ class G2PDocumentController(BaseController):
         )
 
         self.router.add_api_route(
-            "/get_section_documents_for_change_request",
-            self.get_section_documents_for_change_request,
+            "/get_change_request_documents",
+            self.get_change_request_documents,
             responses={200: {"model": ChangeRequestDocumentsResponse}},
             methods=["POST"],
         )
@@ -74,28 +73,16 @@ class G2PDocumentController(BaseController):
 
     async def upload_documents(
         self,
-        section_id: str = Form(..., description="Section ID to validate document labels against"),
-        document_label_ids: List[str] = Form(..., description="List of document label IDs (one per file)"),
-        files: List[UploadFile] = File(..., description="List of files to upload")
+        document_label: str = Form(..., description="Document label for the files"),
+        documents: List[UploadFile] = File(..., description="List of documents to upload")
     ) -> UploadDocumentsResponse:
         """
-        Upload documents for a change request to MinIO storage.
-
-        Files are uploaded and stored in MinIO. Returns document_store_ids that can be
-        used when creating a change request with documents.
-
-        The number of document_label_ids must match the number of files.
+        Upload multiple documents to MinIO storage with the specified document label.
         """
         try:
-            if len(document_label_ids) != len(files):
-                raise ValueError(f"Number of document_label_ids ({len(document_label_ids)}) must match number of files ({len(files)})")
-
-            # Pair each file with its document_label_id
-            files_with_labels = list(zip(document_label_ids, files))
-
             upload_response_data: UploadDocumentsResponseData = await self.g2p_document_controller_service.upload_documents(
-                section_id=section_id,
-                files=files_with_labels
+                document_label=document_label,
+                documents=documents,
             )
             upload_response: UploadDocumentsResponse = self.helper.construct_upload_documents_success_response(
                 upload_response_data=upload_response_data
@@ -108,8 +95,7 @@ class G2PDocumentController(BaseController):
 
     async def upload_record_image(
         self,
-        section_id: str = Form(..., description="Section ID for organizing storage path"),
-        file: UploadFile = File(..., description="The image file to upload")
+        document: UploadFile = File(..., description="The image file to upload")
     ) -> UploadRecordImageResponse:
         """
         Upload a record image to MinIO storage.
@@ -118,38 +104,17 @@ class G2PDocumentController(BaseController):
         Returns the document_store_id that can be used when creating a change request.
         """
         try:
-            upload_response_data: UploadRecordImageData = await self.g2p_document_controller_service.upload_record_image(
-                section_id=section_id,
-                file=file
+            upload_response_data: UploadDocumentsResponseData = await self.g2p_document_controller_service.upload_documents(
+                document_label="RECORD_IMAGE",
+                documents=[document],
             )
             upload_response: UploadRecordImageResponse = self.helper.construct_upload_record_image_success_response(
-                upload_record_image_data=upload_response_data
+                upload_record_image_data=upload_response_data[0]
             )
             return upload_response
         except Exception as error_exception:
             _logger.error(f"Error in upload_record_image: {str(error_exception)}")
             error_response: UploadRecordImageResponse = self.helper.construct_upload_record_image_error_response(error_exception)
-            return error_response
-
-    async def get_document_labels_for_section(
-        self,
-        request: GetDocumentLabelsForSectionRequest
-    ) -> DocumentLabelsForSectionResponse:
-        """
-        Get document labels for a section.
-
-        Returns the list of document labels configured for the specified section.
-        """
-        try:
-            document_labels_data: DocumentLabelsForSectionData = await self.g2p_document_controller_service.get_document_labels_for_section(request)
-            response: DocumentLabelsForSectionResponse = self.helper.construct_document_labels_for_section_success_response(
-                document_labels_data=document_labels_data,
-                g2p_request=request
-            )
-            return response
-        except Exception as error_exception:
-            _logger.error(f"Error in get_document_labels_for_section: {str(error_exception)}")
-            error_response: DocumentLabelsForSectionResponse = self.helper.construct_document_labels_for_section_error_response(error_exception)
             return error_response
 
     async def get_section_documents(
@@ -173,7 +138,7 @@ class G2PDocumentController(BaseController):
             error_response: SectionDocumentsResponse = self.helper.construct_section_documents_error_response(error_exception)
             return error_response
 
-    async def get_section_documents_for_change_request(
+    async def get_change_request_documents(
         self,
         request: GetSectionDocumentsForChangeRequestRequest
     ) -> ChangeRequestDocumentsResponse:
@@ -183,7 +148,7 @@ class G2PDocumentController(BaseController):
         Returns the list of documents (label, document_store_id) attached to the specified change request.
         """
         try:
-            change_request_documents_data: ChangeRequestDocumentsData = await self.g2p_document_controller_service.get_section_documents_for_change_request(request)
+            change_request_documents_data: ChangeRequestDocumentsData = await self.g2p_document_controller_service.get_change_request_documents(request)
             response: ChangeRequestDocumentsResponse = self.helper.construct_change_request_documents_success_response(
                 change_request_documents_data=change_request_documents_data,
                 g2p_request=request

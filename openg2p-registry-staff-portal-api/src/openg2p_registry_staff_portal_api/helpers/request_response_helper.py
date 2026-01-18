@@ -41,7 +41,6 @@ from openg2p_registry_core.schemas import (
     RegistryConfigurationData, RegistryConfigurationDataResponse, RegistryConfigurationDataResponseBody,
     NumberOfRequestsPendingData, NumberOfRequestsPendingResponse, NumberOfRequestsPendingResponseBody,
     EarliestPendingChangeRequestData, EarliestPendingChangeRequestResponse, EarliestPendingChangeRequestResponseBody,
-    DocumentLabelsForSectionData, DocumentLabelsForSectionResponse, DocumentLabelsForSectionResponseBody,
     SectionDocumentsData, SectionDocumentsResponse, SectionDocumentsResponseBody,
     ChangeRequestDocumentsData, ChangeRequestDocumentsResponse, ChangeRequestDocumentsResponseBody,
     GetG2PAttributeValuesResponse, GetG2PAttributeValuesResponseBody, GetIngestionSummaryDataRequest, GetIngestionSummaryDataRequestBody,
@@ -972,56 +971,6 @@ class RequestResponseHelper(BaseService):
     # =========================================================================
     # Document APIs Helper Methods
     # =========================================================================
-
-    def construct_document_labels_for_section_success_response(
-        self,
-        document_labels_data: DocumentLabelsForSectionData,
-        g2p_request: G2PRequest = None
-    ) -> DocumentLabelsForSectionResponse:
-        """Construct success response for get_document_labels_for_section endpoint."""
-        request_id = g2p_request.request_header.request_id if g2p_request else ""
-
-        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
-            request_id=request_id,
-            response_status=G2PResponseStatus.SUCCESS,
-            response_error_code="",
-            response_error_message="",
-            response_timestamp=datetime.now()
-        )
-
-        response_body: DocumentLabelsForSectionResponseBody = DocumentLabelsForSectionResponseBody(
-            response_payload=document_labels_data
-        )
-
-        response: DocumentLabelsForSectionResponse = DocumentLabelsForSectionResponse(
-            response_header=g2p_response_header,
-            response_body=response_body
-        )
-        return response
-
-    def construct_document_labels_for_section_error_response(
-        self,
-        error_exception: Exception
-    ) -> DocumentLabelsForSectionResponse:
-        """Construct error response for get_document_labels_for_section endpoint."""
-        error_code = ""
-        error_message = str(error_exception)
-        if isinstance(error_exception, G2PRegistryException):
-            error_code = error_exception.code
-            error_message = error_exception.message
-
-        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
-            request_id="",
-            response_status=G2PResponseStatus.ERROR,
-            response_error_code=error_code,
-            response_error_message=error_message,
-            response_timestamp=datetime.now()
-        )
-
-        return DocumentLabelsForSectionResponse(
-            response_header=g2p_response_header,
-            response_body=None
-        )
 
     def construct_section_documents_success_response(
         self,
