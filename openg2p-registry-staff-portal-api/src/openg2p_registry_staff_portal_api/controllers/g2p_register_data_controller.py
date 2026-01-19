@@ -5,11 +5,15 @@ from openg2p_registry_core.controller_services import G2PRegisterDataControllerS
 from openg2p_registry_core.schemas import (
     GetNumberOfVersionsRequest,
     GetRecordHistoryRequest,
+    GetVersionDatesRequest,
+    GetChangesForDateRequest,
     GetSubjectRecordRequest,
     GetDeduplicationRegisterResultsRequest,
     GetDeduplicationChangerequestResultsRequest,
     NumberOfVersionsResponse, NumberOfVersionsData,
     RecordHistoryDataResponse, RecordHistoryListData,
+    VersionDatesDataResponse, VersionDatesData,
+    ChangesForDateDataResponse, VersionsForDateData,
     RecordDataResponse, RecordData, RegisterTabRecordData,
     DeduplicationRegisterResultsDataResponse,
     DeduplicationChangerequestResultsDataResponse,
@@ -50,6 +54,20 @@ class G2PRegisterDataController(BaseController):
         )
 
         self.router.add_api_route(
+            "/get_version_dates",
+            self.get_version_dates,
+            responses={200: {"model": VersionDatesDataResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_changes_for_a_date",
+            self.get_versions_for_a_date,
+            responses={200: {"model": ChangesForDateDataResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
             "/get_subject_record",
             self.get_subject_record,
             responses={200: {"model": RecordDataResponse}},
@@ -85,8 +103,8 @@ class G2PRegisterDataController(BaseController):
         )
 
         self.router.add_api_route(
-            "/get_register_tab_records",
-            self.get_register_tab_records,
+            "/get_tab_records",
+            self.get_tab_records,
             responses={200: {"model": RegisterTabRecordsDataResponse}},
             methods=["POST"],
         )
@@ -117,6 +135,39 @@ class G2PRegisterDataController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in get_record_history: {str(error_exception)}")
             error_response: RecordHistoryDataResponse = self.helper.construct_error_response(error_exception, get_record_history_request)
+            return error_response
+
+    async def get_version_dates(self, get_version_dates_request: GetVersionDatesRequest) -> VersionDatesDataResponse:
+        """
+        Get unique truncated dates from history records for a given register, internal_record_id and tab_id.
+        Returns a list of unique dates (YYYY-MM-DD format) based on created_at of history records.
+        """
+        try:
+            version_dates_data: VersionDatesData = await self.g2p_register_data_controller_service.get_version_dates(get_version_dates_request)
+            version_dates_response: VersionDatesDataResponse = self.helper.construct_version_dates_success_response(
+                version_dates_data=version_dates_data, g2p_request=get_version_dates_request
+            )
+            return version_dates_response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_version_dates: {str(error_exception)}")
+            error_response: VersionDatesDataResponse = self.helper.construct_error_response(error_exception, get_version_dates_request)
+            return error_response
+
+    async def get_versions_for_a_date(self, get_changes_for_date_request: GetChangesForDateRequest) -> ChangesForDateDataResponse:
+        """
+        Get changes from history records for a given register, internal_record_id, tab_id and specific date.
+        Returns a list of change_request_id, section_id, section_mnemonic, and created_at.
+        """
+        try:
+            changes_for_date_data: VersionsForDateData = await self.g2p_register_data_controller_service.get_versions_for_a_date(get_changes_for_date_request)
+            changes_for_date_response: ChangesForDateDataResponse = self.helper.construct_changes_for_date_success_response(
+                changes_for_date_data=changes_for_date_data, g2p_request=get_changes_for_date_request
+            )
+            return changes_for_date_response
+        except Exception as error_exception:
+            raise error_exception
+            _logger.error(f"Error in get_changes_for_a_date: {str(error_exception)}")
+            error_response: ChangesForDateDataResponse = self.helper.construct_error_response(error_exception, get_changes_for_date_request)
             return error_response
 
     async def get_subject_record(self, get_subject_record_request: GetSubjectRecordRequest) -> RecordDataResponse:
@@ -202,7 +253,7 @@ class G2PRegisterDataController(BaseController):
             )
             return error_response
 
-    async def get_register_tab_records(
+    async def get_tab_records(
         self,
         get_register_tab_records_request: GetRegisterTabRecordsRequest
     ) -> RegisterTabRecordsDataResponse:
