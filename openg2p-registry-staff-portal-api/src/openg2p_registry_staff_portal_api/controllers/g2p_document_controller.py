@@ -45,13 +45,6 @@ class G2PDocumentController(BaseController):
         )
 
         self.router.add_api_route(
-            "/upload",
-            self.upload_documents,
-            responses={200: {"model": UploadDocumentsResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
             "/get_section_documents",
             self.get_section_documents,
             responses={200: {"model": SectionDocumentsResponse}},
@@ -62,13 +55,6 @@ class G2PDocumentController(BaseController):
             "/get_change_request_documents",
             self.get_change_request_documents,
             responses={200: {"model": ChangeRequestDocumentsResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/upload_record_image",
-            self.upload_record_image,
-            responses={200: {"model": UploadRecordImageResponse}},
             methods=["POST"],
         )
 
@@ -101,29 +87,6 @@ class G2PDocumentController(BaseController):
             error_response: UploadDocumentsResponse = self.helper.construct_upload_documents_error_response(error_exception)
             return error_response
 
-    async def upload_record_image(
-        self,
-        document: UploadFile = File(..., description="The image file to upload")
-    ) -> UploadRecordImageResponse:
-        """
-        Upload a record image to MinIO storage.
-
-        The image is uploaded with a hardcoded RECORD_IMAGE label.
-        Returns the document_store_id that can be used when creating a change request.
-        """
-        try:
-            upload_response_data: UploadDocumentsResponseData = await self.g2p_document_controller_service.upload_documents(
-                document_label="RECORD_IMAGE",
-                documents=[document],
-            )
-            upload_response: UploadRecordImageResponse = self.helper.construct_upload_record_image_success_response(
-                upload_record_image_data=upload_response_data[0]
-            )
-            return upload_response
-        except Exception as error_exception:
-            _logger.error(f"Error in upload_record_image: {str(error_exception)}")
-            error_response: UploadRecordImageResponse = self.helper.construct_upload_record_image_error_response(error_exception)
-            return error_response
 
     async def get_section_documents(
         self,
