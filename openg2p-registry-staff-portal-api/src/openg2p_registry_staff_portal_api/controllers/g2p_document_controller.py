@@ -12,7 +12,8 @@ from openg2p_registry_core.schemas import (
     GetSectionDocumentsRequest,
     GetSectionDocumentsForChangeRequestRequest,
     SectionDocumentsResponse, SectionDocumentsData,
-    ChangeRequestDocumentsResponse, ChangeRequestDocumentsData
+    ChangeRequestDocumentsResponse, ChangeRequestDocumentsData,
+    FileUrlResponse, FileUrlData, FileUrlRequest
 )
 
 from ..helpers import RequestResponseHelper
@@ -54,6 +55,13 @@ class G2PDocumentController(BaseController):
             "/get_change_request_documents",
             self.get_change_request_documents,
             responses={200: {"model": ChangeRequestDocumentsResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_file_url",
+            self.get_file_url,
+            responses={200: {"model": FileUrlResponse}},
             methods=["POST"],
         )
 
@@ -120,4 +128,25 @@ class G2PDocumentController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in get_section_documents_for_change_request: {str(error_exception)}")
             error_response: ChangeRequestDocumentsResponse = self.helper.construct_change_request_documents_error_response(error_exception)
+            return error_response
+
+    async def get_file_url(
+        self,
+        file_url_request: FileUrlRequest
+    ) -> FileUrlResponse:
+        """
+        Get the URL for a file.
+
+        Returns the URL for the specified file.
+        """
+        try:
+            file_url_data: FileUrlData = await self.g2p_document_controller_service.get_file_url(file_url_request)
+            file_url_response: FileUrlResponse = self.helper.construct_file_url_success_response(
+                file_url_data=file_url_data,
+                g2p_request=file_url_request
+            )
+            return file_url_response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_file_url: {str(error_exception)}")
+            error_response: FileUrlResponse = self.helper.construct_file_url_error_response(error_exception)
             return error_response
