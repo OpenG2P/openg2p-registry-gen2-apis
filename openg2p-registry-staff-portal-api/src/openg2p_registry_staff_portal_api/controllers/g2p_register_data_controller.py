@@ -262,7 +262,7 @@ class G2PRegisterDataController(BaseController):
         Multiple sections with the same section_register_id are deduplicated.
         """
         try:
-            tab_records: list[RegisterTabRecordData] = await self.g2p_register_data_controller_service.get_register_tab_records(
+            tab_records: list[RegisterTabRecordData] = await self.g2p_register_data_controller_service.get_tab_records(
                 get_register_tab_records_request
             )
             tab_records_response: RegisterTabRecordsDataResponse = self.helper.construct_register_tab_records_success_response(
