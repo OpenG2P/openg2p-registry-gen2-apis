@@ -139,7 +139,7 @@ class G2PDciService(BaseService):
         search_criteria: DciSearchCriteria
     ) -> Tuple[str, int, int, Optional[str]]:
         # Search text
-        search_text: str = search_criteria.query.value.expression
+        search_text: str = search_criteria.query.value
         
         # Pagination
         current_page: int = 1
