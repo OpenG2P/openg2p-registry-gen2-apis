@@ -12,7 +12,7 @@ class DciQueryValue(BaseModel):
 
 class DciQuery(BaseModel):
     type: str
-    value: DciQueryValue
+    value: str
 
 
 # ----------------------------
