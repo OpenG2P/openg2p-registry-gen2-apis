@@ -50,31 +50,13 @@ from openg2p_registry_core.schemas import (
     IngestionDataPayloadResponse, IngestionDataPayloadResponseBody,
     IngestionDataSearchResultsResponse, IngestionDataSearchResultsResponseBody, IngestionDataSearchResultData,
     IngestionDataPayload, FileUrlData, FileUrlResponse, FileUrlResponseBody,
+    VcConfigurationResponse, VcConfigurationResponseBody, VcConfigurationData
 )
 
 from openg2p_registry_core.errors import G2PRegistryException
 
 
 class RequestResponseHelper(BaseService):
-    def construct_change_request_success_response(self, change_request_response_payload: ChangeRequestResponsePayload, g2p_request: G2PRequest) -> ChangeRequestResponse:
-
-        g2p_response_header = G2PResponseHeader(
-            request_id=g2p_request.request_header.request_id,
-            response_status=G2PResponseStatus.SUCCESS,
-            response_error_code="",
-            response_error_message="",
-            response_timestamp=datetime.now()
-        )
-
-        response_body: ChangeRequestResponseBody = ChangeRequestResponseBody(
-            response_payload=change_request_response_payload
-        )
-
-        change_request_response: ChangeRequestResponse = ChangeRequestResponse(
-            response_header=g2p_response_header,
-            response_body=response_body
-        )
-        return change_request_response
     
     def construct_error_response(self, error: Exception, g2p_request: G2PRequest = None) -> G2PResponse:
         """
@@ -108,6 +90,52 @@ class RequestResponseHelper(BaseService):
         )
 
         return error_response
+
+    def construct_change_request_success_response(self, change_request_response_payload: ChangeRequestResponsePayload, g2p_request: G2PRequest) -> ChangeRequestResponse:
+
+        g2p_response_header = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: ChangeRequestResponseBody = ChangeRequestResponseBody(
+            response_payload=change_request_response_payload
+        )
+
+        change_request_response: ChangeRequestResponse = ChangeRequestResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return change_request_response
+
+    def construct_vc_configuration_data_success_response(
+        self,
+        vc_configuration_data: VcConfigurationData,
+        g2p_request: G2PRequest = None
+    ) -> VcConfigurationResponse:
+        """Construct success response for vc configuration endpoints."""
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: VcConfigurationResponseBody = VcConfigurationResponseBody(
+            response_payload=vc_configuration_data
+        )
+
+        response: VcConfigurationResponse = VcConfigurationResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return response
 
     def construct_ingestion_summary_data_success_response(self, ingestion_summary_data: IngestionSummaryData, g2p_request: G2PRequest = None) -> IngestionSummaryDataResponse:
         request_id = g2p_request.request_header.request_id if g2p_request else ""
