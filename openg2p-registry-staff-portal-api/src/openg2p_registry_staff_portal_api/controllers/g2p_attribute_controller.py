@@ -23,7 +23,7 @@ class G2PAttributeController(BaseController):
         self.router.tags += ["G2P Attributes"]
         self.g2p_attribute_controller_service = G2PAttributeControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
-        self.router.prefix = "/master_data"
+        self.router.prefix = "/attributes"
 
         self.router.add_api_route(
             "/get_g2p_attribute_values",

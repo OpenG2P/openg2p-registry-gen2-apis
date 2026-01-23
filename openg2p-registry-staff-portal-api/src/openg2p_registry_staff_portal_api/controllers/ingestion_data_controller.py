@@ -34,6 +34,7 @@ class G2PIngestionDataController(BaseController):
             self.get_ingestion_summary_data,
             responses={200: {"model": IngestionSummaryDataResponse}},
             methods=["POST"],
+            operation_id="get_ingestion_summary_data",
         )
 
         self.router.add_api_route(
@@ -41,6 +42,7 @@ class G2PIngestionDataController(BaseController):
             self.search_in_ingestion_data,
             responses={200: {"model": IngestionDataSearchResultsResponse}},
             methods=["POST"],
+            operation_id="search_ingestion_data",
         )
 
         self.router.add_api_route(
@@ -48,6 +50,7 @@ class G2PIngestionDataController(BaseController):
             self.get_raw_payload,
             responses={200: {"model": IngestionDataPayloadResponse}},
             methods=["POST"],
+            operation_id="get_raw_ingestion_payload",
         )
 
         self.router.add_api_route(
@@ -55,6 +58,7 @@ class G2PIngestionDataController(BaseController):
             self.get_enriched_and_transformed_payload,
             responses={200: {"model": IngestionDataPayloadResponse}},
             methods=["POST"],
+            operation_id="get_enriched_transformed_ingestion_payload",
         )
 
     async def get_ingestion_summary_data(self, get_ingestion_summary_data_request: GetIngestionSummaryDataRequest) -> IngestionSummaryDataResponse:

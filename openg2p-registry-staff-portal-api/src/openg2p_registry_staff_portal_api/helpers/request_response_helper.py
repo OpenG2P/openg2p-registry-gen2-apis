@@ -179,7 +179,7 @@ class RequestResponseHelper(BaseService):
         )
         return register_summary_data_response
 
-    def construct_changerequest_summary_data_success_response(self, changerequest_summary_data: ChangeRequestSummaryData, g2p_request: G2PRequest = None) -> ChangeRequestSummaryDataResponse:
+    def construct_change_request_summary_data_success_response(self, change_request_summary_data: ChangeRequestSummaryData, g2p_request: G2PRequest = None) -> ChangeRequestSummaryDataResponse:
         request_id = g2p_request.request_header.request_id if g2p_request else ""
 
         g2p_response_header: G2PResponseHeader = G2PResponseHeader(
@@ -191,14 +191,14 @@ class RequestResponseHelper(BaseService):
         )
 
         response_body: ChangeRequestSummaryDataResponseBody = ChangeRequestSummaryDataResponseBody(
-            response_payload=changerequest_summary_data
+            response_payload=change_request_summary_data
         )
 
-        changerequest_summary_data_response: ChangeRequestSummaryDataResponse = ChangeRequestSummaryDataResponse(
+        change_request_summary_data_response: ChangeRequestSummaryDataResponse = ChangeRequestSummaryDataResponse(
             response_header=g2p_response_header,
             response_body=response_body
         )
-        return changerequest_summary_data_response
+        return change_request_summary_data_response
 
     def construct_all_registers_success_response(self, all_registers_list: List[RegisterData], g2p_request: G2PRequest = None) -> AllRegistersResponse:
         request_id = g2p_request.request_header.request_id if g2p_request else ""
@@ -680,7 +680,7 @@ class RequestResponseHelper(BaseService):
         )
         return dedup_results_response
 
-    def construct_deduplication_changerequest_results_success_response(self, dedup_results_list: List = None, dedup_results_data: DeduplicationChangerequestResultsData = None, g2p_request: G2PRequest = None, number_of_items: int = None, number_of_pages: int = None) -> DeduplicationChangerequestResultsDataResponse:
+    def construct_deduplication_change_request_results_success_response(self, dedup_results_list: List = None, dedup_results_data: DeduplicationChangerequestResultsData = None, g2p_request: G2PRequest = None, number_of_items: int = None, number_of_pages: int = None) -> DeduplicationChangerequestResultsDataResponse:
         g2p_response_header: G2PResponseHeader = G2PResponseHeader(
             request_id=g2p_request.request_header.request_id if g2p_request else "",
             response_status=G2PResponseStatus.SUCCESS,
