@@ -22,11 +22,11 @@ _config = Settings.get_config()
 _logger = logging.getLogger(_config.logging_default_logger_name)
 
 
-class OutgestionConfigurationController(BaseController):
+class G2POutgestionConfigurationController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["Outgestion Configuration"]
+        self.router.tags += ["/outgestion-config"]
         self.outgestion_config_service = G2POutgestionConfigurationControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
         self.router.prefix = "/outgestion-config"

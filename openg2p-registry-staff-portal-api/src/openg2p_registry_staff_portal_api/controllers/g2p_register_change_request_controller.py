@@ -20,7 +20,8 @@ from openg2p_registry_core.schemas import (
     ChangeRequestFlattenedDataResponse,
     VerificationsDataResponse,
     VerificationDataResponse, VerificationData,
-    ChangeRequestSummaryDataResponse, ChangeRequestSummaryData
+    ChangeRequestSummaryDataResponse, ChangeRequestSummaryData,
+    SearchChangeRequestRequest, ChangeRequestSearchResultsResponse
 )
 from openg2p_fastapi_common.schemas import G2PResponse
 
@@ -35,7 +36,7 @@ class G2PRegisterChangerequestController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["G2P Register Changerequest"]
+        self.router.tags += ["/change-requests"]
         self.g2p_register_change_request_controller_service = G2PRegisterChangerequestControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
         self.router.prefix = "/change-requests"
@@ -114,6 +115,13 @@ class G2PRegisterChangerequestController(BaseController):
             "/get_register_change_request_summary_data",
             self.get_register_change_request_summary_data,
             responses={200: {"model": ChangeRequestSummaryDataResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/search_in_change_request",
+            self.search_in_change_request,
+            responses={200: {"model": ChangeRequestSearchResultsResponse}},
             methods=["POST"],
         )
 
@@ -249,4 +257,17 @@ class G2PRegisterChangerequestController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in get_register_change_request_summary_data: {str(error_exception)}")
             error_response: ChangeRequestSummaryDataResponse = self.helper.construct_error_response(error_exception, get_change_request_summary_data_request)
+            return error_response
+    
+    async def search_in_change_request(self, search_change_request_request: SearchChangeRequestRequest) -> ChangeRequestSearchResultsResponse:
+        try:
+            search_results_list, total_items, number_of_pages = await self.g2p_register_change_request_controller_service.search_in_change_request(search_change_request_request)
+            search_results_response: ChangeRequestSearchResultsResponse = self.helper.construct_change_request_search_results_success_response(
+                search_results_list=search_results_list, g2p_request=search_change_request_request,
+                number_of_items=total_items, number_of_pages=number_of_pages
+            )
+            return search_results_response
+        except Exception as error_exception:
+            _logger.error(f"Error in search_in_change_request: {str(error_exception)}")
+            error_response: ChangeRequestSearchResultsResponse = self.helper.construct_error_response(error_exception, search_change_request_request)
             return error_response

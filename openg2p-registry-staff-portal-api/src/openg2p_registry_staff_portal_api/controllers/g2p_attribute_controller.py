@@ -20,7 +20,7 @@ class G2PAttributeController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["G2P Attributes"]
+        self.router.tags += ["/attributes"]
         self.g2p_attribute_controller_service = G2PAttributeControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
         self.router.prefix = "/attributes"

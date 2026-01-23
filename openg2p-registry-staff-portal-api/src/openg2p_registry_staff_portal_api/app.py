@@ -13,10 +13,10 @@ from openg2p_registry_extensions.app import Initializer as ExtensionsInitializer
 from .helpers import RequestResponseHelper
 from .controllers import (
     G2PRegisterDataController, G2PRegisterChangerequestController,
-    G2PRegisterSummaryController, G2PRegisterMetadataController,
-    IngestionConfigurationController, OutgestionConfigurationController,
-    G2PDocumentController, G2PAttributeController, G2PIngestionDataController,
-    G2PIngestionDataController, G2PRegisterVCConfigurationController
+    G2PRegisterMetadataController,
+    G2PIngestionConfigurationController, G2POutgestionConfigurationController,
+    G2PDocumentController, G2PAttributeController, G2PIngestionDataController, 
+    G2PRegisterVCConfigurationController, G2PRegistryConfigurationController
 )
 
 _logger = logging.getLogger(_config.logging_default_logger_name)
@@ -27,17 +27,16 @@ class Initializer(BaseInitializer):
 
         RequestResponseHelper()
 
+        G2PRegistryConfigurationController().post_init()
+        G2PRegisterMetadataController().post_init()
+        G2PRegisterVCConfigurationController().post_init()
         G2PRegisterDataController().post_init()
         G2PRegisterChangerequestController().post_init()
-        G2PRegisterSummaryController().post_init()
-        G2PRegisterMetadataController().post_init()
-        IngestionConfigurationController().post_init()
+        G2PIngestionConfigurationController().post_init()
         G2PIngestionDataController().post_init()
-        OutgestionConfigurationController().post_init()
+        G2POutgestionConfigurationController().post_init()
         G2PDocumentController().post_init()
         G2PAttributeController().post_init()
-        G2PIngestionDataController().post_init()
-        G2PRegisterVCConfigurationController().post_init()
 
     def migrate_database(self, args):
         _logger.info("Starting database migration")

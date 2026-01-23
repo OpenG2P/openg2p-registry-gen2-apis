@@ -24,7 +24,7 @@ class G2PIngestionDataController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["G2P Ingestion Summary"]
+        self.router.tags += ["/ingestion-data"]
         self.g2p_ingestion_data_controller_service = G2PIngestionDataControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
         self.router.prefix = "/ingestion-data"

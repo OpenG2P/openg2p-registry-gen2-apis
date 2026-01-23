@@ -1,7 +1,7 @@
 import logging
 from openg2p_fastapi_common.controller import BaseController
 
-from openg2p_registry_core.controller_services import G2PRegistryControllerService
+from openg2p_registry_core.controller_services import G2PRegistryConfigurationControllerService
 from openg2p_registry_core.schemas import (
     CreateRegistryConfigurationRequest,
     GetRegistryConfigurationRequest,
@@ -23,14 +23,14 @@ _config = Settings.get_config()
 _logger = logging.getLogger(_config.logging_default_logger_name)
 
 
-class G2PRegistryController(BaseController):
+class G2PRegistryConfigurationController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["G2P Registry"]
-        self.g2p_registry_controller_service = G2PRegistryControllerService.get_component()
+        self.router.tags += ["/registry-config"]
+        self.g2p_registry_config_controller_service = G2PRegistryConfigurationControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
-        self.router.prefix = "/registry"
+        self.router.prefix = "/registry-config"
 
         # Registry Configuration Endpoints
         self.router.add_api_route(
@@ -74,7 +74,7 @@ class G2PRegistryController(BaseController):
         create_request: CreateRegistryConfigurationRequest
     ) -> RegistryConfigurationDataResponse:
         try:
-            registry_configuration_data: RegistryConfigurationData = await self.g2p_registry_controller_service.create_registry_configuration(create_request)
+            registry_configuration_data: RegistryConfigurationData = await self.g2p_registry_config_controller_service.create_registry_configuration(create_request)
             response: RegistryConfigurationDataResponse = self.helper.construct_registry_configuration_data_success_response(
                 registry_configuration_data=registry_configuration_data, 
                 g2p_request=create_request
@@ -90,7 +90,7 @@ class G2PRegistryController(BaseController):
         get_request: GetRegistryConfigurationRequest
     ) -> RegistryConfigurationDataResponse:
         try:
-            registry_configuration_data: RegistryConfigurationData = await self.g2p_registry_controller_service.get_registry_configuration(get_request)
+            registry_configuration_data: RegistryConfigurationData = await self.g2p_registry_config_controller_service.get_registry_configuration(get_request)
             response: RegistryConfigurationDataResponse = self.helper.construct_registry_configuration_data_success_response(
                 registry_configuration_data=registry_configuration_data, 
                 g2p_request=get_request
@@ -106,7 +106,7 @@ class G2PRegistryController(BaseController):
         update_request: UpdateRegistryConfigurationRequest
     ) -> RegistryConfigurationDataResponse:
         try:
-            registry_configuration_data: RegistryConfigurationData = await self.g2p_registry_controller_service.update_registry_configuration(update_request)
+            registry_configuration_data: RegistryConfigurationData = await self.g2p_registry_config_controller_service.update_registry_configuration(update_request)
             response: RegistryConfigurationDataResponse = self.helper.construct_registry_configuration_data_success_response(
                 registry_configuration_data=registry_configuration_data, 
                 g2p_request=update_request
@@ -122,7 +122,7 @@ class G2PRegistryController(BaseController):
         get_request: GetNumberOfRequestsPendingRequest
     ) -> NumberOfRequestsPendingResponse:
         try:
-            number_of_requests_pending_data: NumberOfRequestsPendingData = await self.g2p_registry_controller_service.get_number_of_requests_pending(get_request)
+            number_of_requests_pending_data: NumberOfRequestsPendingData = await self.g2p_registry_config_controller_service.get_number_of_requests_pending(get_request)
             response: NumberOfRequestsPendingResponse = self.helper.construct_number_of_requests_pending_success_response(
                 number_of_requests_pending_data=number_of_requests_pending_data, 
                 g2p_request=get_request
@@ -138,7 +138,7 @@ class G2PRegistryController(BaseController):
         get_request: GetEarliestPendingChangeRequestRequest
     ) -> EarliestPendingChangeRequestResponse:
         try:
-            earliest_change_request_data: EarliestPendingChangeRequestData = await self.g2p_registry_controller_service.get_earliest_pending_change_request(get_request)
+            earliest_change_request_data: EarliestPendingChangeRequestData = await self.g2p_registry_config_controller_service.get_earliest_pending_change_request(get_request)
             response: EarliestPendingChangeRequestResponse = self.helper.construct_earliest_pending_change_request_success_response(
                 earliest_pending_change_request_data=earliest_change_request_data, 
                 g2p_request=get_request

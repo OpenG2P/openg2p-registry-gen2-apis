@@ -32,7 +32,7 @@ class G2PDocumentController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["G2P Documents"]
+        self.router.tags += ["/documents"]
         self.g2p_document_controller_service = G2PDocumentControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
         self.router.prefix = "/documents"

@@ -20,7 +20,7 @@ class G2PRegisterVCConfigurationController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["Register VC Configuration"]
+        self.router.tags += ["/vc-config"]
         self.g2p_vc_configuration_service = G2PVcConfigurationControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
         self.router.prefix = "/vc-config"
