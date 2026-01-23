@@ -37,7 +37,7 @@ class G2PRegisterDataController(BaseController):
         self.router.tags += ["G2P Register Data"]
         self.g2p_register_data_controller_service = G2PRegisterDataControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
-        self.router.prefix = "/register"
+        self.router.prefix = "/register-data"
 
         self.router.add_api_route(
             "/get_number_of_versions",
@@ -82,8 +82,8 @@ class G2PRegisterDataController(BaseController):
         )
 
         self.router.add_api_route(
-            "/get_deduplication_changerequest_results",
-            self.get_deduplication_changerequest_results,
+            "/get_deduplication_change_request_results",
+            self.get_deduplication_change_request_results,
             responses={200: {"model": DeduplicationChangerequestResultsDataResponse}},
             methods=["POST"],
         )
@@ -198,20 +198,20 @@ class G2PRegisterDataController(BaseController):
             error_response: DeduplicationRegisterResultsDataResponse = self.helper.construct_error_response(error_exception, get_deduplication_register_results_request)
             return error_response
 
-    async def get_deduplication_changerequest_results(self, get_deduplication_changerequest_results_request: GetDeduplicationChangerequestResultsRequest) -> DeduplicationChangerequestResultsDataResponse:
+    async def get_deduplication_change_request_results(self, get_deduplication_change_request_results_request: GetDeduplicationChangerequestResultsRequest) -> DeduplicationChangerequestResultsDataResponse:
         """
         Get deduplication results for a change request against other change requests.
         """
         try:
-            dedup_results_list, total_items, number_of_pages = await self.g2p_register_data_controller_service.get_deduplication_changerequest_results(get_deduplication_changerequest_results_request)
-            dedup_results_response: DeduplicationChangerequestResultsDataResponse = self.helper.construct_deduplication_changerequest_results_success_response(
-                dedup_results_list=dedup_results_list, g2p_request=get_deduplication_changerequest_results_request,
+            dedup_results_list, total_items, number_of_pages = await self.g2p_register_data_controller_service.get_deduplication_change_request_results(get_deduplication_change_request_results_request)
+            dedup_results_response: DeduplicationChangerequestResultsDataResponse = self.helper.construct_deduplication_change_request_results_success_response(
+                dedup_results_list=dedup_results_list, g2p_request=get_deduplication_change_request_results_request,
                 number_of_items=total_items, number_of_pages=number_of_pages
             )
             return dedup_results_response
         except Exception as error_exception:
-            _logger.error(f"Error in get_deduplication_changerequest_results: {str(error_exception)}")
-            error_response: DeduplicationChangerequestResultsDataResponse = self.helper.construct_error_response(error_exception, get_deduplication_changerequest_results_request)
+            _logger.error(f"Error in get_deduplication_change_request_results: {str(error_exception)}")
+            error_response: DeduplicationChangerequestResultsDataResponse = self.helper.construct_error_response(error_exception, get_deduplication_change_request_results_request)
             return error_response
 
     async def get_schema_definition_for_register_section(self, get_register_section_request: GetRegisterSectionRequest) -> RegisterSectionDataResponse:
