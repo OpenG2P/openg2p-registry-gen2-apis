@@ -5,10 +5,6 @@ from openg2p_fastapi_common.controller import BaseController
 
 from openg2p_registry_core.controller_services import G2PIngestionConfigurationControllerService
 from openg2p_registry_core.schemas import (
-    IncomingPartnerRequest,
-    IncomingPartnerUpdateRequest,
-    IncomingPartnerResponse,
-    IncomingPartnersResponse,
     IncomingModelKeyPathRequest,
     IncomingModelKeyPathResponse,
     IncomingModelKeyPathListResponse,
@@ -43,50 +39,14 @@ _config = Settings.get_config()
 _logger = logging.getLogger(_config.logging_default_logger_name)
 
 
-class IngestionConfigurationController(BaseController):
+class G2PIngestionConfigurationController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["Ingestion Configuration"]
+        self.router.tags += ["/ingestion-config"]
         self.ingestion_config_service = G2PIngestionConfigurationControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
         self.router.prefix = "/ingestion-config"
-
-        # IncomingPartner endpoints
-        self.router.add_api_route(
-            "/create_partner",
-            self.create_incoming_partner,
-            responses={200: {"model": IncomingPartnerResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/get_all_partners",
-            self.get_all_incoming_partners,
-            responses={200: {"model": IncomingPartnersResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/get_partner",
-            self.get_incoming_partner,
-            responses={200: {"model": IncomingPartnerResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/update_partner",
-            self.update_incoming_partner,
-            responses={200: {"model": IncomingPartnerResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/delete_partner",
-            self.delete_incoming_partner,
-            responses={200: {"model": IncomingPartnerResponse}},
-            methods=["POST"],
-        )
 
         # IncomingModelKeyPath endpoints
         self.router.add_api_route(
@@ -267,64 +227,6 @@ class IngestionConfigurationController(BaseController):
             responses={200: {"model": SubscriptionActivityLogsResponse}},
             methods=["POST"],
         )
-
-    async def create_incoming_partner(
-        self, incoming_partner_request: IncomingPartnerRequest
-    ) -> IncomingPartnerResponse:
-        try:
-            partner_data = await self.ingestion_config_service.create_incoming_partner(
-                incoming_partner_request.request_body.request_payload
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                partner_data, IncomingPartnerResponse, incoming_partner_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, incoming_partner_request)
-
-    async def get_incoming_partner(self, partner_request: IncomingPartnerRequest) -> IncomingPartnerResponse:
-        try:
-            partner_data = await self.ingestion_config_service.get_incoming_partner(
-                partner_request.request_body.request_payload.partner_id
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                partner_data, IncomingPartnerResponse, partner_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, partner_request)
-
-    async def get_all_incoming_partners(self, partner_request: IncomingPartnerRequest) -> IncomingPartnersResponse:
-        try:
-            partners_data = await self.ingestion_config_service.get_all_incoming_partners()
-            return self.helper.construct_ingestion_config_success_response(
-                partners_data, IncomingPartnersResponse, partner_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, partner_request)
-
-    async def update_incoming_partner(
-        self, incoming_partner_request: IncomingPartnerUpdateRequest
-    ) -> IncomingPartnerResponse:
-        try:
-            partner_data = await self.ingestion_config_service.update_incoming_partner(
-                incoming_partner_request.request_body.request_payload.partner_id,
-                incoming_partner_request.request_body.request_payload
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                partner_data, IncomingPartnerResponse, incoming_partner_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, incoming_partner_request)
-
-    async def delete_incoming_partner(self, incoming_partner_request: IncomingPartnerUpdateRequest) -> IncomingPartnerResponse:
-        try:
-            await self.ingestion_config_service.delete_incoming_partner(
-                incoming_partner_request.request_body.request_payload.partner_id
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                None, IncomingPartnerResponse, incoming_partner_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, incoming_partner_request)
 
     # IncomingModelKeyPath Methods
     async def create_new_incoming_key_path(

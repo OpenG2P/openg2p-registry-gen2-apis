@@ -20,7 +20,8 @@ from openg2p_registry_core.schemas import (
     ChangeRequestFlattenedDataResponse,
     VerificationsDataResponse,
     VerificationDataResponse, VerificationData,
-    ChangeRequestSummaryDataResponse, ChangeRequestSummaryData
+    ChangeRequestSummaryDataResponse, ChangeRequestSummaryData,
+    SearchChangeRequestRequest, ChangeRequestSearchResultsResponse
 )
 from openg2p_fastapi_common.schemas import G2PResponse
 
@@ -35,10 +36,10 @@ class G2PRegisterChangerequestController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["G2P Register Changerequest"]
-        self.g2p_register_changerequest_controller_service = G2PRegisterChangerequestControllerService.get_component()
+        self.router.tags += ["/change-requests"]
+        self.g2p_register_change_request_controller_service = G2PRegisterChangerequestControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
-        self.router.prefix = "/register"
+        self.router.prefix = "/change-requests"
 
         self.router.add_api_route(
             "/create_change_request",
@@ -111,15 +112,22 @@ class G2PRegisterChangerequestController(BaseController):
         )
 
         self.router.add_api_route(
-            "/get_register_changerequest_summary_data",
-            self.get_register_changerequest_summary_data,
+            "/get_register_change_request_summary_data",
+            self.get_register_change_request_summary_data,
             responses={200: {"model": ChangeRequestSummaryDataResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/search_in_change_request",
+            self.search_in_change_request,
+            responses={200: {"model": ChangeRequestSearchResultsResponse}},
             methods=["POST"],
         )
 
     async def create_change_request(self, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
         try:
-            change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_changerequest_controller_service.create_change_request(change_request_request)
+            change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.create_change_request(change_request_request)
             change_request_response: ChangeRequestResponse = self.helper.construct_change_request_success_response(
                 change_request_response_payload=change_request_response_payload, g2p_request=change_request_request
             )
@@ -131,7 +139,7 @@ class G2PRegisterChangerequestController(BaseController):
 
     async def approve_change_request(self, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
         try:
-            change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_changerequest_controller_service.approve_change_request(change_request_request)
+            change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.approve_change_request(change_request_request)
             change_request_response: ChangeRequestResponse = self.helper.construct_change_request_success_response(
                 change_request_response_payload=change_request_response_payload, g2p_request=change_request_request
             )
@@ -143,7 +151,7 @@ class G2PRegisterChangerequestController(BaseController):
 
     async def reject_change_request(self, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
         try:
-            change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_changerequest_controller_service.reject_change_request(change_request_request)
+            change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.reject_change_request(change_request_request)
             change_request_response: ChangeRequestResponse = self.helper.construct_change_request_success_response(
                 change_request_response_payload=change_request_response_payload, g2p_request=change_request_request
             )
@@ -155,7 +163,7 @@ class G2PRegisterChangerequestController(BaseController):
 
     async def get_number_of_pending_change_requests(self, get_number_of_pending_change_requests_request: GetNumberOfPendingChangeRequestsRequest) -> NumberOfPendingChangeRequestsResponse:
         try:
-            number_of_pending_change_requests_data: NumberOfPendingChangeRequestsData = await self.g2p_register_changerequest_controller_service.get_number_of_pending_change_requests(get_number_of_pending_change_requests_request)
+            number_of_pending_change_requests_data: NumberOfPendingChangeRequestsData = await self.g2p_register_change_request_controller_service.get_number_of_pending_change_requests(get_number_of_pending_change_requests_request)
             number_of_pending_change_requests_response: NumberOfPendingChangeRequestsResponse = self.helper.construct_number_of_pending_change_requests_success_response(
                 number_of_pending_change_requests_data=number_of_pending_change_requests_data, g2p_request=get_number_of_pending_change_requests_request
             )
@@ -167,7 +175,7 @@ class G2PRegisterChangerequestController(BaseController):
 
     async def get_number_of_cross_register_changes(self, get_number_of_cross_register_changes_request: GetNumberOfCrossRegisterChangesRequest) -> NumberOfCrossRegisterChangesResponse:
         try:
-            number_of_cross_register_changes_data: NumberOfCrossRegisterChangesData = await self.g2p_register_changerequest_controller_service.get_number_of_cross_register_changes(get_number_of_cross_register_changes_request)
+            number_of_cross_register_changes_data: NumberOfCrossRegisterChangesData = await self.g2p_register_change_request_controller_service.get_number_of_cross_register_changes(get_number_of_cross_register_changes_request)
             number_of_cross_register_changes_response: NumberOfCrossRegisterChangesResponse = self.helper.construct_number_of_cross_register_changes_success_response(
                 number_of_cross_register_changes_data=number_of_cross_register_changes_data, g2p_request=get_number_of_cross_register_changes_request
             )
@@ -179,7 +187,7 @@ class G2PRegisterChangerequestController(BaseController):
 
     async def get_cross_register_changes(self, get_cross_register_changes_request: GetCrossRegisterChangesRequest) -> CrossRegisterChangesDataResponse:
         try:
-            cross_register_changes: list[CrossRegisterChangeRequestData] = await self.g2p_register_changerequest_controller_service.get_cross_register_changes(get_cross_register_changes_request)
+            cross_register_changes: list[CrossRegisterChangeRequestData] = await self.g2p_register_change_request_controller_service.get_cross_register_changes(get_cross_register_changes_request)
             cross_register_changes_response: CrossRegisterChangesDataResponse = self.helper.construct_cross_register_changes_success_response(
                 cross_register_changes=cross_register_changes, g2p_request=get_cross_register_changes_request
             )
@@ -191,7 +199,7 @@ class G2PRegisterChangerequestController(BaseController):
 
     async def get_change_requests(self, get_change_requests_request: GetChangeRequestsRequest) -> ChangeRequestFlattenedDataResponse:
         try:
-            change_requests_list, total_items, number_of_pages = await self.g2p_register_changerequest_controller_service.get_change_requests(get_change_requests_request)
+            change_requests_list, total_items, number_of_pages = await self.g2p_register_change_request_controller_service.get_change_requests(get_change_requests_request)
             change_requests_response: ChangeRequestFlattenedDataResponse = self.helper.construct_change_requests_success_response(
                 change_requests_list=change_requests_list, g2p_request=get_change_requests_request,
                 number_of_items=total_items, number_of_pages=number_of_pages
@@ -204,7 +212,7 @@ class G2PRegisterChangerequestController(BaseController):
 
     async def get_change_request(self, get_change_request_request: GetChangeRequestRequest) -> ChangeRequestDataResponse:
         try:
-            change_request_data: ChangeRequestData = await self.g2p_register_changerequest_controller_service.get_change_request(get_change_request_request)
+            change_request_data: ChangeRequestData = await self.g2p_register_change_request_controller_service.get_change_request(get_change_request_request)
             change_request_response: ChangeRequestDataResponse = self.helper.construct_change_request_data_success_response(
                 change_request_data=change_request_data, g2p_request=get_change_request_request
             )
@@ -216,7 +224,7 @@ class G2PRegisterChangerequestController(BaseController):
 
     async def get_verifications_for_change_request(self, get_verifications_request: GetVerificationsRequest) -> VerificationsDataResponse:
         try:
-            verifications_list, total_items, number_of_pages = await self.g2p_register_changerequest_controller_service.get_verifications_for_change_request(get_verifications_request)
+            verifications_list, total_items, number_of_pages = await self.g2p_register_change_request_controller_service.get_verifications_for_change_request(get_verifications_request)
             verifications_response: VerificationsDataResponse = self.helper.construct_verifications_success_response(
                 verifications_list=verifications_list, g2p_request=get_verifications_request,
                 number_of_items=total_items, number_of_pages=number_of_pages
@@ -229,7 +237,7 @@ class G2PRegisterChangerequestController(BaseController):
 
     async def add_verification_for_change_request(self, add_verification_request: AddVerificationRequest) -> VerificationDataResponse:
         try:
-            verification_data: VerificationData = await self.g2p_register_changerequest_controller_service.add_verification_for_change_request(add_verification_request)
+            verification_data: VerificationData = await self.g2p_register_change_request_controller_service.add_verification_for_change_request(add_verification_request)
             verification_response: VerificationDataResponse = self.helper.construct_verification_success_response(
                 verification_data=verification_data, g2p_request=add_verification_request
             )
@@ -239,14 +247,27 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: VerificationDataResponse = self.helper.construct_error_response(error_exception, add_verification_request)
             return error_response
 
-    async def get_register_changerequest_summary_data(self, get_changerequest_summary_data_request: GetChangeRequestSummaryDataRequest) -> ChangeRequestSummaryDataResponse:
+    async def get_register_change_request_summary_data(self, get_change_request_summary_data_request: GetChangeRequestSummaryDataRequest) -> ChangeRequestSummaryDataResponse:
         try:
-            changerequest_summary_data: ChangeRequestSummaryData = await self.g2p_register_changerequest_controller_service.get_changerequest_summary_data(get_changerequest_summary_data_request)
-            changerequest_summary_data_response: ChangeRequestSummaryDataResponse = self.helper.construct_changerequest_summary_data_success_response(
-                changerequest_summary_data=changerequest_summary_data, g2p_request=get_changerequest_summary_data_request
+            change_request_summary_data: ChangeRequestSummaryData = await self.g2p_register_change_request_controller_service.get_change_request_summary_data(get_change_request_summary_data_request)
+            change_request_summary_data_response: ChangeRequestSummaryDataResponse = self.helper.construct_change_request_summary_data_success_response(
+                change_request_summary_data=change_request_summary_data, g2p_request=get_change_request_summary_data_request
             )
-            return changerequest_summary_data_response
+            return change_request_summary_data_response
         except Exception as error_exception:
-            _logger.error(f"Error in get_register_changerequest_summary_data: {str(error_exception)}")
-            error_response: ChangeRequestSummaryDataResponse = self.helper.construct_error_response(error_exception, get_changerequest_summary_data_request)
+            _logger.error(f"Error in get_register_change_request_summary_data: {str(error_exception)}")
+            error_response: ChangeRequestSummaryDataResponse = self.helper.construct_error_response(error_exception, get_change_request_summary_data_request)
+            return error_response
+    
+    async def search_in_change_request(self, search_change_request_request: SearchChangeRequestRequest) -> ChangeRequestSearchResultsResponse:
+        try:
+            search_results_list, total_items, number_of_pages = await self.g2p_register_change_request_controller_service.search_in_change_request(search_change_request_request)
+            search_results_response: ChangeRequestSearchResultsResponse = self.helper.construct_change_request_search_results_success_response(
+                search_results_list=search_results_list, g2p_request=search_change_request_request,
+                number_of_items=total_items, number_of_pages=number_of_pages
+            )
+            return search_results_response
+        except Exception as error_exception:
+            _logger.error(f"Error in search_in_change_request: {str(error_exception)}")
+            error_response: ChangeRequestSearchResultsResponse = self.helper.construct_error_response(error_exception, search_change_request_request)
             return error_response

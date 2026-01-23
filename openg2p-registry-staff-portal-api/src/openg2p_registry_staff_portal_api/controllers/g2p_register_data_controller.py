@@ -20,7 +20,10 @@ from openg2p_registry_core.schemas import (
     GetRegisterSectionRequest,
     RegisterSectionData, RegisterSectionDataResponse,
     GetSectionRecordsRequest, SectionRecordsDataResponse,
-    GetRegisterTabRecordsRequest, RegisterTabRecordsDataResponse
+    GetRegisterTabRecordsRequest, RegisterTabRecordsDataResponse,
+    RegisterSummaryDataResponse, SearchResultsResponse,
+    GetRegisterSummaryDataRequest, RegisterSummaryData,
+    SearchRegisterRequest
 )
 
 from ..helpers import RequestResponseHelper
@@ -34,10 +37,10 @@ class G2PRegisterDataController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["G2P Register Data"]
+        self.router.tags += ["/register-data"]
         self.g2p_register_data_controller_service = G2PRegisterDataControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
-        self.router.prefix = "/register"
+        self.router.prefix = "/register-data"
 
         self.router.add_api_route(
             "/get_number_of_versions",
@@ -82,8 +85,8 @@ class G2PRegisterDataController(BaseController):
         )
 
         self.router.add_api_route(
-            "/get_deduplication_changerequest_results",
-            self.get_deduplication_changerequest_results,
+            "/get_deduplication_change_request_results",
+            self.get_deduplication_change_request_results,
             responses={200: {"model": DeduplicationChangerequestResultsDataResponse}},
             methods=["POST"],
         )
@@ -106,6 +109,20 @@ class G2PRegisterDataController(BaseController):
             "/get_tab_records",
             self.get_tab_records,
             responses={200: {"model": RegisterTabRecordsDataResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_register_summary_data",
+            self.get_register_summary_data,
+            responses={200: {"model": RegisterSummaryDataResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/search_in_a_register",
+            self.search_in_a_register,
+            responses={200: {"model": SearchResultsResponse}},
             methods=["POST"],
         )
 
@@ -198,20 +215,20 @@ class G2PRegisterDataController(BaseController):
             error_response: DeduplicationRegisterResultsDataResponse = self.helper.construct_error_response(error_exception, get_deduplication_register_results_request)
             return error_response
 
-    async def get_deduplication_changerequest_results(self, get_deduplication_changerequest_results_request: GetDeduplicationChangerequestResultsRequest) -> DeduplicationChangerequestResultsDataResponse:
+    async def get_deduplication_change_request_results(self, get_deduplication_change_request_results_request: GetDeduplicationChangerequestResultsRequest) -> DeduplicationChangerequestResultsDataResponse:
         """
         Get deduplication results for a change request against other change requests.
         """
         try:
-            dedup_results_list, total_items, number_of_pages = await self.g2p_register_data_controller_service.get_deduplication_changerequest_results(get_deduplication_changerequest_results_request)
-            dedup_results_response: DeduplicationChangerequestResultsDataResponse = self.helper.construct_deduplication_changerequest_results_success_response(
-                dedup_results_list=dedup_results_list, g2p_request=get_deduplication_changerequest_results_request,
+            dedup_results_list, total_items, number_of_pages = await self.g2p_register_data_controller_service.get_deduplication_change_request_results(get_deduplication_change_request_results_request)
+            dedup_results_response: DeduplicationChangerequestResultsDataResponse = self.helper.construct_deduplication_change_request_results_success_response(
+                dedup_results_list=dedup_results_list, g2p_request=get_deduplication_change_request_results_request,
                 number_of_items=total_items, number_of_pages=number_of_pages
             )
             return dedup_results_response
         except Exception as error_exception:
-            _logger.error(f"Error in get_deduplication_changerequest_results: {str(error_exception)}")
-            error_response: DeduplicationChangerequestResultsDataResponse = self.helper.construct_error_response(error_exception, get_deduplication_changerequest_results_request)
+            _logger.error(f"Error in get_deduplication_change_request_results: {str(error_exception)}")
+            error_response: DeduplicationChangerequestResultsDataResponse = self.helper.construct_error_response(error_exception, get_deduplication_change_request_results_request)
             return error_response
 
     async def get_schema_definition_for_register_section(self, get_register_section_request: GetRegisterSectionRequest) -> RegisterSectionDataResponse:
@@ -274,4 +291,29 @@ class G2PRegisterDataController(BaseController):
             error_response: RegisterTabRecordsDataResponse = self.helper.construct_error_response(
                 error_exception, get_register_tab_records_request
             )
+            return error_response
+
+    async def get_register_summary_data(self, get_register_summary_data_request: GetRegisterSummaryDataRequest) -> RegisterSummaryDataResponse:
+        try:
+            register_summary_data_list: list[RegisterSummaryData] = await self.g2p_register_data_controller_service.get_register_summary_data(get_register_summary_data_request)
+            register_summary_data_response: RegisterSummaryDataResponse = self.helper.construct_register_summary_data_success_response(
+                register_summary_data_list=register_summary_data_list, g2p_request=get_register_summary_data_request
+            )
+            return register_summary_data_response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_register_summary_data: {str(error_exception)}")
+            error_response: RegisterSummaryDataResponse = self.helper.construct_error_response(error_exception, get_register_summary_data_request)
+            return error_response
+
+    async def search_in_a_register(self, search_register_request: SearchRegisterRequest) -> SearchResultsResponse:
+        try:
+            search_results_list, total_items, number_of_pages = await self.g2p_register_data_controller_service.search_in_a_register(search_register_request)
+            search_results_response: SearchResultsResponse = self.helper.construct_search_results_success_response(
+                search_results_list=search_results_list, g2p_request=search_register_request,
+                number_of_items=total_items, number_of_pages=number_of_pages
+            )
+            return search_results_response
+        except Exception as error_exception:
+            _logger.error(f"Error in search_in_a_register: {str(error_exception)}")
+            error_response: SearchResultsResponse = self.helper.construct_error_response(error_exception, search_register_request)
             return error_response

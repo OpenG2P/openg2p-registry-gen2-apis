@@ -31,10 +31,10 @@ class G2PRegisterMetadataController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["G2P Register Metadata"]
+        self.router.tags += ["/register-metadata"]
         self.g2p_register_metadata_controller_service = G2PRegisterMetadataControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
-        self.router.prefix = "/register"
+        self.router.prefix = "/register-metadata"
 
         # Register endpoints
         # TODO: Add comments and separate cruds 
