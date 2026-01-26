@@ -64,7 +64,7 @@ class G2PRegisterDataController(BaseController):
         )
 
         self.router.add_api_route(
-            "/get_changes_for_a_date",
+            "/get_versions_for_a_date",
             self.get_versions_for_a_date,
             responses={200: {"model": ChangesForDateDataResponse}},
             methods=["POST"],
