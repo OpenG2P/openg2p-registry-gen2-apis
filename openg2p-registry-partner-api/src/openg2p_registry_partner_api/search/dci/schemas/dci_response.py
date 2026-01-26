@@ -135,7 +135,7 @@ class DciSearchResponse(BaseModel):
     )
 
     search_response: List[DciSearchResponseItem] = Field(
-        min_items=1,
+        min_items=0,
         description="Array of search response entries",
     )
 

@@ -6,6 +6,7 @@ from fastapi import UploadFile
 from typing import Optional, List, Dict, Any, Tuple
 import httpx
 
+from openg2p_registry_core.schemas import DeepSearchResultData
 from openg2p_fastapi_common.service import BaseService
 from openg2p_fastapi_common.context import dbengine
 
@@ -49,19 +50,19 @@ class G2PDciService(BaseService):
 
             search_text, current_page, page_size, sort_by = self._get_registry_search_parameters(search_criteria)
             
-            search_result_data, total_count = await self.register_service.search_in_a_register(
+            deep_search_result_data, total_count = await self.register_service.deep_search_in_a_register(
                 register_id=register_id,
                 search_text=search_text,
                 current_page=current_page,
                 page_size=page_size,
                 sort_by=sort_by,
             )
-            dci_search_result_data = DciSearchResultData(
+            dci_deep_search_result_data = DciSearchResultData(
                 reg_type = search_criteria.reg_type,
                 reg_record_type = search_criteria.reg_record_type,
                 reg_records = [
-                    self._render_reg_record_with_template(search_result_datum, template_file_id) 
-                    for search_result_datum in search_result_data
+                    self._render_reg_record_with_template(deep_search_result_datum, template_file_id) 
+                    for deep_search_result_datum in deep_search_result_data
                 ]
             )
             pagination = DciSearchResultPagination(
@@ -73,7 +74,7 @@ class G2PDciService(BaseService):
                 reference_id = search_request_item.reference_id,
                 timestamp = datetime.now().isoformat(),
                 status = DciStatusCode.SUCCESS.value,
-                data = dci_search_result_data,
+                data = dci_deep_search_result_data,
                 pagination = pagination,
                 locale="en"
             )
@@ -84,16 +85,21 @@ class G2PDciService(BaseService):
         _logger.info(f"Search completed for transaction_id: {message.transaction_id}, found {len(dci_search_response_items)} items")
         return dci_search_response_items
         
+
     def _render_reg_record_with_template(
         self,
-        search_result_data: Any,
+        deep_search_result_data: DeepSearchResultData,
         template_file_id: str
     ) -> Dict[str, Any]:
+        """
+        Render a template using the DeepSearchResultData object (may include Farmer extension fields).
+        """
         template_helper = TemplateHelper.get_component()
         minio_client = MinioClient.get_component()
 
-        # Normalize SearchResultData → dict[str, Any]
-        search_result_dict = self._search_result_data_to_dict(search_result_data)
+        # Always use _deep_search_result_data_to_dict for extracting data
+        search_result_dict: Dict[str, Any] = self._deep_search_result_data_to_dict(deep_search_result_data)
+        print("================", search_result_dict)
 
         reg_record: Dict[str, Any] = template_helper.render_with_template(
             minio_client=minio_client,
@@ -103,35 +109,21 @@ class G2PDciService(BaseService):
         )
 
         return reg_record
-    
-    def _search_result_data_to_dict(
+
+    def _deep_search_result_data_to_dict(
         self,
-        search_result_data: Any
+        deep_search_result_data: DeepSearchResultData
     ) -> Dict[str, Any]:
         """
-        Convert SearchResultData object into a dict[str, Any]
-        suitable for template rendering.
+        Convert DeepSearchResultData (including all extension/extra fields) into a dict for template rendering.
+        Uses pydantic's model_dump()/dict() to ensure all fields (Farmer, etc) are dumped.
         """
+        if hasattr(deep_search_result_data, "model_dump"):
+            data_dict = deep_search_result_data.model_dump(exclude_unset=False, by_alias=False)
+        else:
+            data_dict = deep_search_result_data.dict(exclude_unset=False, by_alias=False)
 
-        result: Dict[str, Any] = {
-            "internal_record_id": search_result_data.internal_record_id,
-            "functional_record_id": search_result_data.functional_record_id,
-            "link_internal_record_id": search_result_data.link_internal_record_id,
-            "foundational_id": search_result_data.foundational_id,
-            "link_foundational_id": search_result_data.link_foundational_id,
-            "record_name": search_result_data.record_name,
-            "record_image_url": search_result_data.record_image_url,
-            "created_by": search_result_data.created_by,
-            "created_at": search_result_data.created_at,
-            "last_approved_at": search_result_data.last_approved_at,
-            "last_approved_by": search_result_data.last_approved_by,
-            "display_fields": {
-                df.field_name: df.value
-                for df in (search_result_data.display_fields or [])
-            },
-        }
-
-        return result
+        return data_dict
 
     
     def _get_registry_search_parameters(
