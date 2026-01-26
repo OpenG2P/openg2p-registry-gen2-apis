@@ -68,7 +68,7 @@ class DciRequestResponseHelper(BaseService):
             sender_id=dci_search_request_env.header.receiver_id,
             receiver_id=dci_search_request_env.header.sender_id,
             sender_uri=dci_search_request_env.header.sender_uri,
-            status=DciStatusCode.ERROR.value,
+            status=DciStatusCode.REJECTED.value,
             status_reason_code=error_code,
             status_reason_message=error_message,
             total_count=len(dci_search_request_env.message.search_request),
