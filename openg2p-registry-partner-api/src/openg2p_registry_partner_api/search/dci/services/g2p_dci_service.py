@@ -99,7 +99,6 @@ class G2PDciService(BaseService):
 
         # Always use _deep_search_result_data_to_dict for extracting data
         search_result_dict: Dict[str, Any] = self._deep_search_result_data_to_dict(deep_search_result_data)
-        print("================", search_result_dict)
 
         reg_record: Dict[str, Any] = template_helper.render_with_template(
             minio_client=minio_client,
