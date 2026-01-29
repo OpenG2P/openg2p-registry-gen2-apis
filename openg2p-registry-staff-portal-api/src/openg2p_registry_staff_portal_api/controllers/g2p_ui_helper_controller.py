@@ -38,7 +38,7 @@ class G2PUIHelperController(BaseController):
     ) -> G2PInputMechanismResponse:
         _logger.debug("Get G2P Input Mechanisms Request: %s", request)
         try:
-            input_mechanisms: List[G2PInputMechanismData] = await self.g2p_ui_helper_controller_service.get_all_input_mechanisms()
+            input_mechanisms: List[G2PInputMechanismData] = await self.g2p_ui_helper_controller_service.get_all_input_mechanisms(request)
             _logger.debug("Input mechanisms: %s", input_mechanisms)
 
             return self.helper.construct_input_mechanisms_success_response(
