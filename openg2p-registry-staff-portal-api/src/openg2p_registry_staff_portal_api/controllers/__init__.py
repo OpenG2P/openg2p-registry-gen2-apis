@@ -8,3 +8,4 @@ from .g2p_registry_configuration_controller import G2PRegistryConfigurationContr
 from .g2p_attribute_controller import G2PAttributeController
 from .g2p_ingestion_data_controller import G2PIngestionDataController
 from .g2p_register_vc_configuration_controller import G2PRegisterVCConfigurationController
+from .g2p_ui_helper_controller import G2PUIHelperController
