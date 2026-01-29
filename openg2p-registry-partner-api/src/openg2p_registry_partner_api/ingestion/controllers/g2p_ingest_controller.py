@@ -18,7 +18,7 @@ class G2PIngestController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["G2P Register Partner"]
+        self.router.tags += ["/partner"]
         self.g2p_ingest_controller_service = G2PIngestControllerService.get_component()
         self.request_response_helper = RequestResponseHelper.get_component()
         self.router.prefix = "/partner"
