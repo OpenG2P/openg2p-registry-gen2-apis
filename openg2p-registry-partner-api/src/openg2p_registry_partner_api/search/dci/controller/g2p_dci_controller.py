@@ -23,7 +23,7 @@ class G2PDciController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["G2P Register DCI"]
+        self.router.tags += ["/dci/registry"]
         self.g2p_dci_service = G2PDciService()
         self.request_response_helper = DciRequestResponseHelper()
         self.keymanager_helper = DciKeymanagerHelper()
