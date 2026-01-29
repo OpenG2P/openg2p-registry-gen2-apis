@@ -51,7 +51,8 @@ from openg2p_registry_core.schemas import (
     IngestionDataSearchResultsResponse, IngestionDataSearchResultsResponseBody, IngestionDataSearchResultData,
     IngestionDataPayload, FileUrlData, FileUrlResponse, FileUrlResponseBody,
     VcConfigurationResponse, VcConfigurationResponseBody, VcConfigurationData,
-    G2PInputMechanismResponse, G2PInputMechanismResponseBody, G2PInputMechanismData
+    G2PInputMechanismResponse, G2PInputMechanismResponseBody, G2PInputMechanismData,
+    AllowedParentsData, AllowedParentsDataResponse, AllowedParentsDataResponseBody
 )
 
 from openg2p_registry_core.errors import G2PRegistryException
@@ -1290,6 +1291,36 @@ class RequestResponseHelper(BaseService):
         )
 
         response: GetG2PAttributeValuesResponse = GetG2PAttributeValuesResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return response
+
+    # =========================================================================
+    # Allowed Parents For Child Section Helper Methods
+    # =========================================================================
+
+    def construct_allowed_parents_success_response(
+        self,
+        allowed_parents_data: AllowedParentsData,
+        g2p_request: G2PRequest = None
+    ) -> AllowedParentsDataResponse:
+        """Construct success response for get_allowed_parents_for_a_child_section endpoint."""
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: AllowedParentsDataResponseBody = AllowedParentsDataResponseBody(
+            response_payload=allowed_parents_data
+        )
+
+        response: AllowedParentsDataResponse = AllowedParentsDataResponse(
             response_header=g2p_response_header,
             response_body=response_body
         )
