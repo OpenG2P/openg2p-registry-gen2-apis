@@ -50,7 +50,8 @@ from openg2p_registry_core.schemas import (
     IngestionDataPayloadResponse, IngestionDataPayloadResponseBody,
     IngestionDataSearchResultsResponse, IngestionDataSearchResultsResponseBody, IngestionDataSearchResultData,
     IngestionDataPayload, FileUrlData, FileUrlResponse, FileUrlResponseBody,
-    VcConfigurationResponse, VcConfigurationResponseBody, VcConfigurationData
+    VcConfigurationResponse, VcConfigurationResponseBody, VcConfigurationData,
+    G2PInputMechanismResponse, G2PInputMechanismResponseBody, G2PInputMechanismData
 )
 
 from openg2p_registry_core.errors import G2PRegistryException
@@ -132,6 +133,32 @@ class RequestResponseHelper(BaseService):
         )
 
         response: VcConfigurationResponse = VcConfigurationResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return response
+    
+    def construct_input_mechanisms_success_response(
+        self,
+        input_mechanisms: List[G2PInputMechanismData],
+        g2p_request: G2PRequest = None
+    ) -> G2PInputMechanismResponse:
+        """Construct success response for input mechanisms endpoints."""
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: G2PInputMechanismResponseBody = G2PInputMechanismResponseBody(
+            response_payload=input_mechanisms
+        )
+
+        response: G2PInputMechanismResponse = G2PInputMechanismResponse(
             response_header=g2p_response_header,
             response_body=response_body
         )
