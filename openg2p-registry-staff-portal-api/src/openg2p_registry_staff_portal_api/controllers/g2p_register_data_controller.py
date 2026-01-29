@@ -23,7 +23,8 @@ from openg2p_registry_core.schemas import (
     GetRegisterTabRecordsRequest, RegisterTabRecordsDataResponse,
     RegisterSummaryDataResponse, SearchResultsResponse,
     GetRegisterSummaryDataRequest, RegisterSummaryData,
-    SearchRegisterRequest
+    SearchRegisterRequest,
+    GetAllowedParentsForChildSectionRequest, AllowedParentsData, AllowedParentsDataResponse
 )
 
 from ..helpers import RequestResponseHelper
@@ -123,6 +124,13 @@ class G2PRegisterDataController(BaseController):
             "/search_in_a_register",
             self.search_in_a_register,
             responses={200: {"model": SearchResultsResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_allowed_parents_for_a_child_section",
+            self.get_allowed_parents_for_a_child_section,
+            responses={200: {"model": AllowedParentsDataResponse}},
             methods=["POST"],
         )
 
@@ -316,4 +324,27 @@ class G2PRegisterDataController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in search_in_a_register: {str(error_exception)}")
             error_response: SearchResultsResponse = self.helper.construct_error_response(error_exception, search_register_request)
+            return error_response
+
+    async def get_allowed_parents_for_a_child_section(
+        self,
+        get_allowed_parents_request: GetAllowedParentsForChildSectionRequest
+    ) -> AllowedParentsDataResponse:
+        """
+        Get allowed parent records for a child section.
+        Given a subject record and a child section register, finds the parent register
+        of that section and returns all records from the parent register that are linked
+        to the subject.
+        """
+        try:
+            allowed_parents_data: AllowedParentsData = await self.g2p_register_data_controller_service.get_allowed_parents_for_child_section(
+                get_allowed_parents_request
+            )
+            allowed_parents_response: AllowedParentsDataResponse = self.helper.construct_allowed_parents_success_response(
+                allowed_parents_data=allowed_parents_data, g2p_request=get_allowed_parents_request
+            )
+            return allowed_parents_response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_allowed_parents_for_a_child_section: {str(error_exception)}")
+            error_response: AllowedParentsDataResponse = self.helper.construct_error_response(error_exception, get_allowed_parents_request)
             return error_response
