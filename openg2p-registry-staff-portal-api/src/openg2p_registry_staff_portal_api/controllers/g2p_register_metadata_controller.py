@@ -12,7 +12,7 @@ from openg2p_registry_core.schemas import (
     AddRegisterTabRequest, DeleteRegisterTabRequest,
     AddRegisterSectionRequest, DeleteRegisterSectionRequest,
     UpdateRegisterSectionRequest, UpdateRegisterSectionUISchemaRequest,
-    CreateRegisterRequest, UpdateRegisterSchemaRequest,
+    CreateRegisterRequest, EditRegisterRequest, DeleteRegisterRequest, UpdateRegisterSchemaRequest,
     UpdateDedupIsEnabledRequest, UpdateDedupThresholdScoreRequest,
     UpdateDeduplicationSchemaRequest, UpdateSearchResultSchemaRequest,
     RegisterSchemaDataResponse, RegisterSchemaData,
@@ -42,6 +42,20 @@ class G2PRegisterMetadataController(BaseController):
         self.router.add_api_route(
             "/create_register",
             self.create_register,
+            responses={200: {"model": RegisterDataResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/edit_register",
+            self.edit_register,
+            responses={200: {"model": RegisterDataResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/delete_register",
+            self.delete_register,
             responses={200: {"model": RegisterDataResponse}},
             methods=["POST"],
         )
@@ -398,6 +412,37 @@ class G2PRegisterMetadataController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in create_register: {str(error_exception)}")
             error_response: RegisterDataResponse = self.helper.construct_error_response(error_exception, create_register_request)
+            return error_response
+
+    async def edit_register(self, edit_register_request: EditRegisterRequest) -> RegisterDataResponse:
+        """
+        Edit an existing register definition.
+        If the register has data, only mnemonic and description can be edited.
+        """
+        try:
+            register_data: RegisterData = await self.g2p_register_metadata_controller_service.edit_register(edit_register_request)
+            register_data_response: RegisterDataResponse = self.helper.construct_register_data_success_response(
+                register_data=register_data, g2p_request=edit_register_request
+            )
+            return register_data_response
+        except Exception as error_exception:
+            _logger.error(f"Error in edit_register: {str(error_exception)}")
+            error_response: RegisterDataResponse = self.helper.construct_error_response(error_exception, edit_register_request)
+            return error_response
+
+    async def delete_register(self, delete_register_request: DeleteRegisterRequest) -> RegisterDataResponse:
+        """
+        Delete a register definition if it has no data.
+        """
+        try:
+            register_data: RegisterData = await self.g2p_register_metadata_controller_service.delete_register(delete_register_request)
+            register_data_response: RegisterDataResponse = self.helper.construct_register_data_success_response(
+                register_data=register_data, g2p_request=delete_register_request
+            )
+            return register_data_response
+        except Exception as error_exception:
+            _logger.error(f"Error in delete_register: {str(error_exception)}")
+            error_response: RegisterDataResponse = self.helper.construct_error_response(error_exception, delete_register_request)
             return error_response
 
     async def update_register_schema(self, update_register_schema_request: UpdateRegisterSchemaRequest) -> RegisterSchemaDataResponse:
