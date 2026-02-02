@@ -6,7 +6,8 @@ from openg2p_registry_core.schemas import (
     ChangeRequestResponsePayload, ChangeRequestResponse, ChangeRequestResponseBody,
     RegisterSummaryData, RegisterSummaryDataResponse, RegisterSummaryDataResponseBody,
     ChangeRequestSummaryData, ChangeRequestSummaryDataResponse, ChangeRequestSummaryDataResponseBody,
-    RegisterData, AllRegistersResponse, AllRegistersResponseBody,
+    RegisterData, AllRegistersRegisterData, AllRegistersResponse, AllRegistersResponseBody,
+    DashboardRegistersResponse, DashboardRegistersResponseBody,
     RegisterDataResponse, RegisterDataResponseBody,
     ChildRegisterData, ChildRegistersResponse, ChildRegistersResponseBody,
     SearchResultData, SearchResultsResponse, SearchResultsResponseBody,
@@ -228,7 +229,7 @@ class RequestResponseHelper(BaseService):
         )
         return change_request_summary_data_response
 
-    def construct_all_registers_success_response(self, all_registers_list: List[RegisterData], g2p_request: G2PRequest = None) -> AllRegistersResponse:
+    def construct_all_registers_success_response(self, all_registers_list: List[AllRegistersRegisterData], g2p_request: G2PRequest = None, number_of_items: int = None, number_of_pages: int = None) -> AllRegistersResponse:
         request_id = g2p_request.request_header.request_id if g2p_request else ""
 
         g2p_response_header: G2PResponseHeader = G2PResponseHeader(
@@ -239,8 +240,17 @@ class RequestResponseHelper(BaseService):
             response_timestamp=datetime.now()
         )
 
+        # Add pagination response if provided
+        pagination_response = None
+        if number_of_items is not None and number_of_pages is not None:
+            pagination_response = G2PPaginationResponse(
+                number_of_items=number_of_items,
+                number_of_pages=number_of_pages
+            )
+
         response_body: AllRegistersResponseBody = AllRegistersResponseBody(
-            response_payload=all_registers_list
+            response_payload=all_registers_list,
+            pagination_response=pagination_response
         )
 
         all_registers_response: AllRegistersResponse = AllRegistersResponse(
@@ -248,6 +258,28 @@ class RequestResponseHelper(BaseService):
             response_body=response_body
         )
         return all_registers_response
+
+    def construct_dashboard_registers_success_response(self, dashboard_registers_list: List[RegisterData], g2p_request: G2PRequest = None) -> DashboardRegistersResponse:
+        """Construct success response for get_dashboard_registers endpoint (clone of construct_all_registers_success_response)"""
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: DashboardRegistersResponseBody = DashboardRegistersResponseBody(
+            response_payload=dashboard_registers_list
+        )
+
+        dashboard_registers_response: DashboardRegistersResponse = DashboardRegistersResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return dashboard_registers_response
 
     def construct_child_registers_success_response(self, child_registers_list: List[ChildRegisterData], g2p_request: G2PRequest = None) -> ChildRegistersResponse:
         request_id = g2p_request.request_header.request_id if g2p_request else ""
