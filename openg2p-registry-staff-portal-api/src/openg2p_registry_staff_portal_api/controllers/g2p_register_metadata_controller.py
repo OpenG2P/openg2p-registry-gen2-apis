@@ -3,7 +3,8 @@ from openg2p_fastapi_common.controller import BaseController
 
 from openg2p_registry_core.controller_services import G2PRegisterMetadataControllerService
 from openg2p_registry_core.schemas import (
-    AllRegistersResponse, RegisterData,
+    AllRegistersResponse, RegisterData, AllRegistersRegisterData,
+    DashboardRegistersResponse, GetDashboardRegistersRequest,
     ChildRegistersResponse, ChildRegisterData,
     GetChildRegistersRequest, GetMasterRegisterRequest,
     GetAllRegistersRequest,
@@ -49,6 +50,13 @@ class G2PRegisterMetadataController(BaseController):
             "/get_all_registers",
             self.get_all_registers,
             responses={200: {"model": AllRegistersResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_dashboard_registers",
+            self.get_dashboard_registers,
+            responses={200: {"model": DashboardRegistersResponse}},
             methods=["POST"],
         )
 
@@ -177,14 +185,30 @@ class G2PRegisterMetadataController(BaseController):
 
     async def get_all_registers(self, get_all_registers_request: GetAllRegistersRequest) -> AllRegistersResponse:
         try:
-            all_registers_list: list[RegisterData] = await self.g2p_register_metadata_controller_service.get_all_registers(get_all_registers_request)
+            all_registers_list, total_items, number_of_pages = await self.g2p_register_metadata_controller_service.get_all_registers(get_all_registers_request)
             all_registers_response: AllRegistersResponse = self.helper.construct_all_registers_success_response(
-                all_registers_list=all_registers_list, g2p_request=get_all_registers_request
+                all_registers_list=all_registers_list,
+                g2p_request=get_all_registers_request,
+                number_of_items=total_items,
+                number_of_pages=number_of_pages
             )
             return all_registers_response
         except Exception as error_exception:
             _logger.error(f"Error in get_all_registers: {str(error_exception)}")
             error_response: AllRegistersResponse = self.helper.construct_error_response(error_exception, get_all_registers_request)
+            return error_response
+
+    async def get_dashboard_registers(self, get_dashboard_registers_request: GetDashboardRegistersRequest) -> DashboardRegistersResponse:
+        """Get all registers for dashboard display (clone of get_all_registers)"""
+        try:
+            dashboard_registers_list: list[RegisterData] = await self.g2p_register_metadata_controller_service.get_dashboard_registers(get_dashboard_registers_request)
+            dashboard_registers_response: DashboardRegistersResponse = self.helper.construct_dashboard_registers_success_response(
+                dashboard_registers_list=dashboard_registers_list, g2p_request=get_dashboard_registers_request
+            )
+            return dashboard_registers_response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_dashboard_registers: {str(error_exception)}")
+            error_response: DashboardRegistersResponse = self.helper.construct_error_response(error_exception, get_dashboard_registers_request)
             return error_response
 
     async def get_child_registers(self, get_child_registers_request: GetChildRegistersRequest) -> ChildRegistersResponse:
