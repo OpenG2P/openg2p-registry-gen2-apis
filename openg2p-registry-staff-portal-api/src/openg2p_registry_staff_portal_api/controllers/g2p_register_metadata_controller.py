@@ -9,7 +9,7 @@ from openg2p_registry_core.schemas import (
     GetChildRegistersRequest, GetMasterRegisterRequest,
     GetAllRegistersRequest,
     GetRegisterSchemaRequest, GetRegisterSectionsRequest, GetRegisterTabSectionsRequest, GetRegisterTabsRequest,
-    AddRegisterTabRequest, DeleteRegisterTabRequest,
+    AddRegisterTabRequest, DeleteRegisterTabRequest, EditRegisterTabRequest,
     AddRegisterSectionRequest, DeleteRegisterSectionRequest,
     UpdateRegisterSectionRequest, UpdateRegisterSectionUISchemaRequest,
     CreateRegisterRequest, EditRegisterRequest, DeleteRegisterRequest, UpdateRegisterSchemaRequest,
@@ -197,6 +197,13 @@ class G2PRegisterMetadataController(BaseController):
             methods=["POST"],
         )
 
+        self.router.add_api_route(
+            "/edit_register_tab",
+            self.edit_register_tab,
+            responses={200: {"model": RegisterTabDataResponse}},
+            methods=["POST"],
+        )
+
     async def get_all_registers(self, get_all_registers_request: GetAllRegistersRequest) -> AllRegistersResponse:
         try:
             all_registers_list, total_items, number_of_pages = await self.g2p_register_metadata_controller_service.get_all_registers(get_all_registers_request)
@@ -281,12 +288,15 @@ class G2PRegisterMetadataController(BaseController):
 
     async def get_register_tab_sections(self, get_register_tab_sections_request: GetRegisterTabSectionsRequest) -> RegisterSectionsDataResponse:
         """
-        Get all sections for a given register_id and tab_id.
+        Get all sections for a given register_id and tab_id with pagination.
         """
         try:
-            register_tab_sections_list: list[RegisterSectionData] = await self.g2p_register_metadata_controller_service.get_register_tab_sections(get_register_tab_sections_request)
+            register_tab_sections_list, total_items, number_of_pages = await self.g2p_register_metadata_controller_service.get_register_tab_sections(get_register_tab_sections_request)
             register_tab_sections_response: RegisterSectionsDataResponse = self.helper.construct_register_sections_success_response(
-                register_sections_list=register_tab_sections_list, g2p_request=get_register_tab_sections_request
+                register_sections_list=register_tab_sections_list,
+                g2p_request=get_register_tab_sections_request,
+                number_of_items=total_items,
+                number_of_pages=number_of_pages
             )
             return register_tab_sections_response
         except Exception as error_exception:
@@ -311,7 +321,7 @@ class G2PRegisterMetadataController(BaseController):
 
     async def delete_register_section(self, delete_register_section_request: DeleteRegisterSectionRequest) -> RegisterSectionDataResponse:
         """
-        Delete a section by register_id and section_id.
+        Delete a section by section_id.
         """
         try:
             section_data: RegisterSectionData = await self.g2p_register_metadata_controller_service.delete_register_section(delete_register_section_request)
@@ -356,12 +366,15 @@ class G2PRegisterMetadataController(BaseController):
 
     async def get_register_tabs(self, get_register_tabs_request: GetRegisterTabsRequest) -> RegisterTabsDataResponse:
         """
-        Get all UI tabs for a given register_id.
+        Get all UI tabs for a given register_id with pagination.
         """
         try:
-            register_tabs_list: list[RegisterUITabData] = await self.g2p_register_metadata_controller_service.get_register_tabs(get_register_tabs_request)
+            register_tabs_list, total_items, number_of_pages = await self.g2p_register_metadata_controller_service.get_register_tabs(get_register_tabs_request)
             register_tabs_response: RegisterTabsDataResponse = self.helper.construct_register_tabs_success_response(
-                register_tabs_list=register_tabs_list, g2p_request=get_register_tabs_request
+                register_tabs_list=register_tabs_list,
+                g2p_request=get_register_tabs_request,
+                number_of_items=total_items,
+                number_of_pages=number_of_pages
             )
             return register_tabs_response
         except Exception as error_exception:
@@ -397,6 +410,21 @@ class G2PRegisterMetadataController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in delete_register_tab: {str(error_exception)}")
             error_response: RegisterTabDataResponse = self.helper.construct_error_response(error_exception, delete_register_tab_request)
+            return error_response
+
+    async def edit_register_tab(self, edit_register_tab_request: EditRegisterTabRequest) -> RegisterTabDataResponse:
+        """
+        Edit an existing UI tab.
+        """
+        try:
+            register_tab_data: RegisterUITabData = await self.g2p_register_metadata_controller_service.edit_register_tab(edit_register_tab_request)
+            register_tab_response: RegisterTabDataResponse = self.helper.construct_register_tab_success_response(
+                register_tab_data=register_tab_data, g2p_request=edit_register_tab_request
+            )
+            return register_tab_response
+        except Exception as error_exception:
+            _logger.error(f"Error in edit_register_tab: {str(error_exception)}")
+            error_response: RegisterTabDataResponse = self.helper.construct_error_response(error_exception, edit_register_tab_request)
             return error_response
 
     async def create_register(self, create_register_request: CreateRegisterRequest) -> RegisterDataResponse:
