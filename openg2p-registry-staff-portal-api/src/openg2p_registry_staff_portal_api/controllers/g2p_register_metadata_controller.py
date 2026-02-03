@@ -9,7 +9,7 @@ from openg2p_registry_core.schemas import (
     GetChildRegistersRequest, GetMasterRegisterRequest,
     GetAllRegistersRequest,
     GetRegisterSchemaRequest, GetRegisterSectionsRequest, GetRegisterTabSectionsRequest, GetRegisterTabsRequest,
-    AddRegisterTabRequest, DeleteRegisterTabRequest,
+    AddRegisterTabRequest, DeleteRegisterTabRequest, EditRegisterTabRequest,
     AddRegisterSectionRequest, DeleteRegisterSectionRequest,
     UpdateRegisterSectionRequest, UpdateRegisterSectionUISchemaRequest,
     CreateRegisterRequest, EditRegisterRequest, DeleteRegisterRequest, UpdateRegisterSchemaRequest,
@@ -193,6 +193,13 @@ class G2PRegisterMetadataController(BaseController):
         self.router.add_api_route(
             "/delete_register_tab",
             self.delete_register_tab,
+            responses={200: {"model": RegisterTabDataResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/edit_register_tab",
+            self.edit_register_tab,
             responses={200: {"model": RegisterTabDataResponse}},
             methods=["POST"],
         )
@@ -403,6 +410,21 @@ class G2PRegisterMetadataController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in delete_register_tab: {str(error_exception)}")
             error_response: RegisterTabDataResponse = self.helper.construct_error_response(error_exception, delete_register_tab_request)
+            return error_response
+
+    async def edit_register_tab(self, edit_register_tab_request: EditRegisterTabRequest) -> RegisterTabDataResponse:
+        """
+        Edit an existing UI tab.
+        """
+        try:
+            register_tab_data: RegisterUITabData = await self.g2p_register_metadata_controller_service.edit_register_tab(edit_register_tab_request)
+            register_tab_response: RegisterTabDataResponse = self.helper.construct_register_tab_success_response(
+                register_tab_data=register_tab_data, g2p_request=edit_register_tab_request
+            )
+            return register_tab_response
+        except Exception as error_exception:
+            _logger.error(f"Error in edit_register_tab: {str(error_exception)}")
+            error_response: RegisterTabDataResponse = self.helper.construct_error_response(error_exception, edit_register_tab_request)
             return error_response
 
     async def create_register(self, create_register_request: CreateRegisterRequest) -> RegisterDataResponse:
