@@ -841,7 +841,13 @@ class RequestResponseHelper(BaseService):
         )
         return register_data_response
 
-    def construct_register_sections_success_response(self, register_sections_list: List[RegisterSectionData], g2p_request: G2PRequest = None) -> RegisterSectionsDataResponse:
+    def construct_register_sections_success_response(
+        self,
+        register_sections_list: List[RegisterSectionData],
+        g2p_request: G2PRequest = None,
+        number_of_items: int = None,
+        number_of_pages: int = None
+    ) -> RegisterSectionsDataResponse:
         """Construct success response for get_register_sections endpoint."""
         g2p_response_header: G2PResponseHeader = G2PResponseHeader(
             request_id=g2p_request.request_header.request_id if g2p_request else "",
@@ -851,8 +857,17 @@ class RequestResponseHelper(BaseService):
             response_timestamp=datetime.now()
         )
 
+        # Add pagination response if provided
+        pagination_response = None
+        if number_of_items is not None and number_of_pages is not None:
+            pagination_response = G2PPaginationResponse(
+                number_of_items=number_of_items,
+                number_of_pages=number_of_pages
+            )
+
         response_body: RegisterSectionsDataResponseBody = RegisterSectionsDataResponseBody(
-            response_payload=register_sections_list
+            response_payload=register_sections_list,
+            pagination_response=pagination_response
         )
 
         register_sections_response: RegisterSectionsDataResponse = RegisterSectionsDataResponse(
@@ -881,7 +896,13 @@ class RequestResponseHelper(BaseService):
         )
         return register_section_response
 
-    def construct_register_tabs_success_response(self, register_tabs_list: List[RegisterUITabData], g2p_request: G2PRequest = None) -> RegisterTabsDataResponse:
+    def construct_register_tabs_success_response(
+        self,
+        register_tabs_list: List[RegisterUITabData],
+        g2p_request: G2PRequest = None,
+        number_of_items: int = None,
+        number_of_pages: int = None
+    ) -> RegisterTabsDataResponse:
         """Construct success response for get_register_tabs endpoint."""
         g2p_response_header: G2PResponseHeader = G2PResponseHeader(
             request_id=g2p_request.request_header.request_id if g2p_request else "",
@@ -891,8 +912,17 @@ class RequestResponseHelper(BaseService):
             response_timestamp=datetime.now()
         )
 
+        # Add pagination response if provided
+        pagination_response = None
+        if number_of_items is not None and number_of_pages is not None:
+            pagination_response = G2PPaginationResponse(
+                number_of_items=number_of_items,
+                number_of_pages=number_of_pages
+            )
+
         response_body: RegisterTabsDataResponseBody = RegisterTabsDataResponseBody(
-            response_payload=register_tabs_list
+            response_payload=register_tabs_list,
+            pagination_response=pagination_response
         )
 
         register_tabs_response: RegisterTabsDataResponse = RegisterTabsDataResponse(
