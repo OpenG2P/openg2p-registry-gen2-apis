@@ -324,9 +324,9 @@ class G2PRegisterMetadataController(BaseController):
         Delete a section by section_id.
         """
         try:
-            await self.g2p_register_metadata_controller_service.delete_register_section(delete_register_section_request)
+            section_data: RegisterSectionData = await self.g2p_register_metadata_controller_service.delete_register_section(delete_register_section_request)
             section_response: RegisterSectionDataResponse = self.helper.construct_register_section_success_response(
-                register_section_data=None, g2p_request=delete_register_section_request
+                register_section_data=section_data, g2p_request=delete_register_section_request
             )
             return section_response
         except Exception as error_exception:
