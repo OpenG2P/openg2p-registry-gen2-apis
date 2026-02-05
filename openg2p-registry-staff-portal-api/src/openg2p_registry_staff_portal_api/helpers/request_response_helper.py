@@ -35,6 +35,7 @@ from openg2p_registry_core.schemas import (
     RegisterSchemaData, RegisterSchemaDataResponse, RegisterSchemaDataResponseBody,
     RegisterSectionData, RegisterSectionsDataResponse, RegisterSectionsDataResponseBody,
     RegisterSectionDataResponse, RegisterSectionDataResponseBody,
+    RegisterSectionUISchemaData, RegisterSectionUISchemaDataResponse, RegisterSectionUISchemaDataResponseBody,
     RegisterUITabData, RegisterTabsDataResponse, RegisterTabsDataResponseBody,
     RegisterTabDataResponse, RegisterTabDataResponseBody,
     SectionRecordsDataResponse, SectionRecordsDataResponseBody,
@@ -895,6 +896,29 @@ class RequestResponseHelper(BaseService):
             response_body=response_body
         )
         return register_section_response
+
+    def construct_register_section_ui_schema_success_response(
+        self,
+        register_section_ui_schema_data: RegisterSectionUISchemaData,
+        g2p_request: G2PRequest = None
+    ) -> RegisterSectionUISchemaDataResponse:
+        """Construct success response for get_register_section_ui_schema endpoint."""
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id if g2p_request else "",
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: RegisterSectionUISchemaDataResponseBody = RegisterSectionUISchemaDataResponseBody(
+            response_payload=register_section_ui_schema_data
+        )
+
+        return RegisterSectionUISchemaDataResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
 
     def construct_register_tabs_success_response(
         self,

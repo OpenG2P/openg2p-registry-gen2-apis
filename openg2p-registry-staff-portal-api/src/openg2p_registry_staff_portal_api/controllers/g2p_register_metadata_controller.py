@@ -10,13 +10,14 @@ from openg2p_registry_core.schemas import (
     GetAllRegistersRequest,
     GetRegisterSchemaRequest, GetRegisterSectionsRequest, GetRegisterTabSectionsRequest, GetRegisterTabsRequest,
     AddRegisterTabRequest, DeleteRegisterTabRequest, EditRegisterTabRequest,
-    AddRegisterSectionRequest, DeleteRegisterSectionRequest,
+    AddRegisterSectionRequest, DeleteRegisterSectionRequest, GetRegisterSectionUISchemaRequest,
     UpdateRegisterSectionRequest, UpdateRegisterSectionUISchemaRequest,
     CreateRegisterRequest, EditRegisterRequest, DeleteRegisterRequest, UpdateRegisterSchemaRequest,
     UpdateDedupIsEnabledRequest, UpdateDedupThresholdScoreRequest,
     UpdateDeduplicationSchemaRequest, UpdateSearchResultSchemaRequest,
     RegisterSchemaDataResponse, RegisterSchemaData,
     RegisterSectionsDataResponse, RegisterSectionData, RegisterSectionDataResponse,
+    RegisterSectionUISchemaData, RegisterSectionUISchemaDataResponse,
     RegisterDataResponse, RegisterUITabData, RegisterTabsDataResponse,
     RegisterTabDataResponse
 )
@@ -172,6 +173,13 @@ class G2PRegisterMetadataController(BaseController):
             "/update_register_section_ui_schema",
             self.update_register_section_ui_schema,
             responses={200: {"model": RegisterSectionDataResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_register_section_ui_schema",
+            self.get_register_section_ui_schema,
+            responses={200: {"model": RegisterSectionUISchemaDataResponse}},
             methods=["POST"],
         )
 
@@ -362,6 +370,28 @@ class G2PRegisterMetadataController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in update_register_section_ui_schema: {str(error_exception)}")
             error_response: RegisterSectionDataResponse = self.helper.construct_error_response(error_exception, update_register_section_ui_schema_request)
+            return error_response
+
+    async def get_register_section_ui_schema(
+        self, get_register_section_ui_schema_request: GetRegisterSectionUISchemaRequest
+    ) -> RegisterSectionUISchemaDataResponse:
+        """
+        Get UI schema for a specific section.
+        """
+        try:
+            section_ui_schema_data: RegisterSectionUISchemaData = await self.g2p_register_metadata_controller_service.get_register_section_ui_schema(
+                get_register_section_ui_schema_request
+            )
+            response: RegisterSectionUISchemaDataResponse = self.helper.construct_register_section_ui_schema_success_response(
+                register_section_ui_schema_data=section_ui_schema_data,
+                g2p_request=get_register_section_ui_schema_request
+            )
+            return response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_register_section_ui_schema: {str(error_exception)}")
+            error_response: RegisterSectionUISchemaDataResponse = self.helper.construct_error_response(
+                error_exception, get_register_section_ui_schema_request
+            )
             return error_response
 
     async def get_register_tabs(self, get_register_tabs_request: GetRegisterTabsRequest) -> RegisterTabsDataResponse:
