@@ -4,6 +4,9 @@ from openg2p_fastapi_common.service import BaseService
 from openg2p_fastapi_common.schemas import G2PRequest, G2PResponse, G2PResponseHeader, G2PResponseStatus, G2PResponseBody, G2PPaginationResponse
 from openg2p_registry_core.schemas import (
     ChangeRequestResponsePayload, ChangeRequestResponse, ChangeRequestResponseBody,
+    IntakeFormResponsePayload, IntakeFormResponse, IntakeFormResponseBody,
+    IntakeFormsDataResponse, IntakeFormsDataResponseBody,
+    IntakeFormSearchResultsResponse, IntakeFormSearchResultsResponseBody,
     RegisterSummaryData, RegisterSummaryDataResponse, RegisterSummaryDataResponseBody,
     ChangeRequestSummaryData, ChangeRequestSummaryDataResponse, ChangeRequestSummaryDataResponseBody,
     RegisterData, AllRegistersRegisterData, AllRegistersResponse, AllRegistersResponseBody,
@@ -114,6 +117,97 @@ class RequestResponseHelper(BaseService):
             response_body=response_body
         )
         return change_request_response
+
+    def construct_intake_form_success_response(
+        self,
+        intake_form_response_payload: IntakeFormResponsePayload,
+        g2p_request: G2PRequest
+    ) -> IntakeFormResponse:
+        g2p_response_header = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: IntakeFormResponseBody = IntakeFormResponseBody(
+            response_payload=intake_form_response_payload
+        )
+
+        intake_form_response: IntakeFormResponse = IntakeFormResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return intake_form_response
+
+    def construct_intake_forms_success_response(
+        self,
+        intake_forms_list: List[IntakeFormResponsePayload],
+        g2p_request: G2PRequest = None,
+        number_of_items: int = None,
+        number_of_pages: int = None
+    ) -> IntakeFormsDataResponse:
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        pagination_response = None
+        if number_of_items is not None and number_of_pages is not None:
+            pagination_response = G2PPaginationResponse(
+                number_of_items=number_of_items,
+                number_of_pages=number_of_pages
+            )
+
+        response_body: IntakeFormsDataResponseBody = IntakeFormsDataResponseBody(
+            response_payload=intake_forms_list,
+            pagination_response=pagination_response
+        )
+
+        intake_forms_response: IntakeFormsDataResponse = IntakeFormsDataResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return intake_forms_response
+
+    def construct_intake_form_search_results_success_response(
+        self,
+        search_results_list: List[IntakeFormResponsePayload],
+        g2p_request: G2PRequest = None,
+        number_of_items: int = None,
+        number_of_pages: int = None
+    ) -> IntakeFormSearchResultsResponse:
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        pagination_response = None
+        if number_of_items is not None and number_of_pages is not None:
+            pagination_response = G2PPaginationResponse(
+                number_of_items=number_of_items,
+                number_of_pages=number_of_pages
+            )
+
+        response_body: IntakeFormSearchResultsResponseBody = IntakeFormSearchResultsResponseBody(
+            response_payload=search_results_list,
+            pagination_response=pagination_response
+        )
+
+        search_results_response: IntakeFormSearchResultsResponse = IntakeFormSearchResultsResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return search_results_response
 
     def construct_vc_configuration_data_success_response(
         self,
