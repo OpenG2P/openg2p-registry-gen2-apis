@@ -17,14 +17,14 @@ from ..config import Settings
 _config = Settings.get_config()
 _logger = logging.getLogger(_config.logging_default_logger_name)
 
-class G2PIntakeFormController(BaseController):
+class G2PIntakeFormDataController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.router.tags += ["/intake-forms"]
+        self.router.tags += ["/intake-form-data"]
         self.g2p_intake_form_controller_service = G2PIntakeFormControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
-        self.router.prefix = "/intake-forms"
+        self.router.prefix = "/intake-form-data"
 
         self.router.add_api_route(
             "/save_intake_form_draft",
