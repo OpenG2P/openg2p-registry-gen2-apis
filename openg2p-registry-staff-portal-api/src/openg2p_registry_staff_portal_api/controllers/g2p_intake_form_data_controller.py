@@ -6,7 +6,8 @@ from openg2p_registry_core.controller_services import G2PIntakeFormControllerSer
 from openg2p_registry_core.schemas import (
     SaveSubmissionDraftRequest, FinalizeSubmissionRequest, ApproveRejectSubmissionRequest, SubmissionResponse, SubmissionResponsePayload,
     GetSubmissionRequest,
-    SearchInSubmissionRequest, SubmissionSearchResultsResponse
+    SearchInSubmissionRequest, SubmissionSearchResultsResponse,
+    GetIntakeFormSubmissionsSummaryRequest, IntakeFormSubmissionsSummaryResponse, IntakeFormSubmissionsSummaryData
 )
 from openg2p_fastapi_common.schemas import G2PResponse
 
@@ -64,6 +65,13 @@ class G2PIntakeFormDataController(BaseController):
             "/search_in_submission",
             self.search_in_submission,
             responses={200: {"model": SubmissionSearchResultsResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_intake_form_submissions_summary",
+            self.get_intake_form_submissions_summary,
+            responses={200: {"model": IntakeFormSubmissionsSummaryResponse}},
             methods=["POST"],
         )
 
@@ -138,4 +146,23 @@ class G2PIntakeFormDataController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in search_in_submission: {str(error_exception)}")
             error_response: G2PResponse = self.helper.construct_error_response(error_exception, search_in_submission_request)
+            return error_response
+
+    async def get_intake_form_submissions_summary(
+        self, get_intake_form_submissions_summary_request: GetIntakeFormSubmissionsSummaryRequest
+    ) -> IntakeFormSubmissionsSummaryResponse:
+        try:
+            summary_data: IntakeFormSubmissionsSummaryData = await self.g2p_intake_form_controller_service.get_intake_form_submissions_summary(
+                get_intake_form_submissions_summary_request
+            )
+            summary_response: IntakeFormSubmissionsSummaryResponse = self.helper.construct_intake_form_submissions_summary_success_response(
+                summary_data=summary_data,
+                g2p_request=get_intake_form_submissions_summary_request,
+            )
+            return summary_response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_intake_form_submissions_summary: {str(error_exception)}")
+            error_response: G2PResponse = self.helper.construct_error_response(
+                error_exception, get_intake_form_submissions_summary_request
+            )
             return error_response

@@ -6,6 +6,7 @@ from openg2p_registry_core.schemas import (
     ChangeRequestResponsePayload, ChangeRequestResponse, ChangeRequestResponseBody,
     SubmissionResponsePayload, SubmissionResponse, SubmissionResponseBody,
     SubmissionSearchResultsResponse, SubmissionSearchResultsResponseBody,
+    IntakeFormSubmissionsSummaryData, IntakeFormSubmissionsSummaryResponse, IntakeFormSubmissionsSummaryResponseBody,
     RegisterSummaryData, RegisterSummaryDataResponse, RegisterSummaryDataResponseBody,
     ChangeRequestSummaryData, ChangeRequestSummaryDataResponse, ChangeRequestSummaryDataResponseBody,
     RegisterData, AllRegistersRegisterData, AllRegistersResponse, AllRegistersResponseBody,
@@ -173,6 +174,30 @@ class RequestResponseHelper(BaseService):
             response_body=response_body
         )
         return search_results_response
+
+    def construct_intake_form_submissions_summary_success_response(
+        self,
+        summary_data: IntakeFormSubmissionsSummaryData,
+        g2p_request: G2PRequest = None
+    ) -> IntakeFormSubmissionsSummaryResponse:
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: IntakeFormSubmissionsSummaryResponseBody = IntakeFormSubmissionsSummaryResponseBody(
+            response_payload=summary_data
+        )
+
+        summary_response: IntakeFormSubmissionsSummaryResponse = IntakeFormSubmissionsSummaryResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+        return summary_response
 
     def construct_vc_configuration_data_success_response(
         self,
