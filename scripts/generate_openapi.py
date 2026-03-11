@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
 Generate OpenAPI JSON for each portal API and write to docs/openapi/.
+If one API fails (import or openapi()), it is skipped and the rest are generated.
 Usage: python scripts/generate_openapi.py [output_dir]
 Default output_dir: docs/openapi
 """
 import json
 import sys
+import traceback
 from pathlib import Path
 
 
@@ -27,8 +29,12 @@ def main() -> None:
     ]
     for module_name, app_attr, filename in apis:
         out_path = out_dir / filename
-        generate_openapi(module_name, app_attr, out_path)
-        print(f"Wrote {out_path}")
+        try:
+            generate_openapi(module_name, app_attr, out_path)
+            print(f"Wrote {out_path}")
+        except Exception as e:
+            print(f"Skipped {filename}: {e}", file=sys.stderr)
+            traceback.print_exc(file=sys.stderr)
 
 
 if __name__ == "__main__":
