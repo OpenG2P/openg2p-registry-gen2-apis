@@ -7,7 +7,10 @@ from openg2p_registry_core.schemas import (
     SaveSubmissionDraftRequest, FinalizeSubmissionRequest, ApproveRejectSubmissionRequest, SubmissionResponse, SubmissionResponsePayload,
     GetSubmissionRequest,
     SearchInSubmissionRequest, SubmissionSearchResultsResponse,
-    GetIntakeFormSubmissionsSummaryRequest, IntakeFormSubmissionsSummaryResponse, IntakeFormSubmissionsSummaryData
+    GetIntakeFormSubmissionsSummaryRequest, IntakeFormSubmissionsSummaryResponse, IntakeFormSubmissionsSummaryData,
+    GetChangeRequestsForSubmissionRequest, ChangeRequestFlattenedDataResponse,
+    GetNumberOfPendingChangeRequestsForSubmissionRequest,
+    NumberOfPendingChangeRequestsForSubmissionResponse, NumberOfPendingChangeRequestsForSubmissionData
 )
 from openg2p_fastapi_common.schemas import G2PResponse
 
@@ -65,6 +68,18 @@ class G2PIntakeFormDataController(BaseController):
             "/search_in_submission",
             self.search_in_submission,
             responses={200: {"model": SubmissionSearchResultsResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/get_change_requests_for_submission",
+            self.get_change_requests_for_submission,
+            responses={200: {"model": ChangeRequestFlattenedDataResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/get_number_of_pending_change_requests_for_submission",
+            self.get_number_of_pending_change_requests_for_submission,
+            responses={200: {"model": NumberOfPendingChangeRequestsForSubmissionResponse}},
             methods=["POST"],
         )
 
@@ -146,6 +161,57 @@ class G2PIntakeFormDataController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in search_in_submission: {str(error_exception)}")
             error_response: G2PResponse = self.helper.construct_error_response(error_exception, search_in_submission_request)
+            return error_response
+
+    async def get_change_requests_for_submission(
+        self, get_change_requests_for_submission_request: GetChangeRequestsForSubmissionRequest
+    ) -> ChangeRequestFlattenedDataResponse:
+        try:
+            change_requests_list, total_items, number_of_pages = (
+                await self.g2p_intake_form_controller_service.get_change_requests_for_submission(
+                    get_change_requests_for_submission_request
+                )
+            )
+            response: ChangeRequestFlattenedDataResponse = (
+                self.helper.construct_change_requests_success_response(
+                    change_requests_list=change_requests_list,
+                    g2p_request=get_change_requests_for_submission_request,
+                    number_of_items=total_items,
+                    number_of_pages=number_of_pages,
+                )
+            )
+            return response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_change_requests_for_submission: {str(error_exception)}")
+            error_response: G2PResponse = self.helper.construct_error_response(
+                error_exception, get_change_requests_for_submission_request
+            )
+            return error_response
+
+    async def get_number_of_pending_change_requests_for_submission(
+        self,
+        get_number_of_pending_change_requests_for_submission_request: GetNumberOfPendingChangeRequestsForSubmissionRequest
+    ) -> NumberOfPendingChangeRequestsForSubmissionResponse:
+        try:
+            pending_count_data: NumberOfPendingChangeRequestsForSubmissionData = (
+                await self.g2p_intake_form_controller_service.get_number_of_pending_change_requests_for_submission(
+                    get_number_of_pending_change_requests_for_submission_request
+                )
+            )
+            response: NumberOfPendingChangeRequestsForSubmissionResponse = (
+                self.helper.construct_number_of_pending_change_requests_for_submission_success_response(
+                    number_of_pending_change_requests_for_submission_data=pending_count_data,
+                    g2p_request=get_number_of_pending_change_requests_for_submission_request,
+                )
+            )
+            return response
+        except Exception as error_exception:
+            _logger.error(
+                f"Error in get_number_of_pending_change_requests_for_submission: {str(error_exception)}"
+            )
+            error_response: G2PResponse = self.helper.construct_error_response(
+                error_exception, get_number_of_pending_change_requests_for_submission_request
+            )
             return error_response
 
     async def get_intake_form_submissions_summary(
