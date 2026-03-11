@@ -16,29 +16,17 @@ jobs:
         with:
           path: apis
 
-      - name: Checkout registry-gen2 (core)
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.repository_owner }}/openg2p-registry-gen2
-          path: openg2p-registry-gen2
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Checkout registry-gen2-extensions
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.repository_owner }}/openg2p-registry-gen2-extensions
-          path: openg2p-registry-gen2-extensions
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install dependencies and APIs
+        env:
+          REPO_OWNER: ${{ github.repository_owner }}
         run: |
-          pip install -e openg2p-registry-gen2/openg2p-registry-core
-          pip install -e openg2p-registry-gen2-extensions/openg2p-registry-farmer-extension
+          pip install "git+https://github.com/${REPO_OWNER}/openg2p-registry-gen2.git#subdirectory=openg2p-registry-core"
+          pip install "git+https://github.com/${REPO_OWNER}/openg2p-registry-gen2-extensions.git#subdirectory=openg2p-registry-farmer-extension"
           pip install -e apis/openg2p-registry-bene-portal-api
           pip install -e apis/openg2p-registry-staff-portal-api
           pip install -e apis/openg2p-registry-partner-api
