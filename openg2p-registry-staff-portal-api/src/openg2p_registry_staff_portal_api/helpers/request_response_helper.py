@@ -22,6 +22,7 @@ from openg2p_registry_core.schemas import (
     VersionDatesData, VersionDatesDataResponse, VersionDatesDataResponseBody,
     VersionsForDateData, ChangesForDateDataResponse, ChangesForDateDataResponseBody,
     NumberOfPendingChangeRequestsData, NumberOfPendingChangeRequestsResponse, NumberOfPendingChangeRequestsResponseBody,
+    NumberOfPendingChangeRequestsForSubmissionData, NumberOfPendingChangeRequestsForSubmissionResponse, NumberOfPendingChangeRequestsForSubmissionResponseBody,
     NumberOfCrossRegisterChangesData, NumberOfCrossRegisterChangesResponse, NumberOfCrossRegisterChangesResponseBody,
     CrossRegisterChangeRequestData, CrossRegisterChangesData, CrossRegisterChangesDataResponse, CrossRegisterChangesDataResponseBody,
     ChangeRequestData, ChangeRequestDataResponse, ChangeRequestDataResponseBody,
@@ -655,6 +656,33 @@ class RequestResponseHelper(BaseService):
             response_body=response_body
         )
         return number_of_pending_change_requests_response
+
+    def construct_number_of_pending_change_requests_for_submission_success_response(
+        self,
+        number_of_pending_change_requests_for_submission_data: NumberOfPendingChangeRequestsForSubmissionData,
+        g2p_request: G2PRequest = None
+    ) -> NumberOfPendingChangeRequestsForSubmissionResponse:
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id if g2p_request else "",
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: NumberOfPendingChangeRequestsForSubmissionResponseBody = (
+            NumberOfPendingChangeRequestsForSubmissionResponseBody(
+                response_payload=number_of_pending_change_requests_for_submission_data
+            )
+        )
+
+        response: NumberOfPendingChangeRequestsForSubmissionResponse = (
+            NumberOfPendingChangeRequestsForSubmissionResponse(
+                response_header=g2p_response_header,
+                response_body=response_body
+            )
+        )
+        return response
 
     def construct_number_of_cross_register_changes_success_response(self, number_of_cross_register_changes_data: NumberOfCrossRegisterChangesData, g2p_request: G2PRequest = None) -> NumberOfCrossRegisterChangesResponse:
         g2p_response_header: G2PResponseHeader = G2PResponseHeader(
