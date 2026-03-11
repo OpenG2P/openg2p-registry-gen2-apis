@@ -19,7 +19,8 @@ from .controllers import (
     G2PRegisterVCConfigurationController, G2PRegistryConfigurationController,
     G2PUIHelperController,
     G2PVerificationController,
-    G2PIntakeFormController,
+    G2PIntakeFormDataController,
+    G2PIntakeFormMetadataController,
 )
 
 _logger = logging.getLogger(_config.logging_default_logger_name)
@@ -42,7 +43,8 @@ class Initializer(BaseInitializer):
         G2PAttributeController().post_init()
         G2PUIHelperController().post_init()
         G2PVerificationController().post_init()
-        G2PIntakeFormController().post_init()
+        G2PIntakeFormDataController().post_init()
+        G2PIntakeFormMetadataController().post_init()
 
     def migrate_database(self, args):
         _logger.info("Starting database migration")
