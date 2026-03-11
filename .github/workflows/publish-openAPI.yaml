@@ -25,6 +25,7 @@ jobs:
         env:
           REPO_OWNER: ${{ github.repository_owner }}
         run: |
+          pip install openg2p-fastapi-auth openg2p-fastapi-auth-models
           pip install "git+https://github.com/${REPO_OWNER}/openg2p-registry-gen2.git#subdirectory=openg2p-registry-core"
           pip install "git+https://github.com/${REPO_OWNER}/openg2p-registry-gen2-extensions.git#subdirectory=openg2p-registry-farmer-extension"
           pip install -e apis/openg2p-registry-bene-portal-api
