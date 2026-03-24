@@ -6,7 +6,9 @@ from openg2p_registry_staff_portal_api.app import Initializer
 from openg2p_fastapi_common.ping import PingInitializer
 from openg2p_registry_core.app import Initializer as CoreInitializer
 from openg2p_registry_extensions.app import Initializer as ExtensionsInitializer
+from iam_core.user_auth.app import Initializer as IAMInitializer
 
+IAMInitializer()
 CoreInitializer()
 ExtensionsInitializer()
 initializer = Initializer()
