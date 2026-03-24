@@ -1,5 +1,9 @@
 import logging
+from typing import Annotated
+from fastapi import Depends
 from openg2p_fastapi_common.controller import BaseController
+from iam_core.schemas import AuthPrincipal
+from iam_core.user_auth.dependencies import auth_principal, require_user_type
 
 from openg2p_registry_core.controller_services import G2PRegisterMetadataControllerService
 from openg2p_registry_core.schemas import (
@@ -212,7 +216,12 @@ class G2PRegisterMetadataController(BaseController):
             methods=["POST"],
         )
 
-    async def get_all_registers(self, get_all_registers_request: GetAllRegistersRequest) -> AllRegistersResponse:
+    async def get_all_registers(self,
+        get_all_registers_request: GetAllRegistersRequest, 
+        _auth: Annotated[
+            AuthPrincipal,
+            Depends(require_user_type("staff", auth_dependency=auth_principal)),
+        ]) -> AllRegistersResponse:
         try:
             all_registers_list, total_items, number_of_pages = await self.g2p_register_metadata_controller_service.get_all_registers(get_all_registers_request)
             all_registers_response: AllRegistersResponse = self.helper.construct_all_registers_success_response(
