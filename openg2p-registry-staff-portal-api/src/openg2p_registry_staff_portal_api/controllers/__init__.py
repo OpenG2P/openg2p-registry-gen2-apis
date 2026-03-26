@@ -12,3 +12,4 @@ from .g2p_ui_helper_controller import G2PUIHelperController
 from .g2p_verification_controller import G2PVerificationController
 from .g2p_intake_form_data_controller import G2PIntakeFormDataController
 from .g2p_intake_form_metadata_controller import G2PIntakeFormMetadataController
+from .g2p_change_request_core_controller import G2PChangeRequestCoreController
