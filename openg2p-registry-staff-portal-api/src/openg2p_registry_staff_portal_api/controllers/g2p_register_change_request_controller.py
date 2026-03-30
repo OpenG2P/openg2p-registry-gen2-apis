@@ -24,6 +24,7 @@ from openg2p_registry_core.schemas import (
     SearchChangeRequestRequest, ChangeRequestSearchResultsResponse
 )
 from openg2p_fastapi_common.schemas import G2PResponse
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -125,6 +126,7 @@ class G2PRegisterChangerequestController(BaseController):
             methods=["POST"],
         )
 
+    @require_permissions({"changeRequest:create"})
     async def create_change_request(self, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
         try:
             change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.create_change_request(change_request_request)
@@ -137,6 +139,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: G2PResponse = self.helper.construct_error_response(error_exception, change_request_request)
             return error_response
 
+    @require_permissions({"changeRequest:approve"})
     async def approve_change_request(self, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
         try:
             change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.approve_change_request(change_request_request)
@@ -149,6 +152,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: G2PResponse = self.helper.construct_error_response(error_exception, change_request_request)
             return error_response
 
+    @require_permissions({"changeRequest:approve"})
     async def reject_change_request(self, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
         try:
             change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.reject_change_request(change_request_request)
@@ -161,6 +165,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: G2PResponse = self.helper.construct_error_response(error_exception, change_request_request)
             return error_response
 
+    @require_permissions({"changeRequest:view"})
     async def get_number_of_pending_change_requests(self, get_number_of_pending_change_requests_request: GetNumberOfPendingChangeRequestsRequest) -> NumberOfPendingChangeRequestsResponse:
         try:
             number_of_pending_change_requests_data: NumberOfPendingChangeRequestsData = await self.g2p_register_change_request_controller_service.get_number_of_pending_change_requests(get_number_of_pending_change_requests_request)
@@ -173,6 +178,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: NumberOfPendingChangeRequestsResponse = self.helper.construct_error_response(error_exception, get_number_of_pending_change_requests_request)
             return error_response
 
+    @require_permissions({"changeRequest:view"})
     async def get_number_of_cross_register_changes(self, get_number_of_cross_register_changes_request: GetNumberOfCrossRegisterChangesRequest) -> NumberOfCrossRegisterChangesResponse:
         try:
             number_of_cross_register_changes_data: NumberOfCrossRegisterChangesData = await self.g2p_register_change_request_controller_service.get_number_of_cross_register_changes(get_number_of_cross_register_changes_request)
@@ -185,6 +191,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: NumberOfCrossRegisterChangesResponse = self.helper.construct_error_response(error_exception, get_number_of_cross_register_changes_request)
             return error_response
 
+    @require_permissions({"changeRequest:view"})
     async def get_cross_register_changes(self, get_cross_register_changes_request: GetCrossRegisterChangesRequest) -> CrossRegisterChangesDataResponse:
         try:
             cross_register_changes: list[CrossRegisterChangeRequestData] = await self.g2p_register_change_request_controller_service.get_cross_register_changes(get_cross_register_changes_request)
@@ -197,6 +204,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: CrossRegisterChangesDataResponse = self.helper.construct_error_response(error_exception, get_cross_register_changes_request)
             return error_response
 
+    @require_permissions({"changeRequest:view"})
     async def get_change_requests(self, get_change_requests_request: GetChangeRequestsRequest) -> ChangeRequestFlattenedDataResponse:
         try:
             change_requests_list, total_items, number_of_pages = await self.g2p_register_change_request_controller_service.get_change_requests(get_change_requests_request)
@@ -210,6 +218,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: ChangeRequestFlattenedDataResponse = self.helper.construct_error_response(error_exception, get_change_requests_request)
             return error_response
 
+    @require_permissions({"changeRequest:view"})
     async def get_change_request(self, get_change_request_request: GetChangeRequestRequest) -> ChangeRequestDataResponse:
         try:
             change_request_data: ChangeRequestData = await self.g2p_register_change_request_controller_service.get_change_request(get_change_request_request)
@@ -222,6 +231,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: ChangeRequestDataResponse = self.helper.construct_error_response(error_exception, get_change_request_request)
             return error_response
 
+    @require_permissions({"verificationChangeRequest:view"})
     async def get_verifications_for_change_request(self, get_verifications_request: GetVerificationsRequest) -> VerificationsDataResponse:
         try:
             verifications_list, total_items, number_of_pages = await self.g2p_register_change_request_controller_service.get_verifications_for_change_request(get_verifications_request)
@@ -235,6 +245,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: VerificationsDataResponse = self.helper.construct_error_response(error_exception, get_verifications_request)
             return error_response
 
+    @require_permissions({"verificationChangeRequest:create"})
     async def add_verification_for_change_request(self, add_verification_request: AddVerificationRequest) -> VerificationDataResponse:
         try:
             verification_data: VerificationData = await self.g2p_register_change_request_controller_service.add_verification_for_change_request(add_verification_request)
@@ -247,6 +258,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: VerificationDataResponse = self.helper.construct_error_response(error_exception, add_verification_request)
             return error_response
 
+    @require_permissions({"changeRequest:view"})
     async def get_register_change_request_summary_data(self, get_change_request_summary_data_request: GetChangeRequestSummaryDataRequest) -> ChangeRequestSummaryDataResponse:
         try:
             change_request_summary_data: ChangeRequestSummaryData = await self.g2p_register_change_request_controller_service.get_change_request_summary_data(get_change_request_summary_data_request)
@@ -259,6 +271,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: ChangeRequestSummaryDataResponse = self.helper.construct_error_response(error_exception, get_change_request_summary_data_request)
             return error_response
     
+    @require_permissions({"changeRequest:view"})
     async def search_in_change_request(self, search_change_request_request: SearchChangeRequestRequest) -> ChangeRequestSearchResultsResponse:
         try:
             search_results_list, total_items, number_of_pages = await self.g2p_register_change_request_controller_service.search_in_change_request(search_change_request_request)

@@ -10,6 +10,7 @@ from openg2p_registry_core.schemas import (
     VerificationDataResponse, VerificationData
 )
 from openg2p_fastapi_common.schemas import G2PResponse
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -42,6 +43,7 @@ class G2PVerificationController(BaseController):
             methods=["POST"],
         )
 
+    @require_permissions({"verificationIntakeForm:view"})
     async def get_verifications(self, get_verifications_request: GetVerificationsRequest) -> VerificationsDataResponse:
         try:
             verifications_list, total_items, number_of_pages = await self.g2p_verification_controller_service.get_verifications(get_verifications_request)
@@ -55,6 +57,7 @@ class G2PVerificationController(BaseController):
             error_response: VerificationsDataResponse = self.helper.construct_error_response(error_exception, get_verifications_request)
             return error_response
 
+    @require_permissions({"verificationIntakeForm:create"})
     async def add_verification(self, add_verification_request: AddVerificationRequest) -> VerificationDataResponse:
         try:
             verification_data: VerificationData = await self.g2p_verification_controller_service.add_verification(add_verification_request)

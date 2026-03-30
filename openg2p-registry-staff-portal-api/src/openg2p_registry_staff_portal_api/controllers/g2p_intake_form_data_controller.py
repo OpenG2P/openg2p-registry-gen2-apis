@@ -13,6 +13,7 @@ from openg2p_registry_core.schemas import (
     NumberOfPendingChangeRequestsForSubmissionResponse, NumberOfPendingChangeRequestsForSubmissionData
 )
 from openg2p_fastapi_common.schemas import G2PResponse
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -90,6 +91,7 @@ class G2PIntakeFormDataController(BaseController):
             methods=["POST"],
         )
 
+    @require_permissions({"intakeForm:create"})
     async def save_submission_draft(self, save_submission_draft_request: SaveSubmissionDraftRequest) -> SubmissionResponse:
         try:
             submission_response_payload: SubmissionResponsePayload = await self.g2p_intake_form_controller_service.save_submission_draft(save_submission_draft_request)
@@ -102,6 +104,7 @@ class G2PIntakeFormDataController(BaseController):
             error_response: G2PResponse = self.helper.construct_error_response(error_exception, save_submission_draft_request)
             return error_response
 
+    @require_permissions({"intakeForm:create"})
     async def finalize_submission(self, finalize_submission_request: FinalizeSubmissionRequest) -> SubmissionResponse:
         try:
             submission_response_payload: SubmissionResponsePayload = await self.g2p_intake_form_controller_service.finalize_submission(finalize_submission_request)
@@ -138,6 +141,7 @@ class G2PIntakeFormDataController(BaseController):
             error_response: G2PResponse = self.helper.construct_error_response(error_exception, reject_submission_request)
             return error_response
 
+    @require_permissions({"intakeForm:view"})
     async def get_submission(self, get_submission_request: GetSubmissionRequest) -> SubmissionResponse:
         try:
             submission_response_payload: SubmissionResponsePayload = await self.g2p_intake_form_controller_service.get_submission(get_submission_request)
@@ -150,6 +154,7 @@ class G2PIntakeFormDataController(BaseController):
             error_response: G2PResponse = self.helper.construct_error_response(error_exception, get_submission_request)
             return error_response
 
+    @require_permissions({"intakeForm:view"})
     async def search_in_submission(self, search_in_submission_request: SearchInSubmissionRequest) -> SubmissionSearchResultsResponse:
         try:
             search_results_list, total_items, number_of_pages = await self.g2p_intake_form_controller_service.search_in_submission(search_in_submission_request)
@@ -163,6 +168,7 @@ class G2PIntakeFormDataController(BaseController):
             error_response: G2PResponse = self.helper.construct_error_response(error_exception, search_in_submission_request)
             return error_response
 
+    @require_permissions({"changeRequest:view"})
     async def get_change_requests_for_submission(
         self, get_change_requests_for_submission_request: GetChangeRequestsForSubmissionRequest
     ) -> ChangeRequestFlattenedDataResponse:
@@ -188,6 +194,7 @@ class G2PIntakeFormDataController(BaseController):
             )
             return error_response
 
+    @require_permissions({"changeRequest:view"})
     async def get_number_of_pending_change_requests_for_submission(
         self,
         get_number_of_pending_change_requests_for_submission_request: GetNumberOfPendingChangeRequestsForSubmissionRequest
@@ -214,6 +221,7 @@ class G2PIntakeFormDataController(BaseController):
             )
             return error_response
 
+    @require_permissions({"intakeForm:view"})
     async def get_intake_form_submissions_summary(
         self, get_intake_form_submissions_summary_request: GetIntakeFormSubmissionsSummaryRequest
     ) -> IntakeFormSubmissionsSummaryResponse:

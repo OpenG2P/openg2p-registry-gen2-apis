@@ -10,6 +10,7 @@ from openg2p_registry_core.schemas import (
     IntakeFormMetadataResponse,
 )
 from openg2p_fastapi_common.schemas import G2PResponse
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -40,6 +41,7 @@ class G2PIntakeFormMetadataController(BaseController):
             methods=["POST"],
         )
 
+    @require_permissions({"intakeForm:view"})
     async def get_intake_forms_for_register(
         self, get_intake_forms_for_register_request: GetIntakeFormsForRegisterRequest
     ) -> IntakeFormsForRegisterResponse:
@@ -61,6 +63,7 @@ class G2PIntakeFormMetadataController(BaseController):
             )
             return error_response
 
+    @require_permissions({"intakeForm:view"})
     async def get_intake_form(
         self, get_intake_form_metadata_request: GetIntakeFormMetadataRequest
     ) -> IntakeFormMetadataResponse:

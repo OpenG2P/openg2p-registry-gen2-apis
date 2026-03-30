@@ -12,6 +12,7 @@ from openg2p_registry_core.schemas import (
     IngestionDataPayloadResponse,
     IngestionDataPayload
 )
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -61,6 +62,7 @@ class G2PIngestionDataController(BaseController):
             operation_id="get_enriched_transformed_ingestion_payload",
         )
 
+    @require_permissions({"incomingMessage:view"})
     async def get_ingestion_summary_data(self, get_ingestion_summary_data_request: GetIngestionSummaryDataRequest) -> IngestionSummaryDataResponse:
         try:
             ingestion_summary_data: IngestionSummaryData = await self.g2p_ingestion_data_controller_service.get_ingestion_summary_data(get_ingestion_summary_data_request)
@@ -73,6 +75,7 @@ class G2PIngestionDataController(BaseController):
             error_response: IngestionSummaryDataResponse = self.helper.construct_error_response(error_exception, get_ingestion_summary_data_request)
             return error_response
 
+    @require_permissions({"incomingMessage:view"})
     async def search_in_ingestion_data(self, search_ingestion_data_request: SearchIngestionDataRequest) -> IngestionDataSearchResultsResponse:
         try:
             search_results_list, total_items, number_of_pages = await self.g2p_ingestion_data_controller_service.search_in_ingestion_data(search_ingestion_data_request)
@@ -86,6 +89,7 @@ class G2PIngestionDataController(BaseController):
             error_response: IngestionDataSearchResultsResponse = self.helper.construct_error_response(error_exception, search_ingestion_data_request)
             return error_response
 
+    @require_permissions({"incomingMessage:view"})
     async def get_raw_payload(self, get_ingestion_data_payload_request: GetIngestionDataPayloadRequest) -> IngestionDataPayloadResponse:
         try:
             raw_data_payload: IngestionDataPayload = await self.g2p_ingestion_data_controller_service.get_raw_data_payload(get_ingestion_data_payload_request)
@@ -98,6 +102,7 @@ class G2PIngestionDataController(BaseController):
             error_response: IngestionDataPayloadResponse = self.helper.construct_error_response(error_exception, get_ingestion_data_payload_request)
             return error_response
     
+    @require_permissions({"incomingMessage:view"})
     async def get_enriched_and_transformed_payload(self, get_ingestion_data_payload_request: GetIngestionDataPayloadRequest) -> IngestionDataPayloadResponse:
         try:
             transformed_data_payload: IngestionDataPayload = await self.g2p_ingestion_data_controller_service.get_enriched_and_transformed_data_payload(get_ingestion_data_payload_request)
