@@ -11,6 +11,7 @@ from openg2p_registry_core.schemas import (
     ChangeRequestResponse,
     ChangeRequestResponsePayload,
 )
+from iam_core.user_auth.helpers import require_permissions
 
 from ..config import Settings
 from ..helpers import RequestResponseHelper
@@ -51,6 +52,7 @@ class G2PChangeRequestCoreController(BaseController):
             methods=["POST"],
         )
 
+    @require_permissions({"changeRequest:create"})
     async def create_change_request_for_core_data(
         self, change_request_request: ChangeRequestRequest
     ) -> ChangeRequestResponse:
@@ -72,6 +74,7 @@ class G2PChangeRequestCoreController(BaseController):
             )
             return error_response
 
+    @require_permissions({"changeRequest:approve"})
     async def approve_change_request_for_core_data(
         self, change_request_request: ChangeRequestRequest
     ) -> ChangeRequestResponse:
@@ -93,6 +96,7 @@ class G2PChangeRequestCoreController(BaseController):
             )
             return error_response
 
+    @require_permissions({"changeRequest:approve"})
     async def reject_change_request_for_core_data(
         self, change_request_request: ChangeRequestRequest
     ) -> ChangeRequestResponse:

@@ -26,6 +26,7 @@ from openg2p_registry_core.schemas import (
     SearchRegisterRequest,
     GetAllowedParentsForChildSectionRequest, AllowedParentsData, AllowedParentsDataResponse
 )
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -134,6 +135,7 @@ class G2PRegisterDataController(BaseController):
             methods=["POST"],
         )
 
+    @require_permissions({"registerHistory:view"})
     async def get_number_of_versions(self, get_number_of_versions_request: GetNumberOfVersionsRequest) -> NumberOfVersionsResponse:
         try:
             number_of_versions_data: NumberOfVersionsData = await self.g2p_register_data_controller_service.get_number_of_versions(get_number_of_versions_request)
@@ -146,6 +148,7 @@ class G2PRegisterDataController(BaseController):
             error_response: NumberOfVersionsResponse = self.helper.construct_error_response(error_exception, get_number_of_versions_request)
             return error_response
 
+    @require_permissions({"registerHistory:view"})
     async def get_record_history(self, get_record_history_request: GetRecordHistoryRequest) -> RecordHistoryDataResponse:
         """
         Get the history records for a given register, internal_record_id and tab_id.
@@ -162,6 +165,7 @@ class G2PRegisterDataController(BaseController):
             error_response: RecordHistoryDataResponse = self.helper.construct_error_response(error_exception, get_record_history_request)
             return error_response
 
+    @require_permissions({"registerHistory:view"})
     async def get_version_dates(self, get_version_dates_request: GetVersionDatesRequest) -> VersionDatesDataResponse:
         """
         Get unique truncated dates from history records for a given register, internal_record_id and tab_id.
@@ -178,6 +182,7 @@ class G2PRegisterDataController(BaseController):
             error_response: VersionDatesDataResponse = self.helper.construct_error_response(error_exception, get_version_dates_request)
             return error_response
 
+    @require_permissions({"registerHistory:view"})
     async def get_versions_for_a_date(self, get_changes_for_date_request: GetChangesForDateRequest) -> ChangesForDateDataResponse:
         """
         Get changes from history records for a given register, internal_record_id, tab_id and specific date.
@@ -195,6 +200,7 @@ class G2PRegisterDataController(BaseController):
             error_response: ChangesForDateDataResponse = self.helper.construct_error_response(error_exception, get_changes_for_date_request)
             return error_response
 
+    @require_permissions({"register:view"})
     async def get_subject_record(self, get_subject_record_request: GetSubjectRecordRequest) -> RecordDataResponse:
         try:
             record_data: RecordData = await self.g2p_register_data_controller_service.get_subject_record(get_subject_record_request)
@@ -207,6 +213,7 @@ class G2PRegisterDataController(BaseController):
             error_response: RecordDataResponse = self.helper.construct_error_response(error_exception, get_subject_record_request)
             return error_response
 
+    @require_permissions({"register:view"})
     async def get_deduplication_register_results(self, get_deduplication_register_results_request: GetDeduplicationRegisterResultsRequest) -> DeduplicationRegisterResultsDataResponse:
         """
         Get deduplication results for a change request against register records.
@@ -223,6 +230,7 @@ class G2PRegisterDataController(BaseController):
             error_response: DeduplicationRegisterResultsDataResponse = self.helper.construct_error_response(error_exception, get_deduplication_register_results_request)
             return error_response
 
+    @require_permissions({"register:view"})
     async def get_deduplication_change_request_results(self, get_deduplication_change_request_results_request: GetDeduplicationChangerequestResultsRequest) -> DeduplicationChangerequestResultsDataResponse:
         """
         Get deduplication results for a change request against other change requests.
@@ -239,6 +247,7 @@ class G2PRegisterDataController(BaseController):
             error_response: DeduplicationChangerequestResultsDataResponse = self.helper.construct_error_response(error_exception, get_deduplication_change_request_results_request)
             return error_response
 
+    @require_permissions({"registerSection:view"})
     async def get_schema_definition_for_register_section(self, get_register_section_request: GetRegisterSectionRequest) -> RegisterSectionDataResponse:
         """
         Get schema definition for a specific section of a register.
@@ -254,6 +263,7 @@ class G2PRegisterDataController(BaseController):
             error_response: RegisterSectionDataResponse = self.helper.construct_error_response(error_exception, get_register_section_request)
             return error_response
 
+    @require_permissions({"register:view"})
     async def get_section_records(
         self,
         get_section_records_request: GetSectionRecordsRequest
@@ -278,6 +288,7 @@ class G2PRegisterDataController(BaseController):
             )
             return error_response
 
+    @require_permissions({"register:view"})
     async def get_tab_records(
         self,
         get_register_tab_records_request: GetRegisterTabRecordsRequest
@@ -301,6 +312,7 @@ class G2PRegisterDataController(BaseController):
             )
             return error_response
 
+    @require_permissions({"register:view"})
     async def get_register_summary_data(self, get_register_summary_data_request: GetRegisterSummaryDataRequest) -> RegisterSummaryDataResponse:
         try:
             register_summary_data_list: list[RegisterSummaryData] = await self.g2p_register_data_controller_service.get_register_summary_data(get_register_summary_data_request)
@@ -313,6 +325,7 @@ class G2PRegisterDataController(BaseController):
             error_response: RegisterSummaryDataResponse = self.helper.construct_error_response(error_exception, get_register_summary_data_request)
             return error_response
 
+    @require_permissions({"register:view"})
     async def search_in_a_register(self, search_register_request: SearchRegisterRequest) -> SearchResultsResponse:
         try:
             search_results_list, total_items, number_of_pages = await self.g2p_register_data_controller_service.search_in_a_register(search_register_request)
@@ -326,6 +339,7 @@ class G2PRegisterDataController(BaseController):
             error_response: SearchResultsResponse = self.helper.construct_error_response(error_exception, search_register_request)
             return error_response
 
+    @require_permissions({"register:view"})
     async def get_allowed_parents_for_a_child_section(
         self,
         get_allowed_parents_request: GetAllowedParentsForChildSectionRequest
