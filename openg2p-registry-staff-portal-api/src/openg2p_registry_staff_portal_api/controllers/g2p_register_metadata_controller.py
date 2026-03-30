@@ -3,7 +3,7 @@ from openg2p_fastapi_common.controller import BaseController
 
 from openg2p_registry_core.controller_services import G2PRegisterMetadataControllerService
 from openg2p_registry_core.schemas import (
-    AllRegistersResponse, RegisterData, AllRegistersRegisterData,
+    AllRegistersResponse, RegisterData,
     DashboardRegistersResponse, GetDashboardRegistersRequest,
     ChildRegistersResponse, ChildRegisterData,
     GetChildRegistersRequest, GetMasterRegisterRequest,
@@ -21,6 +21,7 @@ from openg2p_registry_core.schemas import (
     RegisterDataResponse, RegisterUITabData, RegisterTabsDataResponse,
     RegisterTabDataResponse
 )
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings

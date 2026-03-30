@@ -8,8 +8,6 @@ from openg2p_registry_core.schemas import (
     GetIntakeFormMetadataRequest,
     IntakeFormsForRegisterResponse,
     IntakeFormMetadataResponse,
-    RegisterUITabData,
-    RegisterSectionData,
 )
 from openg2p_fastapi_common.schemas import G2PResponse
 
