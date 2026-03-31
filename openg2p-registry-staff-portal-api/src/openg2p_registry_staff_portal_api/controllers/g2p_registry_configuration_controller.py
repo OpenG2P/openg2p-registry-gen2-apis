@@ -15,6 +15,7 @@ from openg2p_registry_core.schemas import (
     EarliestPendingChangeRequestData,
     EarliestPendingChangeRequestResponse
 )
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -69,6 +70,7 @@ class G2PRegistryConfigurationController(BaseController):
             methods=["POST"],
         )
 
+    @require_permissions({"registryConfiguration:edit"})
     async def create_registry_configuration(
         self, 
         create_request: CreateRegistryConfigurationRequest
@@ -85,6 +87,7 @@ class G2PRegistryConfigurationController(BaseController):
             error_response: RegistryConfigurationDataResponse = self.helper.construct_error_response(error_exception, create_request)
             return error_response
 
+    @require_permissions({"registryConfiguration:view"})
     async def get_registry_configuration(
         self, 
         get_request: GetRegistryConfigurationRequest
@@ -101,6 +104,7 @@ class G2PRegistryConfigurationController(BaseController):
             error_response: RegistryConfigurationDataResponse = self.helper.construct_error_response(error_exception, get_request)
             return error_response
 
+    @require_permissions({"registryConfiguration:edit"})
     async def update_registry_configuration(
         self, 
         update_request: UpdateRegistryConfigurationRequest
@@ -117,6 +121,7 @@ class G2PRegistryConfigurationController(BaseController):
             error_response: RegistryConfigurationDataResponse = self.helper.construct_error_response(error_exception, update_request)
             return error_response
 
+    @require_permissions({"registryConfiguration:view", "changeRequest:view"})
     async def get_number_of_requests_pending(
         self, 
         get_request: GetNumberOfRequestsPendingRequest
@@ -133,6 +138,7 @@ class G2PRegistryConfigurationController(BaseController):
             error_response: NumberOfRequestsPendingResponse = self.helper.construct_error_response(error_exception, get_request)
             return error_response
 
+    @require_permissions({"registryConfiguration:view", "changeRequest:view"})
     async def get_earliest_pending_change_request(
         self, 
         get_request: GetEarliestPendingChangeRequestRequest
@@ -148,4 +154,3 @@ class G2PRegistryConfigurationController(BaseController):
             _logger.error(f"Error in get_earliest_pending_change_request: {str(error_exception)}")
             error_response: EarliestPendingChangeRequestResponse = self.helper.construct_error_response(error_exception, get_request)
             return error_response
-

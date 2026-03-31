@@ -3,7 +3,7 @@ from openg2p_fastapi_common.controller import BaseController
 
 from openg2p_registry_core.controller_services import G2PRegisterMetadataControllerService
 from openg2p_registry_core.schemas import (
-    AllRegistersResponse, RegisterData, AllRegistersRegisterData,
+    AllRegistersResponse, RegisterData,
     DashboardRegistersResponse, GetDashboardRegistersRequest,
     ChildRegistersResponse, ChildRegisterData,
     GetChildRegistersRequest, GetMasterRegisterRequest,
@@ -21,6 +21,7 @@ from openg2p_registry_core.schemas import (
     RegisterDataResponse, RegisterUITabData, RegisterTabsDataResponse,
     RegisterTabDataResponse
 )
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -212,6 +213,7 @@ class G2PRegisterMetadataController(BaseController):
             methods=["POST"],
         )
 
+    @require_permissions({"registerDefinition:view"})
     async def get_all_registers(self, get_all_registers_request: GetAllRegistersRequest) -> AllRegistersResponse:
         try:
             all_registers_list, total_items, number_of_pages = await self.g2p_register_metadata_controller_service.get_all_registers(get_all_registers_request)
@@ -227,6 +229,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: AllRegistersResponse = self.helper.construct_error_response(error_exception, get_all_registers_request)
             return error_response
 
+    @require_permissions({"registerDefinition:view"})
     async def get_dashboard_registers(self, get_dashboard_registers_request: GetDashboardRegistersRequest) -> DashboardRegistersResponse:
         """Get all registers for dashboard display (clone of get_all_registers)"""
         try:
@@ -240,6 +243,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: DashboardRegistersResponse = self.helper.construct_error_response(error_exception, get_dashboard_registers_request)
             return error_response
 
+    @require_permissions({"registerDefinition:view"})
     async def get_child_registers(self, get_child_registers_request: GetChildRegistersRequest) -> ChildRegistersResponse:
         try:
             child_registers_list: list[ChildRegisterData] = await self.g2p_register_metadata_controller_service.get_child_registers(get_child_registers_request)
@@ -252,6 +256,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: ChildRegistersResponse = self.helper.construct_error_response(error_exception, get_child_registers_request)
             return error_response
 
+    @require_permissions({"registerDefinition:view"})
     async def get_master_register(self, get_master_register_request: GetMasterRegisterRequest) -> RegisterDataResponse:
         try:
             master_register_data: RegisterData | None = await self.g2p_register_metadata_controller_service.get_master_register(get_master_register_request)
@@ -264,6 +269,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterDataResponse = self.helper.construct_error_response(error_exception, get_master_register_request)
             return error_response
 
+    @require_permissions({"registerDefinition:view"})
     async def get_register_schema(self, get_register_schema_request: GetRegisterSchemaRequest) -> RegisterSchemaDataResponse:
         """
         Get register schema configuration for a given register_id.
@@ -279,6 +285,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterSchemaDataResponse = self.helper.construct_error_response(error_exception, get_register_schema_request)
             return error_response
 
+    @require_permissions({"registerSection:view"})
     async def get_register_sections(self, get_register_sections_request: GetRegisterSectionsRequest) -> RegisterSectionsDataResponse:
         """
         Get all sections for a given register_id.
@@ -294,6 +301,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterSectionsDataResponse = self.helper.construct_error_response(error_exception, get_register_sections_request)
             return error_response
 
+    @require_permissions({"registerSection:view"})
     async def get_register_tab_sections(self, get_register_tab_sections_request: GetRegisterTabSectionsRequest) -> RegisterSectionsDataResponse:
         """
         Get all sections for a given register_id and tab_id with pagination.
@@ -312,6 +320,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterSectionsDataResponse = self.helper.construct_error_response(error_exception, get_register_tab_sections_request)
             return error_response
 
+    @require_permissions({"registerSection:create"})
     async def add_register_section(self, add_register_section_request: AddRegisterSectionRequest) -> RegisterSectionDataResponse:
         """
         Add a new section for a given register_id.
@@ -327,6 +336,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterSectionDataResponse = self.helper.construct_error_response(error_exception, add_register_section_request)
             return error_response
 
+    @require_permissions({"registerSection:delete"})
     async def delete_register_section(self, delete_register_section_request: DeleteRegisterSectionRequest) -> RegisterSectionDataResponse:
         """
         Delete a section by section_id.
@@ -342,6 +352,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterSectionDataResponse = self.helper.construct_error_response(error_exception, delete_register_section_request)
             return error_response
 
+    @require_permissions({"registerSection:edit"})
     async def update_register_section(self, update_register_section_request: UpdateRegisterSectionRequest) -> RegisterSectionDataResponse:
         """
         Update a section's metadata (not including UI schema).
@@ -357,6 +368,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterSectionDataResponse = self.helper.construct_error_response(error_exception, update_register_section_request)
             return error_response
 
+    @require_permissions({"registerSection:edit"})
     async def update_register_section_ui_schema(self, update_register_section_ui_schema_request: UpdateRegisterSectionUISchemaRequest) -> RegisterSectionDataResponse:
         """
         Update a section's UI schema.
@@ -372,6 +384,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterSectionDataResponse = self.helper.construct_error_response(error_exception, update_register_section_ui_schema_request)
             return error_response
 
+    @require_permissions({"registerSection:view"})
     async def get_register_section_ui_schema(
         self, get_register_section_ui_schema_request: GetRegisterSectionUISchemaRequest
     ) -> RegisterSectionUISchemaDataResponse:
@@ -394,6 +407,7 @@ class G2PRegisterMetadataController(BaseController):
             )
             return error_response
 
+    @require_permissions({"registerTab:view"})
     async def get_register_tabs(self, get_register_tabs_request: GetRegisterTabsRequest) -> RegisterTabsDataResponse:
         """
         Get all UI tabs for a given register_id with pagination.
@@ -412,6 +426,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterTabsDataResponse = self.helper.construct_error_response(error_exception, get_register_tabs_request)
             return error_response
 
+    @require_permissions({"registerTab:create"})
     async def add_register_tab(self, add_register_tab_request: AddRegisterTabRequest) -> RegisterTabDataResponse:
         """
         Add a new UI tab for a given register_id.
@@ -427,6 +442,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterTabDataResponse = self.helper.construct_error_response(error_exception, add_register_tab_request)
             return error_response
 
+    @require_permissions({"registerTab:delete"})
     async def delete_register_tab(self, delete_register_tab_request: DeleteRegisterTabRequest) -> RegisterTabDataResponse:
         """
         Delete a UI tab by tab_id.
@@ -442,6 +458,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterTabDataResponse = self.helper.construct_error_response(error_exception, delete_register_tab_request)
             return error_response
 
+    @require_permissions({"registerTab:edit"})
     async def edit_register_tab(self, edit_register_tab_request: EditRegisterTabRequest) -> RegisterTabDataResponse:
         """
         Edit an existing UI tab.
@@ -457,6 +474,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterTabDataResponse = self.helper.construct_error_response(error_exception, edit_register_tab_request)
             return error_response
 
+    @require_permissions({"registerDefinition:create"})
     async def create_register(self, create_register_request: CreateRegisterRequest) -> RegisterDataResponse:
         """
         Create a new register definition and null register schema record.
@@ -472,6 +490,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterDataResponse = self.helper.construct_error_response(error_exception, create_register_request)
             return error_response
 
+    @require_permissions({"registerDefinition:edit"})
     async def edit_register(self, edit_register_request: EditRegisterRequest) -> RegisterDataResponse:
         """
         Edit an existing register definition.
@@ -488,6 +507,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterDataResponse = self.helper.construct_error_response(error_exception, edit_register_request)
             return error_response
 
+    @require_permissions({"registerDefinition:delete"})
     async def delete_register(self, delete_register_request: DeleteRegisterRequest) -> RegisterDataResponse:
         """
         Delete a register definition if it has no data.
@@ -503,6 +523,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterDataResponse = self.helper.construct_error_response(error_exception, delete_register_request)
             return error_response
 
+    @require_permissions({"registerDefinition:edit"})
     async def update_register_schema(self, update_register_schema_request: UpdateRegisterSchemaRequest) -> RegisterSchemaDataResponse:
         """
         Update an existing register schema configuration for a given register_id.
@@ -518,6 +539,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterSchemaDataResponse = self.helper.construct_error_response(error_exception, update_register_schema_request)
             return error_response
 
+    @require_permissions({"registerDefinition:edit"})
     async def update_dedup_is_enabled(self, update_dedup_is_enabled_request: UpdateDedupIsEnabledRequest) -> RegisterSchemaDataResponse:
         """
         Update the dedup_is_enabled flag for a register.
@@ -533,6 +555,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterSchemaDataResponse = self.helper.construct_error_response(error_exception, update_dedup_is_enabled_request)
             return error_response
 
+    @require_permissions({"registerDefinition:edit"})
     async def update_dedup_threshold_score(self, update_dedup_threshold_score_request: UpdateDedupThresholdScoreRequest) -> RegisterSchemaDataResponse:
         """
         Update the dedup_threshold_score for a register.
@@ -548,6 +571,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterSchemaDataResponse = self.helper.construct_error_response(error_exception, update_dedup_threshold_score_request)
             return error_response
 
+    @require_permissions({"registerDefinition:edit"})
     async def update_deduplication_schema(self, update_deduplication_schema_request: UpdateDeduplicationSchemaRequest) -> RegisterSchemaDataResponse:
         """
         Update the deduplicate_schema for a register.
@@ -563,6 +587,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: RegisterSchemaDataResponse = self.helper.construct_error_response(error_exception, update_deduplication_schema_request)
             return error_response
 
+    @require_permissions({"registerDefinition:edit"})
     async def update_search_result_schema(self, update_search_result_schema_request: UpdateSearchResultSchemaRequest) -> RegisterSchemaDataResponse:
         """
         Update the search_result_schema for a register.

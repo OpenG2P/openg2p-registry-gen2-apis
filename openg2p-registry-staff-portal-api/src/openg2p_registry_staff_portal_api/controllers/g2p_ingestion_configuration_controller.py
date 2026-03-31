@@ -31,6 +31,7 @@ from openg2p_registry_core.schemas import (
     SubscriptionActivityLogRequest,
     SubscriptionActivityLogsResponse,
 )
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -229,6 +230,7 @@ class G2PIngestionConfigurationController(BaseController):
         )
 
     # IncomingModelKeyPath Methods
+    @require_permissions({"ingestKeyPath:create"})
     async def create_new_incoming_key_path(
         self, pattern_request: IncomingModelKeyPathRequest
     ) -> IncomingModelKeyPathResponse:
@@ -242,6 +244,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestKeyPath:view"})
     async def get_all_incoming_key_paths(
         self, pattern_request: IncomingModelKeyPathRequest
     ) -> IncomingModelKeyPathListResponse:
@@ -253,6 +256,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestKeyPath:delete"})
     async def delete_incoming_key_path(
         self, pattern_request: DeleteIncomingKeyPathRequest
     ) -> IncomingModelKeyPathResponse:
@@ -266,6 +270,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestKeyPath:edit"})
     async def edit_key_path_for_message_id(
         self, pattern_request: EditKeyPathForMessageIdRequest
     ) -> IncomingModelKeyPathResponse:
@@ -280,6 +285,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestKeyPath:edit"})
     async def edit_key_path_for_sender(
         self, pattern_request: EditKeyPathForSenderRequest
     ) -> IncomingModelKeyPathResponse:
@@ -294,6 +300,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestKeyPath:edit"})
     async def edit_key_path_for_signature(
         self, pattern_request: EditKeyPathForSignatureRequest
     ) -> IncomingModelKeyPathResponse:
@@ -308,6 +315,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestKeyPath:edit"})
     async def edit_key_path_for_signature_payload(
         self, pattern_request: EditKeyPathForSignaturePayloadRequest
     ) -> IncomingModelKeyPathResponse:
@@ -322,6 +330,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestKeyPath:edit"})
     async def edit_is_list(
         self, pattern_request: EditIsListRequest
     ) -> IncomingModelKeyPathResponse:
@@ -336,6 +345,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestKeyPath:edit"})
     async def edit_key_path_for_list_elements(
         self, pattern_request: EditKeyPathForListElementsRequest
     ) -> IncomingModelKeyPathResponse:
@@ -350,6 +360,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestExpression:create"})
     async def create_semantic_pattern(
         self, pattern_request: IncomingModelSemanticPatternRequest
     ) -> IncomingModelSemanticPatternResponse:
@@ -363,6 +374,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestExpression:view"})
     async def get_semantic_pattern(
         self, pattern_request: IncomingModelSemanticPatternRequest
     ) -> IncomingModelSemanticPatternResponse:
@@ -376,6 +388,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestExpression:edit"})
     async def update_semantic_pattern(
         self, pattern_request: IncomingModelSemanticPatternUpdateRequest
     ) -> IncomingModelSemanticPatternResponse:
@@ -390,6 +403,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestTemplate:create"})
     async def create_template(
         self, template_request: IncomingTemplateRequest, template_file: UploadFile
     ) -> IncomingTemplateResponse:
@@ -403,6 +417,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, template_request)
 
+    @require_permissions({"ingestTemplate:view"})
     async def get_template(self, template_request: IncomingTemplateRequest) -> IncomingTemplateResponse:
         try:
             template_data: IncomingTemplateData = await self.ingestion_config_service.get_template(
@@ -414,6 +429,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, template_request)
 
+    @require_permissions({"ingestTemplate:edit"})
     async def update_template(
         self, template_update_request: IncomingTemplateUpdateRequest, template_file: Optional[UploadFile] = None
     ) -> IncomingTemplateResponse:
@@ -427,6 +443,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, template_update_request)
     
+    @require_permissions({"ingestTemplate:delete"})
     async def delete_template(self, template_delete_request: IncomingTemplateUpdateRequest) -> IncomingTemplateResponse:
         try:
             template_data: IncomingTemplateData = await self.ingestion_config_service.delete_template(
@@ -438,6 +455,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, template_delete_request)
 
+    @require_permissions({"dataModel:create"})
     async def create_data_model(
         self, data_model_request: DataModelRequest, response_template_file: Optional[UploadFile] = None
     ) -> DataModelResponse:
@@ -451,6 +469,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, data_model_request)
 
+    @require_permissions({"dataModel:view"})
     async def get_data_model(self, data_model_request: DataModelRequest) -> DataModelResponse:
         try:
             data_model_data = await self.ingestion_config_service.get_data_model(
@@ -462,6 +481,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, data_model_request)
 
+    @require_permissions({"dataModel:view"})
     async def get_all_data_models(self, data_model_request: DataModelRequest) -> DataModelsResponse:
         try:
             data_models_data = await self.ingestion_config_service.get_all_data_models()
@@ -471,6 +491,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, data_model_request)
 
+    @require_permissions({"dataModel:edit"})
     async def update_data_model(
         self, data_model_request: DataModelUpdateRequest, response_template_file: Optional[UploadFile] = None
     ) -> DataModelResponse:
@@ -485,6 +506,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, data_model_request)
 
+    @require_permissions({"dataModel:delete"})
     async def delete_data_model(self, data_model_request: DataModelRequest) -> DataModelResponse:
         try:
             data_model_data = await self.ingestion_config_service.delete_data_model(
@@ -496,6 +518,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, data_model_request)
 
+    @require_permissions({"dataModel:edit"})
     async def change_response_template_file(
         self, change_template_request: ChangeResponseTemplateFileRequest,
         response_template_file: Optional[UploadFile] = None
@@ -511,6 +534,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, change_template_request)
 
+    @require_permissions({"dataModel:edit"})
     async def change_active_status(
         self, change_status_request: ChangeActiveStatusRequest
     ) -> DataModelResponse:
@@ -550,4 +574,3 @@ class G2PIngestionConfigurationController(BaseController):
             )
         except Exception as error:
             return self.helper.construct_error_response(error, activity_log_request)
-

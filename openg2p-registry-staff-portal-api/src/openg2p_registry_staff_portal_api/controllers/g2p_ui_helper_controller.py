@@ -8,6 +8,7 @@ from openg2p_registry_core.schemas import (
     G2PInputMechanismResponse,
     G2PInputMechanismData,
 )
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -32,6 +33,7 @@ class G2PUIHelperController(BaseController):
             methods=["POST"],
         )
 
+    @require_permissions({"referenceData:view"})
     async def get_all_input_mechanisms(
         self,
         request: G2PInputMechanismRequest,
@@ -47,4 +49,3 @@ class G2PUIHelperController(BaseController):
         except Exception as e:
             _logger.error("Error getting input mechanisms: %s", str(e), exc_info=True)
             return self.helper.construct_error_response(e, request)
-

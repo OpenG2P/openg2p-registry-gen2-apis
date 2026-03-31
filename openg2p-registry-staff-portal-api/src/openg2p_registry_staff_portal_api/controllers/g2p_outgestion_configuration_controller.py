@@ -14,6 +14,7 @@ from openg2p_registry_core.schemas import (
     OutgoingTemplateUpdateRequest,
     OutgoingTemplateResponse,
 )
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -111,6 +112,7 @@ class G2POutgestionConfigurationController(BaseController):
         )
 
 
+    @require_permissions({"outgestTopic:create"})
     async def create_outgoing_topic(
         self, topic_request: OutgoingTopicRequest
     ) -> OutgoingTopicResponse:
@@ -124,6 +126,7 @@ class G2POutgestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, topic_request)
 
+    @require_permissions({"outgestTopic:view"})
     async def get_outgoing_topic(self, topic_request: OutgoingTopicRequest) -> OutgoingTopicResponse:
         try:
             topic_data: list[OutgoingTopicData] = await self.outgestion_config_service.get_outgoing_topic(topic_request.request_body.request_payload.topic_id)
@@ -133,6 +136,7 @@ class G2POutgestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, topic_request)
 
+    @require_permissions({"outgestTopic:view"})
     async def get_all_outgoing_topics(self, topic_request: OutgoingTopicRequest) -> OutgoingTopicResponse:
         try:
             topics_data: list[OutgoingTopicData] = await self.outgestion_config_service.get_all_outgoing_topics()
@@ -142,6 +146,7 @@ class G2POutgestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, topic_request)
 
+    @require_permissions({"outgestTopic:edit"})
     async def update_outgoing_topic(
         self, topic_update_request: OutgoingTopicUpdateRequest
     ) -> OutgoingTopicResponse:
@@ -155,6 +160,7 @@ class G2POutgestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, topic_update_request)
         
+    @require_permissions({"outgestTopic:edit"})
     async def toggle_outgoing_topic_status(
         self, topic_update_request: OutgoingTopicUpdateRequest
     ) -> OutgoingTopicResponse:
@@ -168,6 +174,7 @@ class G2POutgestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, topic_update_request)
 
+    @require_permissions({"outgestTopic:edit"})
     async def re_register_outgoing_topic(
         self, topic_update_request: OutgoingTopicUpdateRequest
     ) -> OutgoingTopicResponse:
@@ -181,6 +188,7 @@ class G2POutgestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, topic_update_request)
 
+    @require_permissions({"outgestTopic:delete"})
     async def delete_outgoing_topic(
         self, topic_update_request: OutgoingTopicUpdateRequest
     ) -> OutgoingTopicResponse:
@@ -195,6 +203,7 @@ class G2POutgestionConfigurationController(BaseController):
             return self.helper.construct_error_response(error, topic_update_request)
     
 
+    @require_permissions({"outgestTemplate:create"})
     async def create_template(
         self, template_request: OutgoingTemplateRequest, template_file: UploadFile
 
@@ -209,6 +218,7 @@ class G2POutgestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, template_request)
 
+    @require_permissions({"outgestTemplate:view"})
     async def get_template(self, template_request: OutgoingTemplateRequest) -> OutgoingTemplateResponse:
         try:
             template_data: OutgoingTemplateData = await self.outgestion_config_service.get_template(
@@ -220,6 +230,7 @@ class G2POutgestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, template_request)
 
+    @require_permissions({"outgestTemplate:edit"})
     async def update_template(
         self, template_update_request: OutgoingTemplateUpdateRequest, template_file: Optional[UploadFile] = None 
     ) -> OutgoingTemplateResponse:
@@ -233,6 +244,7 @@ class G2POutgestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, template_update_request)
 
+    @require_permissions({"outgestTemplate:delete"})
     async def delete_template(self, template_delete_request: OutgoingTemplateUpdateRequest) -> OutgoingTemplateResponse:
         try:
             template_data: OutgoingTemplateData = await self.outgestion_config_service.delete_template(

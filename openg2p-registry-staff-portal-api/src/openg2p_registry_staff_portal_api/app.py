@@ -21,6 +21,7 @@ from .controllers import (
     G2PVerificationController,
     G2PIntakeFormDataController,
     G2PIntakeFormMetadataController,
+    G2PChangeRequestCoreController,
 )
 
 _logger = logging.getLogger(_config.logging_default_logger_name)
@@ -45,6 +46,7 @@ class Initializer(BaseInitializer):
         G2PVerificationController().post_init()
         G2PIntakeFormDataController().post_init()
         G2PIntakeFormMetadataController().post_init()
+        G2PChangeRequestCoreController().post_init()
 
     def migrate_database(self, args):
         _logger.info("Starting database migration")

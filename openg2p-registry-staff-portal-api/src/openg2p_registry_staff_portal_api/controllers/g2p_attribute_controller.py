@@ -8,6 +8,7 @@ from openg2p_registry_core.schemas import (
     GetG2PAttributeValuesResponse,
     G2PAttributeValueData,
 )
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -32,6 +33,7 @@ class G2PAttributeController(BaseController):
             methods=["POST"],
         )
 
+    @require_permissions({"referenceData:view"})
     async def get_g2p_attribute_values(
         self,
         request: GetG2PAttributeValuesRequest,
@@ -50,4 +52,3 @@ class G2PAttributeController(BaseController):
         except Exception as e:
             _logger.error("Error getting attribute values: %s", str(e), exc_info=True)
             return self.helper.construct_error_response(e, request)
-
