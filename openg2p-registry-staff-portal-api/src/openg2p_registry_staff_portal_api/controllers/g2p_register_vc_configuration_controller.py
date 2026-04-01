@@ -8,6 +8,7 @@ from openg2p_registry_core.schemas import (
     VcConfigurationResponse,
     VcConfigurationRequest,
 )
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -62,6 +63,7 @@ class G2PRegisterVCConfigurationController(BaseController):
         )
 
 
+    @require_permissions({"registerDefinition:view"})
     async def get_vc_configuration_for_register(
         self, 
         vc_configuration_request: VcConfigurationRequest
@@ -78,6 +80,7 @@ class G2PRegisterVCConfigurationController(BaseController):
             error_response: VcConfigurationResponse = self.helper.construct_error_response(error_exception, vc_configuration_request)
             return error_response
         
+    @require_permissions({"registerDefinition:view"})
     async def get_all_vc_configurations(self, vc_configuration_request: VcConfigurationRequest) -> VcConfigurationResponse:
         try:
             vc_configuration_data: List[VcConfigurationData] = await self.g2p_vc_configuration_service.get_all_vc_configurations(vc_configuration_request)
@@ -91,6 +94,7 @@ class G2PRegisterVCConfigurationController(BaseController):
             error_response: VcConfigurationResponse = self.helper.construct_error_response(error_exception, vc_configuration_request)
             return error_response
         
+    @require_permissions({"registerDefinition:create"})
     async def create_vc_configuration(self, vc_configuration_request: VcConfigurationRequest) -> VcConfigurationResponse:
         try:
             vc_configuration_data: List[VcConfigurationData] = await self.g2p_vc_configuration_service.create_vc_configuration(vc_configuration_request)
@@ -104,6 +108,7 @@ class G2PRegisterVCConfigurationController(BaseController):
             error_response: VcConfigurationResponse = self.helper.construct_error_response(error_exception, vc_configuration_request)
             return error_response
 
+    @require_permissions({"registerDefinition:edit"})
     async def edit_descriptor_schema(self, vc_configuration_request: VcConfigurationRequest) -> VcConfigurationResponse:
         try:
             vc_configuration_data: List[VcConfigurationData] = await self.g2p_vc_configuration_service.edit_descriptor_schema(vc_configuration_request)
@@ -117,6 +122,7 @@ class G2PRegisterVCConfigurationController(BaseController):
             error_response: VcConfigurationResponse = self.helper.construct_error_response(error_exception, vc_configuration_request)
             return error_response
 
+    @require_permissions({"registerDefinition:edit"})
     async def remove_vc_configuration(self, vc_configuration_request: VcConfigurationRequest) -> VcConfigurationResponse:
         try:
             vc_configuration_data: List[VcConfigurationData] = await self.g2p_vc_configuration_service.remove_vc_configuration(vc_configuration_request)
