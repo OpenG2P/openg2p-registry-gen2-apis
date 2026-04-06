@@ -549,6 +549,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, change_status_request)
 
+    @require_permissions({"ingestSubscription:create"})
     async def create_subscription_activity_log(
         self, subscription_activity_log_request: SubscriptionActivityLogRequest
     ) -> SubscriptionActivityLogsResponse:
@@ -562,6 +563,7 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, subscription_activity_log_request)
 
+    @require_permissions({"ingestSubscription:view"})
     async def get_subscription_activity_logs_by_partner(
         self, activity_log_request: SubscriptionActivityLogRequest
     ) -> SubscriptionActivityLogsResponse:

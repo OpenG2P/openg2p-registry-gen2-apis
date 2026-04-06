@@ -117,6 +117,7 @@ class G2PIntakeFormDataController(BaseController):
             error_response: G2PResponse = self.helper.construct_error_response(error_exception, finalize_submission_request)
             return error_response
 
+    @require_permissions({"intakeForm:approve"})
     async def approve_submission(self, approve_submission_request: ApproveRejectSubmissionRequest) -> SubmissionResponse:
         try:
             submission_response_payload: SubmissionResponsePayload = await self.g2p_intake_form_controller_service.approve_submission(approve_submission_request)
@@ -129,6 +130,7 @@ class G2PIntakeFormDataController(BaseController):
             error_response: G2PResponse = self.helper.construct_error_response(error_exception, approve_submission_request)
             return error_response
 
+    @require_permissions({"intakeForm:approve"})
     async def reject_submission(self, reject_submission_request: ApproveRejectSubmissionRequest) -> SubmissionResponse:
         try:
             submission_response_payload: SubmissionResponsePayload = await self.g2p_intake_form_controller_service.reject_submission(reject_submission_request)

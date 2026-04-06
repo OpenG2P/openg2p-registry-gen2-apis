@@ -15,6 +15,7 @@ from openg2p_registry_core.schemas import (
     ChangeRequestDocumentsResponse, ChangeRequestDocumentsData,
     FileUrlResponse, FileUrlData, FileUrlRequest
 )
+from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
 from ..config import Settings
@@ -65,6 +66,7 @@ class G2PDocumentController(BaseController):
             methods=["POST"],
         )
 
+    @require_permissions({"changeRequest:create"})
     async def upload_documents(
         self,
         document_label: str = Form(..., description="Document label for the files"),
@@ -88,6 +90,7 @@ class G2PDocumentController(BaseController):
             return error_response
 
 
+    @require_permissions({"register:view"})
     async def get_section_documents(
         self,
         request: GetSectionDocumentsRequest
@@ -109,6 +112,7 @@ class G2PDocumentController(BaseController):
             error_response: SectionDocumentsResponse = self.helper.construct_section_documents_error_response(error_exception)
             return error_response
 
+    @require_permissions({"changeRequest:view"})
     async def get_change_request_documents(
         self,
         request: GetSectionDocumentsForChangeRequestRequest
@@ -130,6 +134,7 @@ class G2PDocumentController(BaseController):
             error_response: ChangeRequestDocumentsResponse = self.helper.construct_change_request_documents_error_response(error_exception)
             return error_response
 
+    @require_permissions({"changeRequest:view"})
     async def get_file_url(
         self,
         file_url_request: FileUrlRequest
