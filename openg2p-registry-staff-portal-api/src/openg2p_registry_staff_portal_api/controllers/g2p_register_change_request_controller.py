@@ -258,7 +258,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: VerificationDataResponse = self.helper.construct_error_response(error_exception, add_verification_request)
             return error_response
 
-    @require_permissions({"changeRequest:view"})
+    @require_permissions({})
     async def get_register_change_request_summary_data(self, get_change_request_summary_data_request: GetChangeRequestSummaryDataRequest) -> ChangeRequestSummaryDataResponse:
         try:
             change_request_summary_data: ChangeRequestSummaryData = await self.g2p_register_change_request_controller_service.get_change_request_summary_data(get_change_request_summary_data_request)

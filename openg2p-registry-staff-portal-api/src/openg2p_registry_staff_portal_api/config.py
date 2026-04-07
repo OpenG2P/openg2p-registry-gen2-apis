@@ -26,4 +26,5 @@ class Settings(ExtSettings):
     db_dbname: str = "registrydb"
 
     # IAM authentication
-    keycloak_client_id: str
+    auth_provider_api_url: str | None = None
+    keycloak_client_id: str | None = None

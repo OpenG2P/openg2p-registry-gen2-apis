@@ -223,7 +223,7 @@ class G2PIntakeFormDataController(BaseController):
             )
             return error_response
 
-    @require_permissions({"intakeForm:view"})
+    @require_permissions({})
     async def get_intake_form_submissions_summary(
         self, get_intake_form_submissions_summary_request: GetIntakeFormSubmissionsSummaryRequest
     ) -> IntakeFormSubmissionsSummaryResponse:
