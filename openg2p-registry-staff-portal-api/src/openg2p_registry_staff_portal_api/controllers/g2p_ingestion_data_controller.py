@@ -62,7 +62,7 @@ class G2PIngestionDataController(BaseController):
             operation_id="get_enriched_transformed_ingestion_payload",
         )
 
-    @require_permissions({"incomingMessage:view"})
+    @require_permissions({})
     async def get_ingestion_summary_data(self, get_ingestion_summary_data_request: GetIngestionSummaryDataRequest) -> IngestionSummaryDataResponse:
         try:
             ingestion_summary_data: IngestionSummaryData = await self.g2p_ingestion_data_controller_service.get_ingestion_summary_data(get_ingestion_summary_data_request)

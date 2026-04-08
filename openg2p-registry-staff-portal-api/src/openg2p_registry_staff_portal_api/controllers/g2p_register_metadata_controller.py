@@ -229,7 +229,7 @@ class G2PRegisterMetadataController(BaseController):
             error_response: AllRegistersResponse = self.helper.construct_error_response(error_exception, get_all_registers_request)
             return error_response
 
-    @require_permissions({"registerDefinition:view"})
+    @require_permissions({})
     async def get_dashboard_registers(self, get_dashboard_registers_request: GetDashboardRegistersRequest) -> DashboardRegistersResponse:
         """Get all registers for dashboard display (clone of get_all_registers)"""
         try:
