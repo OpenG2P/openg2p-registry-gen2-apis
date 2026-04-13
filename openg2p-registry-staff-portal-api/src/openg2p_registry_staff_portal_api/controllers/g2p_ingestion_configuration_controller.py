@@ -211,11 +211,11 @@ class G2PIngestionConfigurationController(BaseController):
         self, pattern_request: IncomingModelKeyPathIdRequest
     ) -> IncomingModelKeyPathResponse:
         try:
-            await self.ingestion_config_service.delete_incoming_key_path(
+            key_path_data = await self.ingestion_config_service.delete_incoming_key_path(
                 pattern_request.request_body.request_payload.key_path_id
             )
             return self.helper.construct_ingestion_config_success_response(
-                None, IncomingModelKeyPathResponse, pattern_request
+                key_path_data, IncomingModelKeyPathResponse, pattern_request
             )
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
@@ -295,11 +295,11 @@ class G2PIngestionConfigurationController(BaseController):
         self, pattern_request: IncomingModelSemanticPatternIdRequest
     ) -> IncomingModelSemanticPatternResponse:
         try:
-            await self.ingestion_config_service.delete_semantic_pattern(
+            pattern_data = await self.ingestion_config_service.delete_semantic_pattern(
                 pattern_request.request_body.request_payload.semantic_pattern_id
             )
             return self.helper.construct_ingestion_config_success_response(
-                None, IncomingModelSemanticPatternResponse, pattern_request
+                pattern_data, IncomingModelSemanticPatternResponse, pattern_request
             )
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
@@ -359,11 +359,11 @@ class G2PIngestionConfigurationController(BaseController):
     @require_permissions({"ingestTemplate:delete"})
     async def delete_template(self, template_delete_request: IncomingTemplateIdRequest) -> IncomingTemplateResponse:
         try:
-            await self.ingestion_config_service.delete_template(
+            template_data = await self.ingestion_config_service.delete_template(
                 template_delete_request.request_body.request_payload.template_id
             )
             return self.helper.construct_ingestion_config_success_response(
-                None, IncomingTemplateResponse, template_delete_request
+                template_data, IncomingTemplateResponse, template_delete_request
             )
         except Exception as error:
             return self.helper.construct_error_response(error, template_delete_request)
