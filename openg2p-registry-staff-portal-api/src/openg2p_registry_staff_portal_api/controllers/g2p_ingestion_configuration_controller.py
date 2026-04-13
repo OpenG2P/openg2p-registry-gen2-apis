@@ -22,12 +22,6 @@ from openg2p_registry_core.schemas import (
     IncomingTemplateUpdateRequest,
     IncomingTemplateResponse,
     IncomingTemplateData,
-    DataModelRequest,
-    DataModelUpdateRequest,
-    DataModelResponse,
-    DataModelsResponse,
-    ChangeResponseTemplateFileRequest,
-    ChangeActiveStatusRequest,
     SubscriptionActivityLogRequest,
     SubscriptionActivityLogsResponse,
 )
@@ -161,56 +155,6 @@ class G2PIngestionConfigurationController(BaseController):
             "/delete_template",
             self.delete_template,
             responses={200: {"model": IncomingTemplateResponse}},
-            methods=["POST"],
-        )
-
-        # DataModel endpoints
-        self.router.add_api_route(
-            "/create_data_model",
-            self.create_data_model,
-            responses={200: {"model": DataModelResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/get_data_model",
-            self.get_data_model,
-            responses={200: {"model": DataModelResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/get_all_data_models",
-            self.get_all_data_models,
-            responses={200: {"model": DataModelsResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/update_data_model",
-            self.update_data_model,
-            responses={200: {"model": DataModelResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/delete_data_model",
-            self.delete_data_model,
-            responses={200: {"model": DataModelResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/change_response_template_file",
-            self.change_response_template_file,
-            responses={200: {"model": DataModelResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/change_active_status",
-            self.change_active_status,
-            responses={200: {"model": DataModelResponse}},
             methods=["POST"],
         )
 
@@ -454,100 +398,6 @@ class G2PIngestionConfigurationController(BaseController):
             )
         except Exception as error:
             return self.helper.construct_error_response(error, template_delete_request)
-
-    @require_permissions({"dataModel:create"})
-    async def create_data_model(
-        self, data_model_request: DataModelRequest, response_template_file: Optional[UploadFile] = None
-    ) -> DataModelResponse:
-        try:
-            data_model_data = await self.ingestion_config_service.create_data_model(
-                data_model_request.request_body.request_payload, response_template_file
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                data_model_data, DataModelResponse, data_model_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, data_model_request)
-
-    @require_permissions({"dataModel:view"})
-    async def get_data_model(self, data_model_request: DataModelRequest) -> DataModelResponse:
-        try:
-            data_model_data = await self.ingestion_config_service.get_data_model(
-                data_model_request.request_body.request_payload.data_model_id
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                data_model_data, DataModelResponse, data_model_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, data_model_request)
-
-    @require_permissions({"dataModel:view"})
-    async def get_all_data_models(self, data_model_request: DataModelRequest) -> DataModelsResponse:
-        try:
-            data_models_data = await self.ingestion_config_service.get_all_data_models()
-            return self.helper.construct_ingestion_config_success_response(
-                data_models_data, DataModelsResponse, data_model_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, data_model_request)
-
-    @require_permissions({"dataModel:edit"})
-    async def update_data_model(
-        self, data_model_request: DataModelUpdateRequest, response_template_file: Optional[UploadFile] = None
-    ) -> DataModelResponse:
-        try:
-            data_model_data = await self.ingestion_config_service.update_data_model(
-                data_model_request.request_body.request_payload.data_model_id,
-                data_model_request.request_body.request_payload, response_template_file
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                data_model_data, DataModelResponse, data_model_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, data_model_request)
-
-    @require_permissions({"dataModel:delete"})
-    async def delete_data_model(self, data_model_request: DataModelRequest) -> DataModelResponse:
-        try:
-            data_model_data = await self.ingestion_config_service.delete_data_model(
-                data_model_request.request_body.request_payload.data_model_id
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                data_model_data, DataModelResponse, data_model_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, data_model_request)
-
-    @require_permissions({"dataModel:edit"})
-    async def change_response_template_file(
-        self, change_template_request: ChangeResponseTemplateFileRequest,
-        response_template_file: Optional[UploadFile] = None
-    ) -> DataModelResponse:
-        try:
-            data_model_data = await self.ingestion_config_service.change_response_template_file(
-                change_template_request.request_body.request_payload.data_model_id,
-                response_template_file
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                data_model_data, DataModelResponse, change_template_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, change_template_request)
-
-    @require_permissions({"dataModel:edit"})
-    async def change_active_status(
-        self, change_status_request: ChangeActiveStatusRequest
-    ) -> DataModelResponse:
-        try:
-            data_model_data = await self.ingestion_config_service.change_active_status(
-                change_status_request.request_body.request_payload.data_model_id,
-                change_status_request.request_body.request_payload.is_active
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                data_model_data, DataModelResponse, change_status_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, change_status_request)
 
     @require_permissions({"ingestSubscription:create"})
     async def create_subscription_activity_log(
