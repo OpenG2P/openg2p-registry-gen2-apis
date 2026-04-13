@@ -58,6 +58,7 @@ from openg2p_registry_core.schemas import (
     IngestionDataPayloadResponse, IngestionDataPayloadResponseBody,
     IngestionDataSearchResultsResponse, IngestionDataSearchResultsResponseBody, IngestionDataSearchResultData,
     IngestionDataPayload, FileUrlData, FileUrlResponse, FileUrlResponseBody,
+    DeleteFileData, DeleteFileResponse, DeleteFileResponseBody,
     VcConfigurationResponse, VcConfigurationResponseBody, VcConfigurationData,
     G2PInputMechanismResponse, G2PInputMechanismResponseBody, G2PInputMechanismData,
     AllowedParentsData, AllowedParentsDataResponse, AllowedParentsDataResponseBody
@@ -1485,6 +1486,54 @@ class RequestResponseHelper(BaseService):
             response_header=g2p_response_header,
             response_body=None
         )
+
+    def construct_delete_file_success_response(
+        self,
+        delete_file_data: DeleteFileData,
+        g2p_request: G2PRequest = None
+    ) -> DeleteFileResponse:
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: DeleteFileResponseBody = DeleteFileResponseBody(
+            response_payload=delete_file_data
+        )
+
+        return DeleteFileResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+
+    def construct_delete_file_error_response(
+        self,
+        error_exception: Exception
+    ) -> DeleteFileResponse:
+        error_code = ""
+        error_message = str(error_exception)
+        if isinstance(error_exception, G2PRegistryException):
+            error_code = error_exception.code
+            error_message = error_exception.message
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id="",
+            response_status=G2PResponseStatus.ERROR,
+            response_error_code=error_code,
+            response_error_message=error_message,
+            response_timestamp=datetime.now()
+        )
+
+        return DeleteFileResponse(
+            response_header=g2p_response_header,
+            response_body=None
+        )
+
 
     def construct_upload_record_image_success_response(
         self,
