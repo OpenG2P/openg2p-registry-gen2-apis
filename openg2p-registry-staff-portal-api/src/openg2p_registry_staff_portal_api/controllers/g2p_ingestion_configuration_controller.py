@@ -22,6 +22,7 @@ from openg2p_registry_core.schemas import (
     IncomingTemplateResponse,
     IncomingTemplatesResponse,
     SubscriptionActivityLogRequest,
+    GetAllSubscriptionActivityLogsRequest,
     SubscriptionActivityLogsResponse,
 )
 from iam_core.user_auth.helpers import require_permissions
@@ -161,6 +162,13 @@ class G2PIngestionConfigurationController(BaseController):
         self.router.add_api_route(
             "/get_subscription_activity_logs_by_partner",
             self.get_subscription_activity_logs_by_partner,
+            responses={200: {"model": SubscriptionActivityLogsResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_all_subscription_activity_logs",
+            self.get_all_subscription_activity_logs,
             responses={200: {"model": SubscriptionActivityLogsResponse}},
             methods=["POST"],
         )
@@ -390,6 +398,18 @@ class G2PIngestionConfigurationController(BaseController):
             activity_logs_data = await self.ingestion_config_service.get_subscription_activity_logs_by_partner(
                 activity_log_request.request_body.request_payload.partner_id
             )
+            return self.helper.construct_ingestion_config_success_response(
+                activity_logs_data, SubscriptionActivityLogsResponse, activity_log_request
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, activity_log_request)
+
+    @require_permissions({"ingestSubscription:view"})
+    async def get_all_subscription_activity_logs(
+        self, activity_log_request: GetAllSubscriptionActivityLogsRequest
+    ) -> SubscriptionActivityLogsResponse:
+        try:
+            activity_logs_data = await self.ingestion_config_service.get_all_subscription_activity_logs()
             return self.helper.construct_ingestion_config_success_response(
                 activity_logs_data, SubscriptionActivityLogsResponse, activity_log_request
             )
