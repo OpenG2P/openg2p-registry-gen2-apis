@@ -38,7 +38,7 @@ from openg2p_registry_core.schemas import (
     IncomingModelSemanticPatternResponseBody, IncomingModelSemanticPatternsResponseBody,
     IncomingTemplateResponseBody, IncomingTemplatesResponseBody,
     DataModelResponseBody, DataModelsResponseBody, SubscriptionActivityLogsResponseBody,
-    OutgoingTopicResponseBody, OutgoingTemplateResponseBody,
+    OutgoingTopicResponseBody, OutgoingTemplateResponseBody, OutgoingTemplatesResponseBody,
     RegisterSchemaData, RegisterSchemaDataResponse, RegisterSchemaDataResponseBody,
     RegisterSectionData, RegisterSectionsDataResponse, RegisterSectionsDataResponseBody,
     RegisterSectionDataResponse, RegisterSectionDataResponseBody,
@@ -1012,7 +1012,14 @@ class RequestResponseHelper(BaseService):
         )
         return dedup_results_response
 
-    def construct_outgestion_config_success_response(self, payload_data, response_class, g2p_request=None):
+    def construct_outgestion_config_success_response(
+        self,
+        payload_data,
+        response_class,
+        g2p_request=None,
+        number_of_items: int = None,
+        number_of_pages: int = None,
+    ):
         """Generic method to construct success response for ingestion configuration endpoints"""
         request_id = g2p_request.request_header.request_id if g2p_request else ""
 
@@ -1024,15 +1031,36 @@ class RequestResponseHelper(BaseService):
             response_timestamp=datetime.now()
         )
 
+        pagination_response = None
+        if number_of_items is not None and number_of_pages is not None:
+            pagination_response = G2PPaginationResponse(
+                number_of_items=number_of_items,
+                number_of_pages=number_of_pages,
+            )
+
         # Determine the response body class based on response_class
         response_class_name = response_class.__name__
         if response_class_name == 'OutgoingTopicResponse':
-            response_body = OutgoingTopicResponseBody(response_payload=payload_data)
+            response_body = OutgoingTopicResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'OutgoingTemplateResponse':
-            response_body = OutgoingTemplateResponseBody(response_payload=payload_data)
+            response_body = OutgoingTemplateResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
+        elif response_class_name == 'OutgoingTemplatesResponse':
+            response_body = OutgoingTemplatesResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         else:
             # Fallback for other response types
-            response_body = G2PResponseBody(response_payload=payload_data)
+            response_body = G2PResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
 
         response = response_class(
             response_header=g2p_response_header,
