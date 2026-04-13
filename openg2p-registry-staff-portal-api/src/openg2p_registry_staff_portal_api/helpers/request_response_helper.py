@@ -35,7 +35,7 @@ from openg2p_registry_core.schemas import (
     DeduplicationChangerequestResultsData, DeduplicationChangerequestResultsDataResponse, DeduplicationChangerequestResultsDataResponseBody,
     IncomingPartnerData, IncomingPartnerResponseBody, IncomingPartnersResponseBody,
     IncomingModelKeyPathData, IncomingModelKeyPathResponseBody, IncomingModelKeyPathListResponseBody,
-    IncomingModelSemanticPatternResponseBody, IncomingTemplateResponseBody,
+    IncomingModelSemanticPatternResponseBody, IncomingModelSemanticPatternsResponseBody, IncomingTemplateResponseBody,
     DataModelResponseBody, DataModelsResponseBody, SubscriptionActivityLogsResponseBody,
     OutgoingTopicResponseBody, OutgoingTemplateResponseBody,
     RegisterSchemaData, RegisterSchemaDataResponse, RegisterSchemaDataResponseBody,
@@ -873,6 +873,8 @@ class RequestResponseHelper(BaseService):
             response_body = IncomingModelKeyPathListResponseBody(response_payload=payload_data)
         elif response_class_name == 'IncomingModelSemanticPatternResponse':
             response_body = IncomingModelSemanticPatternResponseBody(response_payload=payload_data)
+        elif response_class_name == 'IncomingModelSemanticPatternsResponse':
+            response_body = IncomingModelSemanticPatternsResponseBody(response_payload=payload_data)
         elif response_class_name == 'IncomingTemplateResponse':
             response_body = IncomingTemplateResponseBody(response_payload=payload_data)
         elif response_class_name == 'DataModelResponse':
