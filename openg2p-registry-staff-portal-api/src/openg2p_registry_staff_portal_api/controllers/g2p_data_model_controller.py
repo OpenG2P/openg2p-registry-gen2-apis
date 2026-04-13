@@ -95,11 +95,13 @@ class G2PDataModelController(BaseController):
         self, data_model_request: GetAllDataModelsRequest
     ) -> DataModelsResponse:
         try:
-            pagination = data_model_request.request_body.pagination_request
+            pagination_request = getattr(data_model_request.request_body, "pagination_request", None)
+            current_page = getattr(pagination_request, "current_page", None)
+            page_size = getattr(pagination_request, "page_size", None)
             data_models_data, total_items, number_of_pages = (
                 await self.data_model_controller_service.get_all_data_models(
-                    pagination.current_page,
-                    pagination.page_size,
+                    current_page,
+                    page_size,
                 )
             )
             return self.helper.construct_ingestion_config_success_response(

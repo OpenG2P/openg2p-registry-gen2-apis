@@ -207,11 +207,13 @@ class G2PIngestionConfigurationController(BaseController):
         self, pattern_request: GetAllIncomingKeyPathsRequest
     ) -> IncomingModelKeyPathListResponse:
         try:
-            pagination = pattern_request.request_body.pagination_request
+            pagination_request = getattr(pattern_request.request_body, "pagination_request", None)
+            current_page = getattr(pagination_request, "current_page", None)
+            page_size = getattr(pagination_request, "page_size", None)
             key_paths_data, total_items, number_of_pages = (
                 await self.ingestion_config_service.get_all_incoming_key_paths(
-                    pagination.current_page,
-                    pagination.page_size,
+                    current_page,
+                    page_size,
                 )
             )
             return self.helper.construct_ingestion_config_success_response(
@@ -301,11 +303,13 @@ class G2PIngestionConfigurationController(BaseController):
         self, pattern_request: GetAllIncomingSemanticPatternsRequest
     ) -> IncomingModelSemanticPatternsResponse:
         try:
-            pagination = pattern_request.request_body.pagination_request
+            pagination_request = getattr(pattern_request.request_body, "pagination_request", None)
+            current_page = getattr(pagination_request, "current_page", None)
+            page_size = getattr(pagination_request, "page_size", None)
             pattern_data, total_items, number_of_pages = (
                 await self.ingestion_config_service.get_all_semantic_patterns(
-                    pagination.current_page,
-                    pagination.page_size,
+                    current_page,
+                    page_size,
                 )
             )
             return self.helper.construct_ingestion_config_success_response(
@@ -363,11 +367,13 @@ class G2PIngestionConfigurationController(BaseController):
         self, template_request: GetAllIncomingTemplatesRequest
     ) -> IncomingTemplatesResponse:
         try:
-            pagination = template_request.request_body.pagination_request
+            pagination_request = getattr(template_request.request_body, "pagination_request", None)
+            current_page = getattr(pagination_request, "current_page", None)
+            page_size = getattr(pagination_request, "page_size", None)
             template_data, total_items, number_of_pages = (
                 await self.ingestion_config_service.get_all_templates(
-                    pagination.current_page,
-                    pagination.page_size,
+                    current_page,
+                    page_size,
                 )
             )
             return self.helper.construct_ingestion_config_success_response(
@@ -439,11 +445,13 @@ class G2PIngestionConfigurationController(BaseController):
         self, activity_log_request: GetAllSubscriptionActivityLogsRequest
     ) -> SubscriptionActivityLogsResponse:
         try:
-            pagination = activity_log_request.request_body.pagination_request
+            pagination_request = getattr(activity_log_request.request_body, "pagination_request", None)
+            current_page = getattr(pagination_request, "current_page", None)
+            page_size = getattr(pagination_request, "page_size", None)
             activity_logs_data, total_items, number_of_pages = (
                 await self.ingestion_config_service.get_all_subscription_activity_logs(
-                    pagination.current_page,
-                    pagination.page_size,
+                    current_page,
+                    page_size,
                 )
             )
             return self.helper.construct_ingestion_config_success_response(
