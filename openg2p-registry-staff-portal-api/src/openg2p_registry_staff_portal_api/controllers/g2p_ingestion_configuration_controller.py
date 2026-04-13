@@ -1,6 +1,4 @@
 import logging
-from typing import Optional
-from fastapi import UploadFile
 from openg2p_fastapi_common.controller import BaseController
 
 from openg2p_registry_core.controller_services import G2PIngestionConfigurationControllerService
@@ -18,9 +16,11 @@ from openg2p_registry_core.schemas import (
     IncomingModelSemanticPatternResponse,
     IncomingModelSemanticPatternsResponse,
     IncomingTemplateRequest,
+    IncomingTemplateIdRequest,
+    GetAllIncomingTemplatesRequest,
     IncomingTemplateUpdateRequest,
     IncomingTemplateResponse,
-    IncomingTemplateData,
+    IncomingTemplatesResponse,
     SubscriptionActivityLogRequest,
     SubscriptionActivityLogsResponse,
 )
@@ -126,6 +126,13 @@ class G2PIngestionConfigurationController(BaseController):
             "/get_template",
             self.get_template,
             responses={200: {"model": IncomingTemplateResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_all_templates",
+            self.get_all_templates,
+            responses={200: {"model": IncomingTemplatesResponse}},
             methods=["POST"],
         )
 
@@ -299,11 +306,11 @@ class G2PIngestionConfigurationController(BaseController):
 
     @require_permissions({"ingestTemplate:create"})
     async def create_template(
-        self, template_request: IncomingTemplateRequest, template_file: UploadFile
+        self, template_request: IncomingTemplateRequest
     ) -> IncomingTemplateResponse:
         try:
-            template_data: IncomingTemplateData = await self.ingestion_config_service.create_template(
-                template_request.request_body.request_payload, template_file
+            template_data = await self.ingestion_config_service.create_template(
+                template_request.request_body.request_payload
             )
             return self.helper.construct_ingestion_config_success_response(
                 template_data, IncomingTemplateResponse, template_request
@@ -312,9 +319,9 @@ class G2PIngestionConfigurationController(BaseController):
             return self.helper.construct_error_response(error, template_request)
 
     @require_permissions({"ingestTemplate:view"})
-    async def get_template(self, template_request: IncomingTemplateRequest) -> IncomingTemplateResponse:
+    async def get_template(self, template_request: IncomingTemplateIdRequest) -> IncomingTemplateResponse:
         try:
-            template_data: IncomingTemplateData = await self.ingestion_config_service.get_template(
+            template_data = await self.ingestion_config_service.get_template(
                 template_request.request_body.request_payload.template_id
             )
             return self.helper.construct_ingestion_config_success_response(
@@ -323,13 +330,25 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, template_request)
 
+    @require_permissions({"ingestTemplate:view"})
+    async def get_all_templates(
+        self, template_request: GetAllIncomingTemplatesRequest
+    ) -> IncomingTemplatesResponse:
+        try:
+            template_data = await self.ingestion_config_service.get_all_templates()
+            return self.helper.construct_ingestion_config_success_response(
+                template_data, IncomingTemplatesResponse, template_request
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, template_request)
+
     @require_permissions({"ingestTemplate:edit"})
     async def update_template(
-        self, template_update_request: IncomingTemplateUpdateRequest, template_file: Optional[UploadFile] = None
+        self, template_update_request: IncomingTemplateUpdateRequest
     ) -> IncomingTemplateResponse:
         try:
-            template_data: IncomingTemplateData = await self.ingestion_config_service.update_template(
-                template_update_request.request_body.request_payload, template_file
+            template_data = await self.ingestion_config_service.update_template(
+                template_update_request.request_body.request_payload
             )
             return self.helper.construct_ingestion_config_success_response(
                 template_data, IncomingTemplateResponse, template_update_request
@@ -338,13 +357,13 @@ class G2PIngestionConfigurationController(BaseController):
             return self.helper.construct_error_response(error, template_update_request)
     
     @require_permissions({"ingestTemplate:delete"})
-    async def delete_template(self, template_delete_request: IncomingTemplateUpdateRequest) -> IncomingTemplateResponse:
+    async def delete_template(self, template_delete_request: IncomingTemplateIdRequest) -> IncomingTemplateResponse:
         try:
-            template_data: IncomingTemplateData = await self.ingestion_config_service.delete_template(
-                template_delete_request.request_body.request_payload
+            await self.ingestion_config_service.delete_template(
+                template_delete_request.request_body.request_payload.template_id
             )
             return self.helper.construct_ingestion_config_success_response(
-                template_data, IncomingTemplateResponse, template_delete_request
+                None, IncomingTemplateResponse, template_delete_request
             )
         except Exception as error:
             return self.helper.construct_error_response(error, template_delete_request)
