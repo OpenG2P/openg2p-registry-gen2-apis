@@ -95,9 +95,19 @@ class G2PDataModelController(BaseController):
         self, data_model_request: GetAllDataModelsRequest
     ) -> DataModelsResponse:
         try:
-            data_models_data = await self.data_model_controller_service.get_all_data_models()
+            pagination = data_model_request.request_body.pagination_request
+            data_models_data, total_items, number_of_pages = (
+                await self.data_model_controller_service.get_all_data_models(
+                    pagination.current_page,
+                    pagination.page_size,
+                )
+            )
             return self.helper.construct_ingestion_config_success_response(
-                data_models_data, DataModelsResponse, data_model_request
+                data_models_data,
+                DataModelsResponse,
+                data_model_request,
+                total_items,
+                number_of_pages,
             )
         except Exception as error:
             return self.helper.construct_error_response(error, data_model_request)

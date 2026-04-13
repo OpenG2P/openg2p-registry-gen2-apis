@@ -207,9 +207,19 @@ class G2PIngestionConfigurationController(BaseController):
         self, pattern_request: GetAllIncomingKeyPathsRequest
     ) -> IncomingModelKeyPathListResponse:
         try:
-            key_paths_data = await self.ingestion_config_service.get_all_incoming_key_paths()
+            pagination = pattern_request.request_body.pagination_request
+            key_paths_data, total_items, number_of_pages = (
+                await self.ingestion_config_service.get_all_incoming_key_paths(
+                    pagination.current_page,
+                    pagination.page_size,
+                )
+            )
             return self.helper.construct_ingestion_config_success_response(
-                key_paths_data, IncomingModelKeyPathListResponse, pattern_request
+                key_paths_data,
+                IncomingModelKeyPathListResponse,
+                pattern_request,
+                total_items,
+                number_of_pages,
             )
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
@@ -291,9 +301,19 @@ class G2PIngestionConfigurationController(BaseController):
         self, pattern_request: GetAllIncomingSemanticPatternsRequest
     ) -> IncomingModelSemanticPatternsResponse:
         try:
-            pattern_data = await self.ingestion_config_service.get_all_semantic_patterns()
+            pagination = pattern_request.request_body.pagination_request
+            pattern_data, total_items, number_of_pages = (
+                await self.ingestion_config_service.get_all_semantic_patterns(
+                    pagination.current_page,
+                    pagination.page_size,
+                )
+            )
             return self.helper.construct_ingestion_config_success_response(
-                pattern_data, IncomingModelSemanticPatternsResponse, pattern_request
+                pattern_data,
+                IncomingModelSemanticPatternsResponse,
+                pattern_request,
+                total_items,
+                number_of_pages,
             )
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
@@ -343,9 +363,19 @@ class G2PIngestionConfigurationController(BaseController):
         self, template_request: GetAllIncomingTemplatesRequest
     ) -> IncomingTemplatesResponse:
         try:
-            template_data = await self.ingestion_config_service.get_all_templates()
+            pagination = template_request.request_body.pagination_request
+            template_data, total_items, number_of_pages = (
+                await self.ingestion_config_service.get_all_templates(
+                    pagination.current_page,
+                    pagination.page_size,
+                )
+            )
             return self.helper.construct_ingestion_config_success_response(
-                template_data, IncomingTemplatesResponse, template_request
+                template_data,
+                IncomingTemplatesResponse,
+                template_request,
+                total_items,
+                number_of_pages,
             )
         except Exception as error:
             return self.helper.construct_error_response(error, template_request)
@@ -409,9 +439,19 @@ class G2PIngestionConfigurationController(BaseController):
         self, activity_log_request: GetAllSubscriptionActivityLogsRequest
     ) -> SubscriptionActivityLogsResponse:
         try:
-            activity_logs_data = await self.ingestion_config_service.get_all_subscription_activity_logs()
+            pagination = activity_log_request.request_body.pagination_request
+            activity_logs_data, total_items, number_of_pages = (
+                await self.ingestion_config_service.get_all_subscription_activity_logs(
+                    pagination.current_page,
+                    pagination.page_size,
+                )
+            )
             return self.helper.construct_ingestion_config_success_response(
-                activity_logs_data, SubscriptionActivityLogsResponse, activity_log_request
+                activity_logs_data,
+                SubscriptionActivityLogsResponse,
+                activity_log_request,
+                total_items,
+                number_of_pages,
             )
         except Exception as error:
             return self.helper.construct_error_response(error, activity_log_request)

@@ -850,7 +850,14 @@ class RequestResponseHelper(BaseService):
         )
         return verification_response
 
-    def construct_ingestion_config_success_response(self, payload_data, response_class, g2p_request=None):
+    def construct_ingestion_config_success_response(
+        self,
+        payload_data,
+        response_class,
+        g2p_request=None,
+        number_of_items: int = None,
+        number_of_pages: int = None,
+    ):
         """Generic method to construct success response for ingestion configuration endpoints"""
         request_id = g2p_request.request_header.request_id if g2p_request else ""
 
@@ -862,33 +869,76 @@ class RequestResponseHelper(BaseService):
             response_timestamp=datetime.now()
         )
 
+        pagination_response = None
+        if number_of_items is not None and number_of_pages is not None:
+            pagination_response = G2PPaginationResponse(
+                number_of_items=number_of_items,
+                number_of_pages=number_of_pages,
+            )
+
         # Determine the response body class based on response_class
         response_class_name = response_class.__name__
         if response_class_name == 'IncomingPartnerResponse':
-            response_body = IncomingPartnerResponseBody(response_payload=payload_data)
+            response_body = IncomingPartnerResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'IncomingPartnersResponse':
-            response_body = IncomingPartnersResponseBody(response_payload=payload_data)
+            response_body = IncomingPartnersResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'IncomingModelKeyPathResponse':
-            response_body = IncomingModelKeyPathResponseBody(response_payload=payload_data)
+            response_body = IncomingModelKeyPathResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'IncomingModelKeyPathListResponse':
-            response_body = IncomingModelKeyPathListResponseBody(response_payload=payload_data)
+            response_body = IncomingModelKeyPathListResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'IncomingModelSemanticPatternResponse':
-            response_body = IncomingModelSemanticPatternResponseBody(response_payload=payload_data)
+            response_body = IncomingModelSemanticPatternResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'IncomingModelSemanticPatternsResponse':
-            response_body = IncomingModelSemanticPatternsResponseBody(response_payload=payload_data)
+            response_body = IncomingModelSemanticPatternsResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'IncomingTemplateResponse':
-            response_body = IncomingTemplateResponseBody(response_payload=payload_data)
+            response_body = IncomingTemplateResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'IncomingTemplatesResponse':
-            response_body = IncomingTemplatesResponseBody(response_payload=payload_data)
+            response_body = IncomingTemplatesResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'DataModelResponse':
-            response_body = DataModelResponseBody(response_payload=payload_data)
+            response_body = DataModelResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'DataModelsResponse':
-            response_body = DataModelsResponseBody(response_payload=payload_data)
+            response_body = DataModelsResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'SubscriptionActivityLogsResponse':
-            response_body = SubscriptionActivityLogsResponseBody(response_payload=payload_data)
+            response_body = SubscriptionActivityLogsResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         else:
             # Fallback for other response types
-            response_body = G2PResponseBody(response_payload=payload_data)
+            response_body = G2PResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
 
         response = response_class(
             response_header=g2p_response_header,
