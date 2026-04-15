@@ -38,7 +38,7 @@ from openg2p_registry_core.schemas import (
     IncomingModelSemanticPatternResponseBody, IncomingModelSemanticPatternsResponseBody,
     IncomingTemplateResponseBody, IncomingTemplatesResponseBody,
     DataModelResponseBody, DataModelsResponseBody, SubscriptionActivityLogsResponseBody,
-    OutgoingTopicResponseBody, OutgoingTemplateResponseBody, OutgoingTemplatesResponseBody,
+    OutgoingTopicResponseBody, OutgoingTopicsResponseBody, OutgoingTemplateResponseBody, OutgoingTemplatesResponseBody,
     RegisterSchemaData, RegisterSchemaDataResponse, RegisterSchemaDataResponseBody,
     RegisterSectionData, RegisterSectionsDataResponse, RegisterSectionsDataResponseBody,
     RegisterSectionDataResponse, RegisterSectionDataResponseBody,
@@ -1042,6 +1042,11 @@ class RequestResponseHelper(BaseService):
         response_class_name = response_class.__name__
         if response_class_name == 'OutgoingTopicResponse':
             response_body = OutgoingTopicResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
+        elif response_class_name == 'OutgoingTopicsResponse':
+            response_body = OutgoingTopicsResponseBody(
                 response_payload=payload_data,
                 pagination_response=pagination_response,
             )
