@@ -35,9 +35,10 @@ from openg2p_registry_core.schemas import (
     DeduplicationChangerequestResultsData, DeduplicationChangerequestResultsDataResponse, DeduplicationChangerequestResultsDataResponseBody,
     IncomingPartnerData, IncomingPartnerResponseBody, IncomingPartnersResponseBody,
     IncomingModelKeyPathData, IncomingModelKeyPathResponseBody, IncomingModelKeyPathListResponseBody,
-    IncomingModelSemanticPatternResponseBody, IncomingTemplateResponseBody,
+    IncomingModelSemanticPatternResponseBody, IncomingModelSemanticPatternsResponseBody,
+    IncomingTemplateResponseBody, IncomingTemplatesResponseBody,
     DataModelResponseBody, DataModelsResponseBody, SubscriptionActivityLogsResponseBody,
-    OutgoingTopicResponseBody, OutgoingTemplateResponseBody,
+    OutgoingTopicResponseBody, OutgoingTopicsResponseBody, OutgoingTemplateResponseBody, OutgoingTemplatesResponseBody,
     RegisterSchemaData, RegisterSchemaDataResponse, RegisterSchemaDataResponseBody,
     RegisterSectionData, RegisterSectionsDataResponse, RegisterSectionsDataResponseBody,
     RegisterSectionDataResponse, RegisterSectionDataResponseBody,
@@ -58,6 +59,7 @@ from openg2p_registry_core.schemas import (
     IngestionDataPayloadResponse, IngestionDataPayloadResponseBody,
     IngestionDataSearchResultsResponse, IngestionDataSearchResultsResponseBody, IngestionDataSearchResultData,
     IngestionDataPayload, FileUrlData, FileUrlResponse, FileUrlResponseBody,
+    DeleteFileData, DeleteFileResponse, DeleteFileResponseBody,
     VcConfigurationResponse, VcConfigurationResponseBody, VcConfigurationData,
     G2PInputMechanismResponse, G2PInputMechanismResponseBody, G2PInputMechanismData,
     AllowedParentsData, AllowedParentsDataResponse, AllowedParentsDataResponseBody
@@ -848,7 +850,14 @@ class RequestResponseHelper(BaseService):
         )
         return verification_response
 
-    def construct_ingestion_config_success_response(self, payload_data, response_class, g2p_request=None):
+    def construct_ingestion_config_success_response(
+        self,
+        payload_data,
+        response_class,
+        g2p_request=None,
+        number_of_items: int = None,
+        number_of_pages: int = None,
+    ):
         """Generic method to construct success response for ingestion configuration endpoints"""
         request_id = g2p_request.request_header.request_id if g2p_request else ""
 
@@ -860,29 +869,76 @@ class RequestResponseHelper(BaseService):
             response_timestamp=datetime.now()
         )
 
+        pagination_response = None
+        if number_of_items is not None and number_of_pages is not None:
+            pagination_response = G2PPaginationResponse(
+                number_of_items=number_of_items,
+                number_of_pages=number_of_pages,
+            )
+
         # Determine the response body class based on response_class
         response_class_name = response_class.__name__
         if response_class_name == 'IncomingPartnerResponse':
-            response_body = IncomingPartnerResponseBody(response_payload=payload_data)
+            response_body = IncomingPartnerResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'IncomingPartnersResponse':
-            response_body = IncomingPartnersResponseBody(response_payload=payload_data)
+            response_body = IncomingPartnersResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'IncomingModelKeyPathResponse':
-            response_body = IncomingModelKeyPathResponseBody(response_payload=payload_data)
+            response_body = IncomingModelKeyPathResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'IncomingModelKeyPathListResponse':
-            response_body = IncomingModelKeyPathListResponseBody(response_payload=payload_data)
+            response_body = IncomingModelKeyPathListResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'IncomingModelSemanticPatternResponse':
-            response_body = IncomingModelSemanticPatternResponseBody(response_payload=payload_data)
+            response_body = IncomingModelSemanticPatternResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
+        elif response_class_name == 'IncomingModelSemanticPatternsResponse':
+            response_body = IncomingModelSemanticPatternsResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'IncomingTemplateResponse':
-            response_body = IncomingTemplateResponseBody(response_payload=payload_data)
+            response_body = IncomingTemplateResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
+        elif response_class_name == 'IncomingTemplatesResponse':
+            response_body = IncomingTemplatesResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'DataModelResponse':
-            response_body = DataModelResponseBody(response_payload=payload_data)
+            response_body = DataModelResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'DataModelsResponse':
-            response_body = DataModelsResponseBody(response_payload=payload_data)
+            response_body = DataModelsResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'SubscriptionActivityLogsResponse':
-            response_body = SubscriptionActivityLogsResponseBody(response_payload=payload_data)
+            response_body = SubscriptionActivityLogsResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         else:
             # Fallback for other response types
-            response_body = G2PResponseBody(response_payload=payload_data)
+            response_body = G2PResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
 
         response = response_class(
             response_header=g2p_response_header,
@@ -956,7 +1012,14 @@ class RequestResponseHelper(BaseService):
         )
         return dedup_results_response
 
-    def construct_outgestion_config_success_response(self, payload_data, response_class, g2p_request=None):
+    def construct_outgestion_config_success_response(
+        self,
+        payload_data,
+        response_class,
+        g2p_request=None,
+        number_of_items: int = None,
+        number_of_pages: int = None,
+    ):
         """Generic method to construct success response for ingestion configuration endpoints"""
         request_id = g2p_request.request_header.request_id if g2p_request else ""
 
@@ -968,15 +1031,41 @@ class RequestResponseHelper(BaseService):
             response_timestamp=datetime.now()
         )
 
+        pagination_response = None
+        if number_of_items is not None and number_of_pages is not None:
+            pagination_response = G2PPaginationResponse(
+                number_of_items=number_of_items,
+                number_of_pages=number_of_pages,
+            )
+
         # Determine the response body class based on response_class
         response_class_name = response_class.__name__
         if response_class_name == 'OutgoingTopicResponse':
-            response_body = OutgoingTopicResponseBody(response_payload=payload_data)
+            response_body = OutgoingTopicResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
+        elif response_class_name == 'OutgoingTopicsResponse':
+            response_body = OutgoingTopicsResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         elif response_class_name == 'OutgoingTemplateResponse':
-            response_body = OutgoingTemplateResponseBody(response_payload=payload_data)
+            response_body = OutgoingTemplateResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
+        elif response_class_name == 'OutgoingTemplatesResponse':
+            response_body = OutgoingTemplatesResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
         else:
             # Fallback for other response types
-            response_body = G2PResponseBody(response_payload=payload_data)
+            response_body = G2PResponseBody(
+                response_payload=payload_data,
+                pagination_response=pagination_response,
+            )
 
         response = response_class(
             response_header=g2p_response_header,
@@ -1485,6 +1574,54 @@ class RequestResponseHelper(BaseService):
             response_header=g2p_response_header,
             response_body=None
         )
+
+    def construct_delete_file_success_response(
+        self,
+        delete_file_data: DeleteFileData,
+        g2p_request: G2PRequest = None
+    ) -> DeleteFileResponse:
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+
+        response_body: DeleteFileResponseBody = DeleteFileResponseBody(
+            response_payload=delete_file_data
+        )
+
+        return DeleteFileResponse(
+            response_header=g2p_response_header,
+            response_body=response_body
+        )
+
+    def construct_delete_file_error_response(
+        self,
+        error_exception: Exception
+    ) -> DeleteFileResponse:
+        error_code = ""
+        error_message = str(error_exception)
+        if isinstance(error_exception, G2PRegistryException):
+            error_code = error_exception.code
+            error_message = error_exception.message
+
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id="",
+            response_status=G2PResponseStatus.ERROR,
+            response_error_code=error_code,
+            response_error_message=error_message,
+            response_timestamp=datetime.now()
+        )
+
+        return DeleteFileResponse(
+            response_header=g2p_response_header,
+            response_body=None
+        )
+
 
     def construct_upload_record_image_success_response(
         self,

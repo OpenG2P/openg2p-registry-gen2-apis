@@ -1,16 +1,20 @@
 import logging
-from fastapi import UploadFile
 from openg2p_fastapi_common.controller import BaseController
-from typing import Optional
 
 from openg2p_registry_core.controller_services import G2POutgestionConfigurationControllerService
 from openg2p_registry_core.schemas import (
+    GetAllOutgoingTopicsRequest,
+    GetAllOutgoingTemplatesRequest,
     OutgoingTopicData,
+    OutgoingTopicIdRequest,
     OutgoingTopicRequest,
+    OutgoingTopicsResponse,
     OutgoingTopicUpdateRequest,
     OutgoingTopicResponse,
     OutgoingTemplateData,
+    OutgoingTemplateIdRequest,
     OutgoingTemplateRequest,
+    OutgoingTemplatesResponse,
     OutgoingTemplateUpdateRequest,
     OutgoingTemplateResponse,
 )
@@ -43,7 +47,7 @@ class G2POutgestionConfigurationController(BaseController):
         self.router.add_api_route(
             "/get_all_topics",
             self.get_all_outgoing_topics,
-            responses={200: {"model": OutgoingTopicResponse}},
+            responses={200: {"model": OutgoingTopicsResponse}},
             methods=["POST"],
         )
 
@@ -98,6 +102,13 @@ class G2POutgestionConfigurationController(BaseController):
         )
 
         self.router.add_api_route(
+            "/get_all_templates",
+            self.get_all_templates,
+            responses={200: {"model": OutgoingTemplatesResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
             "/update_template",
             self.update_template,
             responses={200: {"model": OutgoingTemplateResponse}},
@@ -117,7 +128,7 @@ class G2POutgestionConfigurationController(BaseController):
         self, topic_request: OutgoingTopicRequest
     ) -> OutgoingTopicResponse:
         try:
-            topic_data: list[OutgoingTopicData] = await self.outgestion_config_service.create_outgoing_topic(
+            topic_data: OutgoingTopicData = await self.outgestion_config_service.create_outgoing_topic(
                 topic_request.request_body.request_payload
             )
             return self.helper.construct_outgestion_config_success_response(
@@ -127,9 +138,11 @@ class G2POutgestionConfigurationController(BaseController):
             return self.helper.construct_error_response(error, topic_request)
 
     @require_permissions({"outgestTopic:view"})
-    async def get_outgoing_topic(self, topic_request: OutgoingTopicRequest) -> OutgoingTopicResponse:
+    async def get_outgoing_topic(self, topic_request: OutgoingTopicIdRequest) -> OutgoingTopicResponse:
         try:
-            topic_data: list[OutgoingTopicData] = await self.outgestion_config_service.get_outgoing_topic(topic_request.request_body.request_payload.topic_id)
+            topic_data: OutgoingTopicData = await self.outgestion_config_service.get_outgoing_topic(
+                topic_request.request_body.request_payload.topic_id
+            )
             return self.helper.construct_outgestion_config_success_response(
                 topic_data, OutgoingTopicResponse, topic_request
             )
@@ -137,11 +150,25 @@ class G2POutgestionConfigurationController(BaseController):
             return self.helper.construct_error_response(error, topic_request)
 
     @require_permissions({"outgestTopic:view"})
-    async def get_all_outgoing_topics(self, topic_request: OutgoingTopicRequest) -> OutgoingTopicResponse:
+    async def get_all_outgoing_topics(
+        self, topic_request: GetAllOutgoingTopicsRequest
+    ) -> OutgoingTopicsResponse:
         try:
-            topics_data: list[OutgoingTopicData] = await self.outgestion_config_service.get_all_outgoing_topics()
-            return self.helper.construct_outgestion_config_topics_success_response(
-                topics_data, topic_request
+            pagination_request = getattr(topic_request.request_body, "pagination_request", None)
+            current_page = getattr(pagination_request, "current_page", None)
+            page_size = getattr(pagination_request, "page_size", None)
+            topics_data, total_items, number_of_pages = (
+                await self.outgestion_config_service.get_all_outgoing_topics(
+                    current_page,
+                    page_size,
+                )
+            )
+            return self.helper.construct_outgestion_config_success_response(
+                topics_data,
+                OutgoingTopicsResponse,
+                topic_request,
+                total_items,
+                number_of_pages,
             )
         except Exception as error:
             return self.helper.construct_error_response(error, topic_request)
@@ -151,7 +178,7 @@ class G2POutgestionConfigurationController(BaseController):
         self, topic_update_request: OutgoingTopicUpdateRequest
     ) -> OutgoingTopicResponse:
         try:
-            topic_data: list[OutgoingTopicData] = await self.outgestion_config_service.update_outgoing_topic(
+            topic_data: OutgoingTopicData = await self.outgestion_config_service.update_outgoing_topic(
                 topic_update_request.request_body.request_payload
             )
             return self.helper.construct_outgestion_config_success_response(
@@ -162,11 +189,11 @@ class G2POutgestionConfigurationController(BaseController):
         
     @require_permissions({"outgestTopic:edit"})
     async def toggle_outgoing_topic_status(
-        self, topic_update_request: OutgoingTopicUpdateRequest
+        self, topic_update_request: OutgoingTopicIdRequest
     ) -> OutgoingTopicResponse:
         try:
             topic_data = await self.outgestion_config_service.toggle_outgoing_topic_status(
-                topic_update_request.request_body.request_payload
+                topic_update_request.request_body.request_payload.topic_id
             )
             return self.helper.construct_outgestion_config_success_response(
                 topic_data, OutgoingTopicResponse, topic_update_request
@@ -176,11 +203,11 @@ class G2POutgestionConfigurationController(BaseController):
 
     @require_permissions({"outgestTopic:edit"})
     async def re_register_outgoing_topic(
-        self, topic_update_request: OutgoingTopicUpdateRequest
+        self, topic_update_request: OutgoingTopicIdRequest
     ) -> OutgoingTopicResponse:
         try:
             topic_data = await self.outgestion_config_service.re_register_outgoing_topic(
-                topic_update_request.request_body.request_payload
+                topic_update_request.request_body.request_payload.topic_id
             )
             return self.helper.construct_outgestion_config_success_response(
                 topic_data, OutgoingTopicResponse, topic_update_request
@@ -190,11 +217,11 @@ class G2POutgestionConfigurationController(BaseController):
 
     @require_permissions({"outgestTopic:delete"})
     async def delete_outgoing_topic(
-        self, topic_update_request: OutgoingTopicUpdateRequest
+        self, topic_update_request: OutgoingTopicIdRequest
     ) -> OutgoingTopicResponse:
         try:
             topic_data = await self.outgestion_config_service.delete_outgoing_topic(
-                topic_update_request.request_body.request_payload
+                topic_update_request.request_body.request_payload.topic_id
             )
             return self.helper.construct_outgestion_config_success_response(
                 topic_data, OutgoingTopicResponse, topic_update_request
@@ -205,52 +232,75 @@ class G2POutgestionConfigurationController(BaseController):
 
     @require_permissions({"outgestTemplate:create"})
     async def create_template(
-        self, template_request: OutgoingTemplateRequest, template_file: UploadFile
-
+        self, template_request: OutgoingTemplateRequest
     ) -> OutgoingTemplateResponse:
         try:
             template_data: OutgoingTemplateData = await self.outgestion_config_service.create_template(
-                template_request.request_body.request_payload, template_file
+                template_request.request_body.request_payload
             )
-            return self.helper.construct_outgestion_config_template_success_response(
+            return self.helper.construct_outgestion_config_success_response(
                 template_data, OutgoingTemplateResponse, template_request
             )
         except Exception as error:
             return self.helper.construct_error_response(error, template_request)
 
     @require_permissions({"outgestTemplate:view"})
-    async def get_template(self, template_request: OutgoingTemplateRequest) -> OutgoingTemplateResponse:
+    async def get_template(self, template_request: OutgoingTemplateIdRequest) -> OutgoingTemplateResponse:
         try:
             template_data: OutgoingTemplateData = await self.outgestion_config_service.get_template(
-                template_request.request_body.request_payload
+                template_request.request_body.request_payload.template_id
             )
-            return self.helper.construct_outgestion_config_template_success_response(
+            return self.helper.construct_outgestion_config_success_response(
                 template_data, OutgoingTemplateResponse, template_request
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, template_request)
+
+    @require_permissions({"outgestTemplate:view"})
+    async def get_all_templates(
+        self, template_request: GetAllOutgoingTemplatesRequest
+    ) -> OutgoingTemplatesResponse:
+        try:
+            pagination_request = getattr(template_request.request_body, "pagination_request", None)
+            current_page = getattr(pagination_request, "current_page", None)
+            page_size = getattr(pagination_request, "page_size", None)
+            template_data, total_items, number_of_pages = (
+                await self.outgestion_config_service.get_all_templates(
+                    current_page,
+                    page_size,
+                )
+            )
+            return self.helper.construct_outgestion_config_success_response(
+                template_data,
+                OutgoingTemplatesResponse,
+                template_request,
+                total_items,
+                number_of_pages,
             )
         except Exception as error:
             return self.helper.construct_error_response(error, template_request)
 
     @require_permissions({"outgestTemplate:edit"})
     async def update_template(
-        self, template_update_request: OutgoingTemplateUpdateRequest, template_file: Optional[UploadFile] = None 
+        self, template_update_request: OutgoingTemplateUpdateRequest
     ) -> OutgoingTemplateResponse:
         try:
             template_data: OutgoingTemplateData = await self.outgestion_config_service.update_template(
-                template_update_request.request_body.request_payload, template_file
+                template_update_request.request_body.request_payload
             )
-            return self.helper.construct_outgestion_config_template_success_response(
+            return self.helper.construct_outgestion_config_success_response(
                 template_data, OutgoingTemplateResponse, template_update_request
             )
         except Exception as error:
             return self.helper.construct_error_response(error, template_update_request)
 
     @require_permissions({"outgestTemplate:delete"})
-    async def delete_template(self, template_delete_request: OutgoingTemplateUpdateRequest) -> OutgoingTemplateResponse:
+    async def delete_template(self, template_delete_request: OutgoingTemplateIdRequest) -> OutgoingTemplateResponse:
         try:
             template_data: OutgoingTemplateData = await self.outgestion_config_service.delete_template(
-                template_delete_request.request_body.request_payload
+                template_delete_request.request_body.request_payload.template_id
             )
-            return self.helper.construct_outgestion_config_template_success_response(
+            return self.helper.construct_outgestion_config_success_response(
                 template_data, OutgoingTemplateResponse, template_delete_request
             )
         except Exception as error:
