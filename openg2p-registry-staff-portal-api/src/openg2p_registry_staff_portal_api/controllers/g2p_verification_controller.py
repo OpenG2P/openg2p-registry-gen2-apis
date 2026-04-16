@@ -1,5 +1,6 @@
 import logging
 
+from fastapi import Request
 from openg2p_fastapi_common.controller import BaseController
 
 from openg2p_registry_core.controller_services import G2PVerificationControllerService
@@ -9,7 +10,6 @@ from openg2p_registry_core.schemas import (
     VerificationsDataResponse,
     VerificationDataResponse, VerificationData
 )
-from openg2p_fastapi_common.schemas import G2PResponse
 from iam_core.user_auth.helpers import require_permissions
 
 from ..helpers import RequestResponseHelper
@@ -58,8 +58,9 @@ class G2PVerificationController(BaseController):
             return error_response
 
     @require_permissions({"verificationIntakeForm:create"})
-    async def add_verification(self, add_verification_request: AddVerificationRequest) -> VerificationDataResponse:
+    async def add_verification(self, request: Request, add_verification_request: AddVerificationRequest) -> VerificationDataResponse:
         try:
+            add_verification_request.request_body.request_payload.verified_by = getattr(request.state.auth, "name", "Unknown")
             verification_data: VerificationData = await self.g2p_verification_controller_service.add_verification(add_verification_request)
             verification_response: VerificationDataResponse = self.helper.construct_verification_success_response(
                 verification_data=verification_data, g2p_request=add_verification_request
