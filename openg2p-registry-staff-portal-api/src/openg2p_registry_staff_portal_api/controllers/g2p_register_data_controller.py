@@ -312,7 +312,7 @@ class G2PRegisterDataController(BaseController):
             )
             return error_response
 
-    @require_permissions({"register:view"})
+    @require_permissions({})
     async def get_register_summary_data(self, get_register_summary_data_request: GetRegisterSummaryDataRequest) -> RegisterSummaryDataResponse:
         try:
             register_summary_data_list: list[RegisterSummaryData] = await self.g2p_register_data_controller_service.get_register_summary_data(get_register_summary_data_request)

@@ -1,6 +1,4 @@
 import logging
-from typing import Optional
-from fastapi import UploadFile
 from openg2p_fastapi_common.controller import BaseController
 
 from openg2p_registry_core.controller_services import G2PIngestionConfigurationControllerService
@@ -8,27 +6,23 @@ from openg2p_registry_core.schemas import (
     IncomingModelKeyPathRequest,
     IncomingModelKeyPathResponse,
     IncomingModelKeyPathListResponse,
-    EditKeyPathForMessageIdRequest,
-    EditKeyPathForSenderRequest,
-    EditKeyPathForSignatureRequest,
-    EditKeyPathForSignaturePayloadRequest,
-    EditIsListRequest,
-    EditKeyPathForListElementsRequest,
-    DeleteIncomingKeyPathRequest,
+    IncomingModelKeyPathIdRequest,
+    IncomingModelKeyPathUpdateRequest,
+    GetAllIncomingKeyPathsRequest,
     IncomingModelSemanticPatternRequest,
+    IncomingModelSemanticPatternIdRequest,
+    GetAllIncomingSemanticPatternsRequest,
     IncomingModelSemanticPatternUpdateRequest,
     IncomingModelSemanticPatternResponse,
+    IncomingModelSemanticPatternsResponse,
     IncomingTemplateRequest,
+    IncomingTemplateIdRequest,
+    GetAllIncomingTemplatesRequest,
     IncomingTemplateUpdateRequest,
     IncomingTemplateResponse,
-    IncomingTemplateData,
-    DataModelRequest,
-    DataModelUpdateRequest,
-    DataModelResponse,
-    DataModelsResponse,
-    ChangeResponseTemplateFileRequest,
-    ChangeActiveStatusRequest,
+    IncomingTemplatesResponse,
     SubscriptionActivityLogRequest,
+    GetAllSubscriptionActivityLogsRequest,
     SubscriptionActivityLogsResponse,
 )
 from iam_core.user_auth.helpers import require_permissions
@@ -51,8 +45,15 @@ class G2PIngestionConfigurationController(BaseController):
 
         # IncomingModelKeyPath endpoints
         self.router.add_api_route(
-            "/create_new_incoming_key_path",
-            self.create_new_incoming_key_path,
+            "/create_incoming_key_path",
+            self.create_incoming_key_path,
+            responses={200: {"model": IncomingModelKeyPathResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/get_incoming_key_path",
+            self.get_incoming_key_path,
             responses={200: {"model": IncomingModelKeyPathResponse}},
             methods=["POST"],
         )
@@ -65,50 +66,15 @@ class G2PIngestionConfigurationController(BaseController):
         )
 
         self.router.add_api_route(
+            "/update_incoming_key_path",
+            self.update_incoming_key_path,
+            responses={200: {"model": IncomingModelKeyPathResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
             "/delete_incoming_key_path",
             self.delete_incoming_key_path,
-            responses={200: {"model": IncomingModelKeyPathResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/edit_key_path_for_message_id",
-            self.edit_key_path_for_message_id,
-            responses={200: {"model": IncomingModelKeyPathResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/edit_key_path_for_sender",
-            self.edit_key_path_for_sender,
-            responses={200: {"model": IncomingModelKeyPathResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/edit_key_path_for_signature",
-            self.edit_key_path_for_signature,
-            responses={200: {"model": IncomingModelKeyPathResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/edit_key_path_for_signature_payload",
-            self.edit_key_path_for_signature_payload,
-            responses={200: {"model": IncomingModelKeyPathResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/edit_is_list",
-            self.edit_is_list,
-            responses={200: {"model": IncomingModelKeyPathResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/edit_key_path_for_list_elements",
-            self.edit_key_path_for_list_elements,
             responses={200: {"model": IncomingModelKeyPathResponse}},
             methods=["POST"],
         )
@@ -135,6 +101,20 @@ class G2PIngestionConfigurationController(BaseController):
             methods=["POST"],
         )
 
+        self.router.add_api_route(
+            "/get_all_semantic_patterns",
+            self.get_all_semantic_patterns,
+            responses={200: {"model": IncomingModelSemanticPatternsResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/delete_semantic_pattern",
+            self.delete_semantic_pattern,
+            responses={200: {"model": IncomingModelSemanticPatternResponse}},
+            methods=["POST"],
+        )
+
         # IncomingTemplate endpoints
         self.router.add_api_route(
             "/create_template",
@@ -151,6 +131,13 @@ class G2PIngestionConfigurationController(BaseController):
         )
 
         self.router.add_api_route(
+            "/get_all_templates",
+            self.get_all_templates,
+            responses={200: {"model": IncomingTemplatesResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
             "/update_template",
             self.update_template,
             responses={200: {"model": IncomingTemplateResponse}},
@@ -161,56 +148,6 @@ class G2PIngestionConfigurationController(BaseController):
             "/delete_template",
             self.delete_template,
             responses={200: {"model": IncomingTemplateResponse}},
-            methods=["POST"],
-        )
-
-        # DataModel endpoints
-        self.router.add_api_route(
-            "/create_data_model",
-            self.create_data_model,
-            responses={200: {"model": DataModelResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/get_data_model",
-            self.get_data_model,
-            responses={200: {"model": DataModelResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/get_all_data_models",
-            self.get_all_data_models,
-            responses={200: {"model": DataModelsResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/update_data_model",
-            self.update_data_model,
-            responses={200: {"model": DataModelResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/delete_data_model",
-            self.delete_data_model,
-            responses={200: {"model": DataModelResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/change_response_template_file",
-            self.change_response_template_file,
-            responses={200: {"model": DataModelResponse}},
-            methods=["POST"],
-        )
-
-        self.router.add_api_route(
-            "/change_active_status",
-            self.change_active_status,
-            responses={200: {"model": DataModelResponse}},
             methods=["POST"],
         )
 
@@ -229,13 +166,20 @@ class G2PIngestionConfigurationController(BaseController):
             methods=["POST"],
         )
 
+        self.router.add_api_route(
+            "/get_all_subscription_activity_logs",
+            self.get_all_subscription_activity_logs,
+            responses={200: {"model": SubscriptionActivityLogsResponse}},
+            methods=["POST"],
+        )
+
     # IncomingModelKeyPath Methods
     @require_permissions({"ingestKeyPath:create"})
-    async def create_new_incoming_key_path(
+    async def create_incoming_key_path(
         self, pattern_request: IncomingModelKeyPathRequest
     ) -> IncomingModelKeyPathResponse:
         try:
-            pattern_data = await self.ingestion_config_service.create_new_incoming_key_path(
+            pattern_data = await self.ingestion_config_service.create_incoming_key_path(
                 pattern_request.request_body.request_payload
             )
             return self.helper.construct_ingestion_config_success_response(
@@ -245,114 +189,65 @@ class G2PIngestionConfigurationController(BaseController):
             return self.helper.construct_error_response(error, pattern_request)
 
     @require_permissions({"ingestKeyPath:view"})
+    async def get_incoming_key_path(
+        self, pattern_request: IncomingModelKeyPathIdRequest
+    ) -> IncomingModelKeyPathResponse:
+        try:
+            key_path_data = await self.ingestion_config_service.get_incoming_key_path(
+                pattern_request.request_body.request_payload.key_path_id
+            )
+            return self.helper.construct_ingestion_config_success_response(
+                key_path_data, IncomingModelKeyPathResponse, pattern_request
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, pattern_request)
+
+    @require_permissions({"ingestKeyPath:view"})
     async def get_all_incoming_key_paths(
-        self, pattern_request: IncomingModelKeyPathRequest
+        self, pattern_request: GetAllIncomingKeyPathsRequest
     ) -> IncomingModelKeyPathListResponse:
         try:
-            key_paths_data = await self.ingestion_config_service.get_all_incoming_key_paths()
+            pagination_request = getattr(pattern_request.request_body, "pagination_request", None)
+            current_page = getattr(pagination_request, "current_page", None)
+            page_size = getattr(pagination_request, "page_size", None)
+            key_paths_data, total_items, number_of_pages = (
+                await self.ingestion_config_service.get_all_incoming_key_paths(
+                    current_page,
+                    page_size,
+                )
+            )
             return self.helper.construct_ingestion_config_success_response(
-                key_paths_data, IncomingModelKeyPathListResponse, pattern_request
+                key_paths_data,
+                IncomingModelKeyPathListResponse,
+                pattern_request,
+                total_items,
+                number_of_pages,
             )
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
     @require_permissions({"ingestKeyPath:delete"})
     async def delete_incoming_key_path(
-        self, pattern_request: DeleteIncomingKeyPathRequest
+        self, pattern_request: IncomingModelKeyPathIdRequest
     ) -> IncomingModelKeyPathResponse:
         try:
-            await self.ingestion_config_service.delete_incoming_key_path(
+            key_path_data = await self.ingestion_config_service.delete_incoming_key_path(
                 pattern_request.request_body.request_payload.key_path_id
             )
             return self.helper.construct_ingestion_config_success_response(
-                None, IncomingModelKeyPathResponse, pattern_request
+                key_path_data, IncomingModelKeyPathResponse, pattern_request
             )
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
     @require_permissions({"ingestKeyPath:edit"})
-    async def edit_key_path_for_message_id(
-        self, pattern_request: EditKeyPathForMessageIdRequest
+    async def update_incoming_key_path(
+        self, pattern_request: IncomingModelKeyPathUpdateRequest
     ) -> IncomingModelKeyPathResponse:
         try:
-            pattern_data = await self.ingestion_config_service.edit_key_path_for_message_id(
+            pattern_data = await self.ingestion_config_service.update_incoming_key_path(
                 pattern_request.request_body.request_payload.key_path_id,
-                pattern_request.request_body.request_payload.keypath_for_message_id
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                pattern_data, IncomingModelKeyPathResponse, pattern_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, pattern_request)
-
-    @require_permissions({"ingestKeyPath:edit"})
-    async def edit_key_path_for_sender(
-        self, pattern_request: EditKeyPathForSenderRequest
-    ) -> IncomingModelKeyPathResponse:
-        try:
-            pattern_data = await self.ingestion_config_service.edit_key_path_for_sender(
-                pattern_request.request_body.request_payload.key_path_id,
-                pattern_request.request_body.request_payload.key_path_for_sender
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                pattern_data, IncomingModelKeyPathResponse, pattern_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, pattern_request)
-
-    @require_permissions({"ingestKeyPath:edit"})
-    async def edit_key_path_for_signature(
-        self, pattern_request: EditKeyPathForSignatureRequest
-    ) -> IncomingModelKeyPathResponse:
-        try:
-            pattern_data = await self.ingestion_config_service.edit_key_path_for_signature(
-                pattern_request.request_body.request_payload.key_path_id,
-                pattern_request.request_body.request_payload.key_path_for_signature
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                pattern_data, IncomingModelKeyPathResponse, pattern_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, pattern_request)
-
-    @require_permissions({"ingestKeyPath:edit"})
-    async def edit_key_path_for_signature_payload(
-        self, pattern_request: EditKeyPathForSignaturePayloadRequest
-    ) -> IncomingModelKeyPathResponse:
-        try:
-            pattern_data = await self.ingestion_config_service.edit_key_path_for_signature_payload(
-                pattern_request.request_body.request_payload.key_path_id,
-                pattern_request.request_body.request_payload.key_path_for_signature_payload
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                pattern_data, IncomingModelKeyPathResponse, pattern_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, pattern_request)
-
-    @require_permissions({"ingestKeyPath:edit"})
-    async def edit_is_list(
-        self, pattern_request: EditIsListRequest
-    ) -> IncomingModelKeyPathResponse:
-        try:
-            pattern_data = await self.ingestion_config_service.edit_is_list(
-                pattern_request.request_body.request_payload.key_path_id,
-                pattern_request.request_body.request_payload.is_list
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                pattern_data, IncomingModelKeyPathResponse, pattern_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, pattern_request)
-
-    @require_permissions({"ingestKeyPath:edit"})
-    async def edit_key_path_for_list_elements(
-        self, pattern_request: EditKeyPathForListElementsRequest
-    ) -> IncomingModelKeyPathResponse:
-        try:
-            pattern_data = await self.ingestion_config_service.edit_key_path_for_list_elements(
-                pattern_request.request_body.request_payload.key_path_id,
-                pattern_request.request_body.request_payload.keypath_for_list_elements
+                pattern_request.request_body.request_payload,
             )
             return self.helper.construct_ingestion_config_success_response(
                 pattern_data, IncomingModelKeyPathResponse, pattern_request
@@ -376,7 +271,7 @@ class G2PIngestionConfigurationController(BaseController):
 
     @require_permissions({"ingestExpression:view"})
     async def get_semantic_pattern(
-        self, pattern_request: IncomingModelSemanticPatternRequest
+        self, pattern_request: IncomingModelSemanticPatternIdRequest
     ) -> IncomingModelSemanticPatternResponse:
         try:
             pattern_data = await self.ingestion_config_service.get_semantic_pattern(
@@ -403,13 +298,51 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
 
+    @require_permissions({"ingestExpression:view"})
+    async def get_all_semantic_patterns(
+        self, pattern_request: GetAllIncomingSemanticPatternsRequest
+    ) -> IncomingModelSemanticPatternsResponse:
+        try:
+            pagination_request = getattr(pattern_request.request_body, "pagination_request", None)
+            current_page = getattr(pagination_request, "current_page", None)
+            page_size = getattr(pagination_request, "page_size", None)
+            pattern_data, total_items, number_of_pages = (
+                await self.ingestion_config_service.get_all_semantic_patterns(
+                    current_page,
+                    page_size,
+                )
+            )
+            return self.helper.construct_ingestion_config_success_response(
+                pattern_data,
+                IncomingModelSemanticPatternsResponse,
+                pattern_request,
+                total_items,
+                number_of_pages,
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, pattern_request)
+
+    @require_permissions({"ingestExpression:delete"})
+    async def delete_semantic_pattern(
+        self, pattern_request: IncomingModelSemanticPatternIdRequest
+    ) -> IncomingModelSemanticPatternResponse:
+        try:
+            pattern_data = await self.ingestion_config_service.delete_semantic_pattern(
+                pattern_request.request_body.request_payload.semantic_pattern_id
+            )
+            return self.helper.construct_ingestion_config_success_response(
+                pattern_data, IncomingModelSemanticPatternResponse, pattern_request
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, pattern_request)
+
     @require_permissions({"ingestTemplate:create"})
     async def create_template(
-        self, template_request: IncomingTemplateRequest, template_file: UploadFile
+        self, template_request: IncomingTemplateRequest
     ) -> IncomingTemplateResponse:
         try:
-            template_data: IncomingTemplateData = await self.ingestion_config_service.create_template(
-                template_request.request_body.request_payload, template_file
+            template_data = await self.ingestion_config_service.create_template(
+                template_request.request_body.request_payload
             )
             return self.helper.construct_ingestion_config_success_response(
                 template_data, IncomingTemplateResponse, template_request
@@ -418,9 +351,9 @@ class G2PIngestionConfigurationController(BaseController):
             return self.helper.construct_error_response(error, template_request)
 
     @require_permissions({"ingestTemplate:view"})
-    async def get_template(self, template_request: IncomingTemplateRequest) -> IncomingTemplateResponse:
+    async def get_template(self, template_request: IncomingTemplateIdRequest) -> IncomingTemplateResponse:
         try:
-            template_data: IncomingTemplateData = await self.ingestion_config_service.get_template(
+            template_data = await self.ingestion_config_service.get_template(
                 template_request.request_body.request_payload.template_id
             )
             return self.helper.construct_ingestion_config_success_response(
@@ -429,13 +362,37 @@ class G2PIngestionConfigurationController(BaseController):
         except Exception as error:
             return self.helper.construct_error_response(error, template_request)
 
+    @require_permissions({"ingestTemplate:view"})
+    async def get_all_templates(
+        self, template_request: GetAllIncomingTemplatesRequest
+    ) -> IncomingTemplatesResponse:
+        try:
+            pagination_request = getattr(template_request.request_body, "pagination_request", None)
+            current_page = getattr(pagination_request, "current_page", None)
+            page_size = getattr(pagination_request, "page_size", None)
+            template_data, total_items, number_of_pages = (
+                await self.ingestion_config_service.get_all_templates(
+                    current_page,
+                    page_size,
+                )
+            )
+            return self.helper.construct_ingestion_config_success_response(
+                template_data,
+                IncomingTemplatesResponse,
+                template_request,
+                total_items,
+                number_of_pages,
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, template_request)
+
     @require_permissions({"ingestTemplate:edit"})
     async def update_template(
-        self, template_update_request: IncomingTemplateUpdateRequest, template_file: Optional[UploadFile] = None
+        self, template_update_request: IncomingTemplateUpdateRequest
     ) -> IncomingTemplateResponse:
         try:
-            template_data: IncomingTemplateData = await self.ingestion_config_service.update_template(
-                template_update_request.request_body.request_payload, template_file
+            template_data = await self.ingestion_config_service.update_template(
+                template_update_request.request_body.request_payload
             )
             return self.helper.construct_ingestion_config_success_response(
                 template_data, IncomingTemplateResponse, template_update_request
@@ -444,110 +401,16 @@ class G2PIngestionConfigurationController(BaseController):
             return self.helper.construct_error_response(error, template_update_request)
     
     @require_permissions({"ingestTemplate:delete"})
-    async def delete_template(self, template_delete_request: IncomingTemplateUpdateRequest) -> IncomingTemplateResponse:
+    async def delete_template(self, template_delete_request: IncomingTemplateIdRequest) -> IncomingTemplateResponse:
         try:
-            template_data: IncomingTemplateData = await self.ingestion_config_service.delete_template(
-                template_delete_request.request_body.request_payload
+            template_data = await self.ingestion_config_service.delete_template(
+                template_delete_request.request_body.request_payload.template_id
             )
             return self.helper.construct_ingestion_config_success_response(
                 template_data, IncomingTemplateResponse, template_delete_request
             )
         except Exception as error:
             return self.helper.construct_error_response(error, template_delete_request)
-
-    @require_permissions({"dataModel:create"})
-    async def create_data_model(
-        self, data_model_request: DataModelRequest, response_template_file: Optional[UploadFile] = None
-    ) -> DataModelResponse:
-        try:
-            data_model_data = await self.ingestion_config_service.create_data_model(
-                data_model_request.request_body.request_payload, response_template_file
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                data_model_data, DataModelResponse, data_model_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, data_model_request)
-
-    @require_permissions({"dataModel:view"})
-    async def get_data_model(self, data_model_request: DataModelRequest) -> DataModelResponse:
-        try:
-            data_model_data = await self.ingestion_config_service.get_data_model(
-                data_model_request.request_body.request_payload.data_model_id
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                data_model_data, DataModelResponse, data_model_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, data_model_request)
-
-    @require_permissions({"dataModel:view"})
-    async def get_all_data_models(self, data_model_request: DataModelRequest) -> DataModelsResponse:
-        try:
-            data_models_data = await self.ingestion_config_service.get_all_data_models()
-            return self.helper.construct_ingestion_config_success_response(
-                data_models_data, DataModelsResponse, data_model_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, data_model_request)
-
-    @require_permissions({"dataModel:edit"})
-    async def update_data_model(
-        self, data_model_request: DataModelUpdateRequest, response_template_file: Optional[UploadFile] = None
-    ) -> DataModelResponse:
-        try:
-            data_model_data = await self.ingestion_config_service.update_data_model(
-                data_model_request.request_body.request_payload.data_model_id,
-                data_model_request.request_body.request_payload, response_template_file
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                data_model_data, DataModelResponse, data_model_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, data_model_request)
-
-    @require_permissions({"dataModel:delete"})
-    async def delete_data_model(self, data_model_request: DataModelRequest) -> DataModelResponse:
-        try:
-            data_model_data = await self.ingestion_config_service.delete_data_model(
-                data_model_request.request_body.request_payload.data_model_id
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                data_model_data, DataModelResponse, data_model_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, data_model_request)
-
-    @require_permissions({"dataModel:edit"})
-    async def change_response_template_file(
-        self, change_template_request: ChangeResponseTemplateFileRequest,
-        response_template_file: Optional[UploadFile] = None
-    ) -> DataModelResponse:
-        try:
-            data_model_data = await self.ingestion_config_service.change_response_template_file(
-                change_template_request.request_body.request_payload.data_model_id,
-                response_template_file
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                data_model_data, DataModelResponse, change_template_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, change_template_request)
-
-    @require_permissions({"dataModel:edit"})
-    async def change_active_status(
-        self, change_status_request: ChangeActiveStatusRequest
-    ) -> DataModelResponse:
-        try:
-            data_model_data = await self.ingestion_config_service.change_active_status(
-                change_status_request.request_body.request_payload.data_model_id,
-                change_status_request.request_body.request_payload.is_active
-            )
-            return self.helper.construct_ingestion_config_success_response(
-                data_model_data, DataModelResponse, change_status_request
-            )
-        except Exception as error:
-            return self.helper.construct_error_response(error, change_status_request)
 
     @require_permissions({"ingestSubscription:create"})
     async def create_subscription_activity_log(
@@ -573,6 +436,30 @@ class G2PIngestionConfigurationController(BaseController):
             )
             return self.helper.construct_ingestion_config_success_response(
                 activity_logs_data, SubscriptionActivityLogsResponse, activity_log_request
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, activity_log_request)
+
+    @require_permissions({"ingestSubscription:view"})
+    async def get_all_subscription_activity_logs(
+        self, activity_log_request: GetAllSubscriptionActivityLogsRequest
+    ) -> SubscriptionActivityLogsResponse:
+        try:
+            pagination_request = getattr(activity_log_request.request_body, "pagination_request", None)
+            current_page = getattr(pagination_request, "current_page", None)
+            page_size = getattr(pagination_request, "page_size", None)
+            activity_logs_data, total_items, number_of_pages = (
+                await self.ingestion_config_service.get_all_subscription_activity_logs(
+                    current_page,
+                    page_size,
+                )
+            )
+            return self.helper.construct_ingestion_config_success_response(
+                activity_logs_data,
+                SubscriptionActivityLogsResponse,
+                activity_log_request,
+                total_items,
+                number_of_pages,
             )
         except Exception as error:
             return self.helper.construct_error_response(error, activity_log_request)

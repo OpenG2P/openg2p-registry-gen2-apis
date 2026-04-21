@@ -87,7 +87,7 @@ class G2PRegistryConfigurationController(BaseController):
             error_response: RegistryConfigurationDataResponse = self.helper.construct_error_response(error_exception, create_request)
             return error_response
 
-    @require_permissions({"registryConfiguration:view"})
+    @require_permissions({})
     async def get_registry_configuration(
         self, 
         get_request: GetRegistryConfigurationRequest

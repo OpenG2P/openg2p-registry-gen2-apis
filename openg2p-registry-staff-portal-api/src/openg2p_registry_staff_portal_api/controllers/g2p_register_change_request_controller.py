@@ -1,5 +1,6 @@
 import logging
 
+from fastapi import Request
 from openg2p_fastapi_common.controller import BaseController
 
 from openg2p_registry_core.controller_services import G2PRegisterChangerequestControllerService
@@ -127,8 +128,9 @@ class G2PRegisterChangerequestController(BaseController):
         )
 
     @require_permissions({"changeRequest:create"})
-    async def create_change_request(self, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
+    async def create_change_request(self, request: Request, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
         try:
+            change_request_request.request_body.request_payload.created_by = getattr(request.state.auth, "name", "Unknown")
             change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.create_change_request(change_request_request)
             change_request_response: ChangeRequestResponse = self.helper.construct_change_request_success_response(
                 change_request_response_payload=change_request_response_payload, g2p_request=change_request_request
@@ -140,8 +142,9 @@ class G2PRegisterChangerequestController(BaseController):
             return error_response
 
     @require_permissions({"changeRequest:approve"})
-    async def approve_change_request(self, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
+    async def approve_change_request(self, request: Request, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
         try:
+            change_request_request.request_body.request_payload.approved_by = getattr(request.state.auth, "name", "Unknown")
             change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.approve_change_request(change_request_request)
             change_request_response: ChangeRequestResponse = self.helper.construct_change_request_success_response(
                 change_request_response_payload=change_request_response_payload, g2p_request=change_request_request
@@ -153,8 +156,9 @@ class G2PRegisterChangerequestController(BaseController):
             return error_response
 
     @require_permissions({"changeRequest:approve"})
-    async def reject_change_request(self, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
+    async def reject_change_request(self, request: Request, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
         try:
+            change_request_request.request_body.request_payload.approved_by = getattr(request.state.auth, "name", "Unknown")
             change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.reject_change_request(change_request_request)
             change_request_response: ChangeRequestResponse = self.helper.construct_change_request_success_response(
                 change_request_response_payload=change_request_response_payload, g2p_request=change_request_request
@@ -246,8 +250,9 @@ class G2PRegisterChangerequestController(BaseController):
             return error_response
 
     @require_permissions({"verificationChangeRequest:create"})
-    async def add_verification_for_change_request(self, add_verification_request: AddVerificationRequest) -> VerificationDataResponse:
+    async def add_verification_for_change_request(self, request: Request, add_verification_request: AddVerificationRequest) -> VerificationDataResponse:
         try:
+            add_verification_request.request_body.request_payload.verified_by = getattr(request.state.auth, "name", "Unknown")
             verification_data: VerificationData = await self.g2p_register_change_request_controller_service.add_verification_for_change_request(add_verification_request)
             verification_response: VerificationDataResponse = self.helper.construct_verification_success_response(
                 verification_data=verification_data, g2p_request=add_verification_request
@@ -258,7 +263,7 @@ class G2PRegisterChangerequestController(BaseController):
             error_response: VerificationDataResponse = self.helper.construct_error_response(error_exception, add_verification_request)
             return error_response
 
-    @require_permissions({"changeRequest:view"})
+    @require_permissions({})
     async def get_register_change_request_summary_data(self, get_change_request_summary_data_request: GetChangeRequestSummaryDataRequest) -> ChangeRequestSummaryDataResponse:
         try:
             change_request_summary_data: ChangeRequestSummaryData = await self.g2p_register_change_request_controller_service.get_change_request_summary_data(get_change_request_summary_data_request)

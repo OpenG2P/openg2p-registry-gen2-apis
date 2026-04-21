@@ -1,5 +1,6 @@
 import logging
 
+from fastapi import Request
 from openg2p_fastapi_common.controller import BaseController
 
 from openg2p_registry_core.controller_services import G2PIntakeFormControllerService
@@ -92,8 +93,9 @@ class G2PIntakeFormDataController(BaseController):
         )
 
     @require_permissions({"intakeForm:create"})
-    async def save_submission_draft(self, save_submission_draft_request: SaveSubmissionDraftRequest) -> SubmissionResponse:
+    async def save_submission_draft(self, request: Request, save_submission_draft_request: SaveSubmissionDraftRequest) -> SubmissionResponse:
         try:
+            save_submission_draft_request.request_body.request_payload.created_by = getattr(request.state.auth, "name", "Unknown")
             submission_response_payload: SubmissionResponsePayload = await self.g2p_intake_form_controller_service.save_submission_draft(save_submission_draft_request)
             submission_response: SubmissionResponse = self.helper.construct_submission_success_response(
                 submission_response_payload=submission_response_payload, g2p_request=save_submission_draft_request
@@ -118,8 +120,9 @@ class G2PIntakeFormDataController(BaseController):
             return error_response
 
     @require_permissions({"intakeForm:approve"})
-    async def approve_submission(self, approve_submission_request: ApproveRejectSubmissionRequest) -> SubmissionResponse:
+    async def approve_submission(self, request: Request, approve_submission_request: ApproveRejectSubmissionRequest) -> SubmissionResponse:
         try:
+            approve_submission_request.request_body.request_payload.approved_by = getattr(request.state.auth, "name", "Unknown")
             submission_response_payload: SubmissionResponsePayload = await self.g2p_intake_form_controller_service.approve_submission(approve_submission_request)
             submission_response: SubmissionResponse = self.helper.construct_submission_success_response(
                 submission_response_payload=submission_response_payload, g2p_request=approve_submission_request
@@ -131,8 +134,9 @@ class G2PIntakeFormDataController(BaseController):
             return error_response
 
     @require_permissions({"intakeForm:approve"})
-    async def reject_submission(self, reject_submission_request: ApproveRejectSubmissionRequest) -> SubmissionResponse:
+    async def reject_submission(self, request: Request, reject_submission_request: ApproveRejectSubmissionRequest) -> SubmissionResponse:
         try:
+            reject_submission_request.request_body.request_payload.approved_by = getattr(request.state.auth, "name", "Unknown")
             submission_response_payload: SubmissionResponsePayload = await self.g2p_intake_form_controller_service.reject_submission(reject_submission_request)
             submission_response: SubmissionResponse = self.helper.construct_submission_success_response(
                 submission_response_payload=submission_response_payload, g2p_request=reject_submission_request
@@ -223,7 +227,7 @@ class G2PIntakeFormDataController(BaseController):
             )
             return error_response
 
-    @require_permissions({"intakeForm:view"})
+    @require_permissions({})
     async def get_intake_form_submissions_summary(
         self, get_intake_form_submissions_summary_request: GetIntakeFormSubmissionsSummaryRequest
     ) -> IntakeFormSubmissionsSummaryResponse:
