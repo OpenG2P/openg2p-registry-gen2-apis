@@ -67,8 +67,8 @@ class G2PRegistryThemeController(BaseController):
     @require_permissions({})
     async def get_all_themes(self, get_request: GetAllThemesRequest) -> RegistryThemesResponse:
         try:
-            themes: list[RegistryThemeData] = await self.g2p_registry_theme_controller_service.get_all_themes(get_request)
-            return self.helper.construct_registry_themes_success_response(themes, get_request)
+            registry_theme_data_list: list[RegistryThemeData] = await self.g2p_registry_theme_controller_service.get_all_themes(get_request)
+            return self.helper.construct_registry_themes_success_response(registry_theme_data_list, get_request)
         except Exception as error_exception:
             _logger.error(f"Error in get_all_themes: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, get_request)
@@ -76,8 +76,8 @@ class G2PRegistryThemeController(BaseController):
     @require_permissions({"registryConfiguration:edit"})
     async def create_theme(self, create_request: CreateThemeRequest) -> ThemeOperationResponse:
         try:
-            result: ThemeOperationData = await self.g2p_registry_theme_controller_service.create_theme(create_request)
-            return self.helper.construct_theme_operation_success_response(result, create_request)
+            theme_operation_data: ThemeOperationData = await self.g2p_registry_theme_controller_service.create_theme(create_request)
+            return self.helper.construct_theme_operation_success_response(theme_operation_data, create_request)
         except Exception as error_exception:
             _logger.error(f"Error in create_theme: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, create_request)
@@ -85,8 +85,8 @@ class G2PRegistryThemeController(BaseController):
     @require_permissions({"registryConfiguration:edit"})
     async def remove_theme(self, remove_request: RemoveThemeRequest) -> ThemeOperationResponse:
         try:
-            result: ThemeOperationData = await self.g2p_registry_theme_controller_service.remove_theme(remove_request)
-            return self.helper.construct_theme_operation_success_response(result, remove_request)
+            theme_operation_data: ThemeOperationData = await self.g2p_registry_theme_controller_service.remove_theme(remove_request)
+            return self.helper.construct_theme_operation_success_response(theme_operation_data, remove_request)
         except Exception as error_exception:
             _logger.error(f"Error in remove_theme: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, remove_request)
@@ -94,8 +94,8 @@ class G2PRegistryThemeController(BaseController):
     @require_permissions({"registryConfiguration:edit"})
     async def update_theme_values(self, update_request: UpdateThemeValuesRequest) -> ThemeOperationResponse:
         try:
-            result: ThemeOperationData = await self.g2p_registry_theme_controller_service.update_theme_values(update_request)
-            return self.helper.construct_theme_operation_success_response(result, update_request)
+            theme_operation_data: ThemeOperationData = await self.g2p_registry_theme_controller_service.update_theme_values(update_request)
+            return self.helper.construct_theme_operation_success_response(theme_operation_data, update_request)
         except Exception as error_exception:
             _logger.error(f"Error in update_theme_values: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, update_request)
@@ -103,8 +103,8 @@ class G2PRegistryThemeController(BaseController):
     @require_permissions({})
     async def get_theme_values(self, get_request: GetThemeValuesRequest) -> RegistryThemeValuesResponse:
         try:
-            values: list[RegistryThemeValueData] = await self.g2p_registry_theme_controller_service.get_theme_values(get_request)
-            return self.helper.construct_registry_theme_values_success_response(values, get_request)
+            registry_theme_value_data_list: list[RegistryThemeValueData] = await self.g2p_registry_theme_controller_service.get_theme_values(get_request)
+            return self.helper.construct_registry_theme_values_success_response(registry_theme_value_data_list, get_request)
         except Exception as error_exception:
             _logger.error(f"Error in get_theme_values: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, get_request)
