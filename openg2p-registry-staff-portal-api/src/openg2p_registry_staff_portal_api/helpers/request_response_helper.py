@@ -50,6 +50,9 @@ from openg2p_registry_core.schemas import (
     UploadDocumentsResponseData, UploadDocumentsResponse, UploadDocumentsResponseBody,
     UploadRecordImageData, UploadRecordImageResponse, UploadRecordImageResponseBody,
     RegistryConfigurationData, RegistryConfigurationDataResponse, RegistryConfigurationDataResponseBody,
+    RegistryThemeData, RegistryThemesResponse, RegistryThemesResponseBody,
+    RegistryThemeValueData, RegistryThemeValuesResponse, RegistryThemeValuesResponseBody,
+    ThemeOperationData, ThemeOperationResponse, ThemeOperationResponseBody,
     NumberOfRequestsPendingData, NumberOfRequestsPendingResponse, NumberOfRequestsPendingResponseBody,
     EarliestPendingChangeRequestData, EarliestPendingChangeRequestResponse, EarliestPendingChangeRequestResponseBody,
     SectionDocumentsData, SectionDocumentsResponse, SectionDocumentsResponseBody,
@@ -1368,6 +1371,54 @@ class RequestResponseHelper(BaseService):
             response_body=response_body
         )
         return response
+
+    def construct_registry_themes_success_response(
+        self,
+        themes: List[RegistryThemeData],
+        g2p_request: G2PRequest = None
+    ) -> RegistryThemesResponse:
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+        response_body: RegistryThemesResponseBody = RegistryThemesResponseBody(response_payload=themes)
+        return RegistryThemesResponse(response_header=g2p_response_header, response_body=response_body)
+
+    def construct_theme_operation_success_response(
+        self,
+        operation_data: ThemeOperationData,
+        g2p_request: G2PRequest = None
+    ) -> ThemeOperationResponse:
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+        response_body: ThemeOperationResponseBody = ThemeOperationResponseBody(response_payload=operation_data)
+        return ThemeOperationResponse(response_header=g2p_response_header, response_body=response_body)
+
+    def construct_registry_theme_values_success_response(
+        self,
+        theme_values: List[RegistryThemeValueData],
+        g2p_request: G2PRequest = None
+    ) -> RegistryThemeValuesResponse:
+        request_id = g2p_request.request_header.request_id if g2p_request else ""
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+        response_body: RegistryThemeValuesResponseBody = RegistryThemeValuesResponseBody(response_payload=theme_values)
+        return RegistryThemeValuesResponse(response_header=g2p_response_header, response_body=response_body)
 
     def construct_number_of_requests_pending_success_response(
         self,
