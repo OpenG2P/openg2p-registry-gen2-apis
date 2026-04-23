@@ -20,6 +20,7 @@ from .controllers import (
     G2PTemplateFileController,
     G2PRegisterVCConfigurationController, G2PRegistryConfigurationController,
     G2PRegistryThemeController,
+    G2PRegistryLanguageController,
     G2PUIHelperController,
     G2PVerificationController,
     G2PIntakeFormDataController,
@@ -37,6 +38,7 @@ class Initializer(BaseInitializer):
 
         G2PRegistryConfigurationController().post_init()
         G2PRegistryThemeController().post_init()
+        G2PRegistryLanguageController().post_init()
         G2PRegisterMetadataController().post_init()
         G2PRegisterVCConfigurationController().post_init()
         G2PRegisterDataController().post_init()
