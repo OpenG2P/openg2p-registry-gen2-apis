@@ -15,3 +15,4 @@ from .g2p_verification_controller import G2PVerificationController
 from .g2p_intake_form_data_controller import G2PIntakeFormDataController
 from .g2p_intake_form_metadata_controller import G2PIntakeFormMetadataController
 from .g2p_change_request_core_controller import G2PChangeRequestCoreController
+from .g2p_completion_score_controller import G2PCompletionScoreController
