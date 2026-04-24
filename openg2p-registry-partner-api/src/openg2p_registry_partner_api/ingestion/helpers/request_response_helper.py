@@ -1,3 +1,4 @@
+import logging
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from typing import Dict
@@ -7,6 +8,8 @@ from openg2p_fastapi_common.schemas import G2PResponse, G2PResponseHeader, G2PRe
 from openg2p_registry_core.schemas import IngestDataPayload, IngestDataResponse, IngestDataResponseBody
 from openg2p_registry_core.errors import G2PRegistryException
 from openg2p_registry_core.helpers import MinioClient, TemplateHelper
+
+_logger = logging.getLogger(__name__)
 
 class RequestResponseHelper(BaseService):
 
@@ -78,15 +81,31 @@ class RequestResponseHelper(BaseService):
 
 
     def _construct_data_model_response(self, response_template_file_id: str, response: G2PResponse) -> Response:
-        minio_client = MinioClient.get_component()
-        template_helper = TemplateHelper.get_component()
+        # Use JSON mode so datetimes are serialized as ISO strings.
+        response_dict = response.model_dump(mode="json")
 
-        response = response.model_dump()
-        response = template_helper.render_with_template(
-            minio_client=minio_client,
-            template_file_id=response_template_file_id,
-            data=response,
-            expand_data=False
-        )
-        return JSONResponse(content=response)
+        # When no template is configured, return the untemplated G2P response as-is.
+        if not response_template_file_id:
+            return JSONResponse(content=response_dict)
+
+        # Best-effort template rendering. MinIO or the template file may be
+        # unavailable in local/dev environments — in that case we still want a
+        # successful ingest response, so we fall back to the untemplated body.
+        try:
+            minio_client = MinioClient.get_component()
+            template_helper = TemplateHelper.get_component()
+            rendered = template_helper.render_with_template(
+                minio_client=minio_client,
+                template_file_id=response_template_file_id,
+                data=response_dict,
+                expand_data=False,
+            )
+            return JSONResponse(content=rendered)
+        except Exception as exc:  # noqa: BLE001 — dev resilience
+            _logger.warning(
+                "Response template '%s' could not be rendered (%s); "
+                "falling back to raw G2P response.",
+                response_template_file_id, exc,
+            )
+            return JSONResponse(content=response_dict)
         
