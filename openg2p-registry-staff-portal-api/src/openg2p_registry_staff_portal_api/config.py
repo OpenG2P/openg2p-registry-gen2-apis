@@ -37,3 +37,9 @@ class Settings(ExtSettings):
     audit_timeout_seconds: float = 2.0
     audit_source: str = "/openg2p/registry-staff-portal-api"
     audit_module: str = "registry-staff-portal-api"
+
+    # When true, also audit anonymous-looking calls that get rejected
+    # (any non-2xx response without a valid principal). Captures attempted
+    # unauthorized access (401) and JWT-with-missing-roles (403). Set to
+    # false to revert to the original "audit only authenticated users" rule.
+    audit_anonymous_failures: bool = True

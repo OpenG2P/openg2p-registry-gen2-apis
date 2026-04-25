@@ -41,6 +41,7 @@ app.add_middleware(
     source=_config.audit_source,
     module=_config.audit_module,
     client_id=_config.keycloak_client_id,
+    audit_anonymous_failures=_config.audit_anonymous_failures,
 )
 
 if __name__ == "__main__":
