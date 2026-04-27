@@ -26,6 +26,7 @@ from .controllers import (
     G2PIntakeFormDataController,
     G2PIntakeFormMetadataController,
     G2PChangeRequestCoreController,
+    G2PScoreController,
     G2PCompletionScoreController,
 )
 
@@ -56,6 +57,7 @@ class Initializer(BaseInitializer):
         G2PIntakeFormDataController().post_init()
         G2PIntakeFormMetadataController().post_init()
         G2PChangeRequestCoreController().post_init()
+        G2PScoreController().post_init()
         G2PCompletionScoreController().post_init()
 
     def migrate_database(self, args):
