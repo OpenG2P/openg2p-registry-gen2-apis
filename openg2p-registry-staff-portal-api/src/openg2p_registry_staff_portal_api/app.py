@@ -24,6 +24,7 @@ from .controllers import (
     G2PIntakeFormDataController,
     G2PIntakeFormMetadataController,
     G2PChangeRequestCoreController,
+    G2PCompletionScoreController,
 )
 
 _logger = logging.getLogger(_config.logging_default_logger_name)
@@ -51,6 +52,7 @@ class Initializer(BaseInitializer):
         G2PIntakeFormDataController().post_init()
         G2PIntakeFormMetadataController().post_init()
         G2PChangeRequestCoreController().post_init()
+        G2PCompletionScoreController().post_init()
 
     def migrate_database(self, args):
         _logger.info("Starting database migration")
