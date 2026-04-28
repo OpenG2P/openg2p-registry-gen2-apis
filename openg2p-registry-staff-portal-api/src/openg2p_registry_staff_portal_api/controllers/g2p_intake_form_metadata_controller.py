@@ -1,86 +1,318 @@
 import logging
 
-from openg2p_fastapi_common.controller import BaseController
-
-from openg2p_registry_core.controller_services import G2PIntakeFormControllerService
-from openg2p_registry_core.schemas import (
-    GetIntakeFormsForRegisterRequest,
-    GetIntakeFormMetadataRequest,
-    IntakeFormsForRegisterResponse,
-    IntakeFormMetadataResponse,
-)
-from openg2p_fastapi_common.schemas import G2PResponse
 from iam_core.user_auth.helpers import require_permissions
+from openg2p_fastapi_common.controller import BaseController
+from openg2p_fastapi_common.schemas import G2PResponse
 
-from ..helpers import RequestResponseHelper
+from openg2p_registry_core.controller_services import G2PIntakeFormMetadataControllerService
+from openg2p_registry_core.schemas import (
+    AddIntakeFormSectionRequest,
+    CreateIntakeFormRequest,
+    CreateIntakeFormTabRequest,
+    DeleteIntakeFormRequest,
+    DeleteIntakeFormTabRequest,
+    GetAllIntakeFormsRequest,
+    GetAllIntakeFormSectionsRequest,
+    GetAllIntakeFormTabsRequest,
+    GetIntakeFormRequest,
+    GetIntakeFormTabRequest,
+    IntakeFormDefinitionDataResponse,
+    IntakeFormDefinitionDataResponseBody,
+    IntakeFormDefinitionListResponse,
+    IntakeFormDefinitionListResponseBody,
+    IntakeFormUITabDataResponse,
+    IntakeFormUITabDataResponseBody,
+    IntakeFormUITabListResponse,
+    IntakeFormUITabListResponseBody,
+    IntakeFormUITabSectionDataResponse,
+    IntakeFormUITabSectionDataResponseBody,
+    IntakeFormUITabSectionListResponse,
+    IntakeFormUITabSectionListResponseBody,
+    RemoveIntakeFormSectionRequest,
+    UpdateIntakeFormRequest,
+    UpdateIntakeFormSectionRequest,
+    UpdateIntakeFormTabRequest,
+)
+
 from ..config import Settings
+from ..helpers import RequestResponseHelper
 
 _config = Settings.get_config()
 _logger = logging.getLogger(_config.logging_default_logger_name)
+
 
 class G2PIntakeFormMetadataController(BaseController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         self.router.tags += ["/intake-form-metadata"]
-        self.g2p_intake_form_controller_service = G2PIntakeFormControllerService.get_component()
+        self.service = G2PIntakeFormMetadataControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
         self.router.prefix = "/intake-form-metadata"
 
         self.router.add_api_route(
-            "/get_intake_forms_for_register",
-            self.get_intake_forms_for_register,
-            responses={200: {"model": IntakeFormsForRegisterResponse}},
+            "/create_intake_form",
+            self.create_intake_form,
+            responses={200: {"model": IntakeFormDefinitionDataResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/get_intake_form",
+            self.get_intake_form,
+            responses={200: {"model": IntakeFormDefinitionDataResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/get_all_intake_forms",
+            self.get_all_intake_forms,
+            responses={200: {"model": IntakeFormDefinitionListResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/update_intake_form",
+            self.update_intake_form,
+            responses={200: {"model": IntakeFormDefinitionDataResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/delete_intake_form",
+            self.delete_intake_form,
+            responses={200: {"model": IntakeFormDefinitionDataResponse}},
             methods=["POST"],
         )
 
         self.router.add_api_route(
-            "/get_intake_form",
-            self.get_intake_form,
-            responses={200: {"model": IntakeFormMetadataResponse}},
+            "/create_tab",
+            self.create_tab,
+            responses={200: {"model": IntakeFormUITabDataResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/get_tab",
+            self.get_tab,
+            responses={200: {"model": IntakeFormUITabDataResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/get_all_tabs",
+            self.get_all_tabs,
+            responses={200: {"model": IntakeFormUITabListResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/update_tab",
+            self.update_tab,
+            responses={200: {"model": IntakeFormUITabDataResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/delete_tab",
+            self.delete_tab,
+            responses={200: {"model": IntakeFormUITabDataResponse}},
             methods=["POST"],
         )
 
-    @require_permissions({"intakeForm:view"})
-    async def get_intake_forms_for_register(
-        self, get_intake_forms_for_register_request: GetIntakeFormsForRegisterRequest
-    ) -> IntakeFormsForRegisterResponse:
-        try:
-            intake_forms_list, total_items, number_of_pages = await self.g2p_intake_form_controller_service.get_intake_forms_for_register(
-                get_intake_forms_for_register_request
-            )
-            response: IntakeFormsForRegisterResponse = self.helper.construct_intake_forms_for_register_success_response(
-                intake_forms_list=intake_forms_list,
-                g2p_request=get_intake_forms_for_register_request,
-                number_of_items=total_items,
-                number_of_pages=number_of_pages,
-            )
-            return response
-        except Exception as error_exception:
-            _logger.error(f"Error in get_intake_forms_for_register: {str(error_exception)}")
-            error_response: G2PResponse = self.helper.construct_error_response(
-                error_exception, get_intake_forms_for_register_request
-            )
-            return error_response
+        self.router.add_api_route(
+            "/add_section",
+            self.add_section,
+            responses={200: {"model": IntakeFormUITabSectionDataResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/get_all_sections",
+            self.get_all_sections,
+            responses={200: {"model": IntakeFormUITabSectionListResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/update_section",
+            self.update_section,
+            responses={200: {"model": IntakeFormUITabSectionDataResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/remove_section",
+            self.remove_section,
+            responses={200: {"model": IntakeFormUITabSectionDataResponse}},
+            methods=["POST"],
+        )
 
-    @require_permissions({"intakeForm:view"})
-    async def get_intake_form(
-        self, get_intake_form_metadata_request: GetIntakeFormMetadataRequest
-    ) -> IntakeFormMetadataResponse:
+    @require_permissions({"intakeFormDefinition:edit"})
+    async def create_intake_form(self, request: CreateIntakeFormRequest) -> G2PResponse:
         try:
-            intake_form_sections_list, total_items, number_of_pages = await self.g2p_intake_form_controller_service.get_intake_form_metadata(
-                get_intake_form_metadata_request
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            data, _ = await self.service.create_intake_form(request_payload, pagination_request)
+            response_body = IntakeFormDefinitionDataResponseBody(response_payload=data)
+            return self.helper.construct_success_response(response_body, request)
+        except Exception as error_exception:
+            _logger.error(f"Error in create_intake_form: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:edit"})
+    async def update_intake_form(self, request: UpdateIntakeFormRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            data, _ = await self.service.update_intake_form(request_payload, pagination_request)
+            response_body = IntakeFormDefinitionDataResponseBody(response_payload=data)
+            return self.helper.construct_success_response(response_body, request)
+        except Exception as error_exception:
+            _logger.error(f"Error in update_intake_form: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:edit"})
+    async def delete_intake_form(self, request: DeleteIntakeFormRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            _, _ = await self.service.delete_intake_form(request_payload, pagination_request)
+            response_body = IntakeFormDefinitionDataResponseBody(response_payload=None)
+            return self.helper.construct_success_response(response_body, request)
+        except Exception as error_exception:
+            _logger.error(f"Error in delete_intake_form: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:view"})
+    async def get_all_intake_forms(self, request: GetAllIntakeFormsRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            data, pagination_response = await self.service.get_all_intake_forms(request_payload, pagination_request)
+            response_body = IntakeFormDefinitionListResponseBody(response_payload=data)
+            return self.helper.construct_success_response(
+                response_body,
+                request,
+                pagination_response=pagination_response,
             )
-            response: IntakeFormMetadataResponse = self.helper.construct_intake_form_metadata_success_response(
-                intake_form_sections_list=intake_form_sections_list,
-                g2p_request=get_intake_form_metadata_request,
-                number_of_items=total_items,
-                number_of_pages=number_of_pages,
-            )
-            return response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_all_intake_forms: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:view"})
+    async def get_intake_form(self, request: GetIntakeFormRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            data, _ = await self.service.get_intake_form(request_payload, pagination_request)
+            response_body = IntakeFormDefinitionDataResponseBody(response_payload=data)
+            return self.helper.construct_success_response(response_body, request)
         except Exception as error_exception:
             _logger.error(f"Error in get_intake_form: {str(error_exception)}")
-            error_response: G2PResponse = self.helper.construct_error_response(
-                error_exception, get_intake_form_metadata_request
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:edit"})
+    async def create_tab(self, request: CreateIntakeFormTabRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            data, _ = await self.service.create_tab(request_payload, pagination_request)
+            response_body = IntakeFormUITabDataResponseBody(response_payload=data)
+            return self.helper.construct_success_response(response_body, request)
+        except Exception as error_exception:
+            _logger.error(f"Error in create_tab: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:edit"})
+    async def delete_tab(self, request: DeleteIntakeFormTabRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            _, _ = await self.service.delete_tab(request_payload, pagination_request)
+            response_body = IntakeFormUITabDataResponseBody(response_payload=None)
+            return self.helper.construct_success_response(response_body, request)
+        except Exception as error_exception:
+            _logger.error(f"Error in delete_tab: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:edit"})
+    async def update_tab(self, request: UpdateIntakeFormTabRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            data, _ = await self.service.update_tab(request_payload, pagination_request)
+            response_body = IntakeFormUITabDataResponseBody(response_payload=data)
+            return self.helper.construct_success_response(response_body, request)
+        except Exception as error_exception:
+            _logger.error(f"Error in update_tab: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:view"})
+    async def get_tab(self, request: GetIntakeFormTabRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            data, _ = await self.service.get_tab(request_payload, pagination_request)
+            response_body = IntakeFormUITabDataResponseBody(response_payload=data)
+            return self.helper.construct_success_response(response_body, request)
+        except Exception as error_exception:
+            _logger.error(f"Error in get_tab: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:view"})
+    async def get_all_tabs(self, request: GetAllIntakeFormTabsRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            data, pagination_response = await self.service.get_all_tabs(request_payload, pagination_request)
+            response_body = IntakeFormUITabListResponseBody(response_payload=data)
+            return self.helper.construct_success_response(
+                response_body,
+                request,
+                pagination_response=pagination_response,
             )
-            return error_response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_all_tabs: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:edit"})
+    async def add_section(self, request: AddIntakeFormSectionRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            data, _ = await self.service.add_section(request_payload, pagination_request)
+            response_body = IntakeFormUITabSectionDataResponseBody(response_payload=data)
+            return self.helper.construct_success_response(response_body, request)
+        except Exception as error_exception:
+            _logger.error(f"Error in add_section: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:edit"})
+    async def remove_section(self, request: RemoveIntakeFormSectionRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            _, _ = await self.service.remove_section(request_payload, pagination_request)
+            response_body = IntakeFormUITabSectionDataResponseBody(response_payload=None)
+            return self.helper.construct_success_response(response_body, request)
+        except Exception as error_exception:
+            _logger.error(f"Error in remove_section: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:edit"})
+    async def update_section(self, request: UpdateIntakeFormSectionRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            data, _ = await self.service.update_section(request_payload, pagination_request)
+            response_body = IntakeFormUITabSectionDataResponseBody(response_payload=data)
+            return self.helper.construct_success_response(response_body, request)
+        except Exception as error_exception:
+            _logger.error(f"Error in update_section: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:view"})
+    async def get_all_sections(self, request: GetAllIntakeFormSectionsRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            data, pagination_response = await self.service.get_all_sections(request_payload, pagination_request)
+            response_body = IntakeFormUITabSectionListResponseBody(response_payload=data)
+            return self.helper.construct_success_response(
+                response_body,
+                request,
+                pagination_response=pagination_response,
+            )
+        except Exception as error_exception:
+            _logger.error(f"Error in get_all_sections: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)

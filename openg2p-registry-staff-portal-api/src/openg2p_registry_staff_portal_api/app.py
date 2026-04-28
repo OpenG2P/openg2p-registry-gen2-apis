@@ -13,7 +13,7 @@ from openg2p_registry_extensions.app import Initializer as ExtensionsInitializer
 from .helpers import RequestResponseHelper
 from .controllers import (
     G2PRegisterDataController, G2PRegisterChangerequestController,
-    G2PRegisterMetadataController,
+    G2PRegisterMetadataController, G2PRegisterTabMetadataController, G2PRegisterSectionMetadataController,
     G2PIngestionConfigurationController, G2POutgestionConfigurationController,
     G2PDataModelController,
     G2PDocumentController, G2PAttributeController, G2PIngestionDataController, 
@@ -42,6 +42,8 @@ class Initializer(BaseInitializer):
         G2PRegistryThemeController().post_init()
         G2PRegistryLanguageController().post_init()
         G2PRegisterMetadataController().post_init()
+        G2PRegisterTabMetadataController().post_init()
+        G2PRegisterSectionMetadataController().post_init()
         G2PRegisterVCConfigurationController().post_init()
         G2PRegisterDataController().post_init()
         G2PRegisterChangerequestController().post_init()
