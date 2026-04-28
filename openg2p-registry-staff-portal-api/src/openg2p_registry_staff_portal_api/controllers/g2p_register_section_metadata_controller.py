@@ -74,8 +74,10 @@ class G2PRegisterSectionMetadataController(BaseController):
     @require_permissions({"registerSection:view"})
     async def get_all_sections(self, request: GetRegisterSectionsMetadataRequest):
         try:
-            data = await self.service.get_all_sections(request)
-            return self.helper.construct_register_section_metadata_list_success_response(data, request)
+            data, total_items, number_of_pages = await self.service.get_all_sections(request)
+            return self.helper.construct_register_section_metadata_list_success_response(
+                data, request, number_of_items=total_items, number_of_pages=number_of_pages
+            )
         except Exception as error_exception:
             _logger.error(f"Error in get_all_sections: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, request)
