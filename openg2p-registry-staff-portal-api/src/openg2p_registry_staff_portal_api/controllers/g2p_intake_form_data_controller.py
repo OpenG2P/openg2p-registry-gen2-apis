@@ -11,6 +11,12 @@ from openg2p_registry_core.schemas import (
     DeleteIntakeFormSubmissionRequest,
     FinalizeSubmissionRequest,
     GetSubmissionRequest,
+    GetDeduplicationIntakeFormRegisterResultsRequest,
+    GetDeduplicationIntakeFormIntakeFormResultsRequest,
+    DeduplicationIntakeFormRegisterResultsResponse,
+    DeduplicationIntakeFormRegisterResultsResponseBody,
+    DeduplicationIntakeFormIntakeFormResultsResponse,
+    DeduplicationIntakeFormIntakeFormResultsResponseBody,
     SearchInSubmissionRequest,
     SubmissionResponse,
     SubmissionResponseBody,
@@ -75,6 +81,18 @@ class G2PIntakeFormDataController(BaseController):
             "/search_in_intake_form_submissions",
             self.search_in_intake_form_submissions,
             responses={200: {"model": SubmissionSearchResultsResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/get_deduplication_intake_form_register_results",
+            self.get_deduplication_intake_form_register_results,
+            responses={200: {"model": DeduplicationIntakeFormRegisterResultsResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/get_deduplication_intake_form_intake_form_results",
+            self.get_deduplication_intake_form_intake_form_results,
+            responses={200: {"model": DeduplicationIntakeFormIntakeFormResultsResponse}},
             methods=["POST"],
         )
 
@@ -205,4 +223,46 @@ class G2PIntakeFormDataController(BaseController):
             )
         except Exception as error_exception:
             _logger.error("Error in search_in_intake_form_submissions: %s", error_exception)
+            return self.helper.construct_error_response(error_exception, g2p_request)
+
+    @require_permissions({"register:view"})
+    async def get_deduplication_intake_form_register_results(
+        self,
+        g2p_request: GetDeduplicationIntakeFormRegisterResultsRequest,
+    ) -> DeduplicationIntakeFormRegisterResultsResponse:
+        try:
+            results, total_items, number_of_pages = await self.service.get_deduplication_intake_form_register_results(
+                g2p_request
+            )
+            return self.helper.construct_success_response(
+                DeduplicationIntakeFormRegisterResultsResponseBody(
+                    response_payload=results,
+                    number_of_items=total_items,
+                    number_of_pages=number_of_pages,
+                ),
+                g2p_request,
+            )
+        except Exception as error_exception:
+            _logger.error("Error in get_deduplication_intake_form_register_results: %s", error_exception)
+            return self.helper.construct_error_response(error_exception, g2p_request)
+
+    @require_permissions({"register:view"})
+    async def get_deduplication_intake_form_intake_form_results(
+        self,
+        g2p_request: GetDeduplicationIntakeFormIntakeFormResultsRequest,
+    ) -> DeduplicationIntakeFormIntakeFormResultsResponse:
+        try:
+            results, total_items, number_of_pages = await self.service.get_deduplication_intake_form_intake_form_results(
+                g2p_request
+            )
+            return self.helper.construct_success_response(
+                DeduplicationIntakeFormIntakeFormResultsResponseBody(
+                    response_payload=results,
+                    number_of_items=total_items,
+                    number_of_pages=number_of_pages,
+                ),
+                g2p_request,
+            )
+        except Exception as error_exception:
+            _logger.error("Error in get_deduplication_intake_form_intake_form_results: %s", error_exception)
             return self.helper.construct_error_response(error_exception, g2p_request)
