@@ -70,8 +70,10 @@ class G2PRegisterTabMetadataController(BaseController):
     @require_permissions({"registerTab:view"})
     async def get_all_tabs(self, request: GetRegisterTabMetadataListRequest):
         try:
-            data = await self.service.get_all_tabs(request)
-            return self.helper.construct_register_tab_metadata_list_success_response(data, request)
+            data, total_items, number_of_pages = await self.service.get_all_tabs(request)
+            return self.helper.construct_register_tab_metadata_list_success_response(
+                data, request, number_of_items=total_items, number_of_pages=number_of_pages
+            )
         except Exception as error_exception:
             _logger.error(f"Error in get_all_tabs: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, request)
