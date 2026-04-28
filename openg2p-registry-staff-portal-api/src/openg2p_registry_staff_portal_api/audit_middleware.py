@@ -183,43 +183,65 @@ class AuditMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
         # Always run the inner stack first — never delay the user's response.
-        response = await call_next(request)
+        # If the inner stack raises (e.g. JWKS fetch fails, DB error,
+        # unhandled exception in a handler), we still emit an audit event
+        # marked as a 5xx failure before re-raising — this is exactly the
+        # kind of incident operators want recorded.
+        response = None
+        raised: BaseException | None = None
+        try:
+            response = await call_next(request)
+        except BaseException as exc:  # noqa: BLE001 — we re-raise below
+            raised = exc
 
-        if not self._enabled:
-            return response
-        if request.method == "OPTIONS":
-            return response
-        if request.url.path in _SKIP_PATHS:
-            return response
+        # Skip-list checks apply to both success and failure paths.
+        if self._enabled \
+                and request.method != "OPTIONS" \
+                and request.url.path not in _SKIP_PATHS:
+            self._maybe_emit(request, response, raised)
 
+        if raised is not None:
+            raise raised
+        return response
+
+    def _maybe_emit(self, request: Request, response, raised) -> None:
+        """Decide whether to emit, build the event, fire-and-forget."""
         principal = getattr(request.state, self._state_key, None)
-        is_success = 200 <= response.status_code < 300
 
-        # Decide: should we emit for this request?
-        if principal is not None:
-            # Authenticated and let through — always emit.
-            pass
-        elif (not is_success) and self._audit_anonymous_failures:
-            # Rejected anonymous-looking call — emit per v2 policy.
-            pass
+        # If the inner stack raised, treat this as outcome=failure / 500.
+        # The actor may still be available (auth ran successfully and a
+        # later layer crashed) or may be missing (auth itself crashed,
+        # e.g. JWKS unreachable).
+        if raised is not None:
+            status_code = 500
+            is_success = False
         else:
-            # Successful anonymous (legitimate public endpoint) — skip.
-            return response
+            status_code = response.status_code
+            is_success = 200 <= status_code < 300
 
-        # Build event and fire-and-forget (never blocks the response).
+        # Audit decision
+        if principal is not None:
+            pass  # authenticated — always audit
+        elif (not is_success) and self._audit_anonymous_failures:
+            pass  # rejected anonymous — audit per v2 policy
+        else:
+            return  # successful anonymous — skip
+
         try:
             route = self._match_route(request)
-            actor = self._build_actor(request, principal, response)
-            event = self._build_event(request, response, actor, route)
+            actor = self._build_actor(request, principal, response, status_code)
+            event = self._build_event(
+                request, response, status_code, actor, route, raised
+            )
             asyncio.create_task(self._emit(event))
         except Exception:
             _logger.exception("AuditMiddleware: failed to build event; skipping")
 
-        return response
-
     # ---------- actor construction ----------
 
-    def _build_actor(self, request: Request, principal, response) -> dict:
+    def _build_actor(
+        self, request: Request, principal, response, status_code: int
+    ) -> dict:
         """Produce the `data.actor` payload from the best available identity source.
 
         Three paths, in order of preference:
@@ -229,6 +251,11 @@ class AuditMiddleware(BaseHTTPMiddleware):
           2. 403 Forbidden + bearer token — JWT is known-valid (AuthMiddleware
              verified it before raising), so decode is trustworthy.
           3. Anonymous fallback — actor.type=anonymous, only IP is recorded.
+
+        `response` may be None if the inner stack raised an exception
+        before producing a response — in that case status_code=500 is
+        passed in and we fall through to either the principal path (if
+        auth completed before the crash) or anonymous fallback.
         """
         ip = _client_ip(request)
         bearer = _extract_bearer(request)
@@ -256,7 +283,7 @@ class AuditMiddleware(BaseHTTPMiddleware):
                 "session_id": session_id,
             }
 
-        if response.status_code == 403 and bearer:
+        if status_code == 403 and bearer:
             # AuthMiddleware confirmed signature validity before raising.
             # We can trust the decoded claims.
             claims = _decode_jwt_payload(bearer)
@@ -278,7 +305,8 @@ class AuditMiddleware(BaseHTTPMiddleware):
                     "session_id": claims.get("session_state") or claims.get("sid"),
                 }
 
-        # Anonymous fallback — token absent, malformed, or unverified.
+        # Anonymous fallback — token absent, malformed, or unverified, or
+        # the inner stack crashed before auth populated state.auth.
         return {
             "type": "anonymous",
             "id": "anonymous",
@@ -287,7 +315,15 @@ class AuditMiddleware(BaseHTTPMiddleware):
 
     # ---------- event construction ----------
 
-    def _build_event(self, request: Request, response, actor: dict, route) -> dict:
+    def _build_event(
+        self,
+        request: Request,
+        response,
+        status_code: int,
+        actor: dict,
+        route,
+        raised: BaseException | None,
+    ) -> dict:
         # Endpoint function name → CloudEvents `type` and `action` derivation.
         func_name = "unknown"
         if route is not None and getattr(route, "endpoint", None) is not None:
@@ -296,6 +332,27 @@ class AuditMiddleware(BaseHTTPMiddleware):
         # First word of the function name as the action verb (best effort).
         action = func_name.split("_", 1)[0] if "_" in func_name else func_name
 
+        # Build context, plus a `reason` when the inner stack raised.
+        context: dict = {
+            "api": f"{request.method} {request.url.path}",
+            "module": self._module,
+            "http_status": status_code,
+            "request_id": request.headers.get("x-request-id"),
+        }
+        data: dict = {
+            "actor": actor,
+            "action": action,
+            "outcome": _status_to_outcome(status_code),
+            "context": context,
+        }
+        if raised is not None:
+            # Capture exception class + truncated message into reason so
+            # ops can grep for "JWKS" / "Connection refused" / etc. without
+            # leaking full stack traces into the audit store.
+            data["reason"] = (
+                f"{type(raised).__name__}: {str(raised)[:200]}"
+            )
+
         return {
             "specversion": "1.0",
             "id": str(uuid4()),
@@ -303,17 +360,7 @@ class AuditMiddleware(BaseHTTPMiddleware):
             "type": f"org.openg2p.staff_portal.{func_name}",
             "time": _now_iso(),
             "datacontenttype": "application/json",
-            "data": {
-                "actor": actor,
-                "action": action,
-                "outcome": _status_to_outcome(response.status_code),
-                "context": {
-                    "api": f"{request.method} {request.url.path}",
-                    "module": self._module,
-                    "http_status": response.status_code,
-                    "request_id": request.headers.get("x-request-id"),
-                },
-            },
+            "data": data,
         }
 
     # ---------- emission ----------
