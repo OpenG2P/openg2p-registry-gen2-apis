@@ -29,6 +29,9 @@ from openg2p_registry_core.schemas import (
     IntakeFormUITabSectionListResponse,
     IntakeFormUITabSectionListResponseBody,
     RemoveIntakeFormSectionRequest,
+    RenderIntakeFormDataResponse,
+    RenderIntakeFormDataResponseBody,
+    RenderIntakeFormRequest,
     UpdateIntakeFormRequest,
     UpdateIntakeFormSectionRequest,
     UpdateIntakeFormTabRequest,
@@ -60,6 +63,12 @@ class G2PIntakeFormMetadataController(BaseController):
             "/get_intake_form",
             self.get_intake_form,
             responses={200: {"model": IntakeFormDefinitionDataResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/render_intake_form",
+            self.render_intake_form,
+            responses={200: {"model": RenderIntakeFormDataResponse}},
             methods=["POST"],
         )
         self.router.add_api_route(
@@ -199,6 +208,18 @@ class G2PIntakeFormMetadataController(BaseController):
             return self.helper.construct_success_response(response_body, request)
         except Exception as error_exception:
             _logger.error(f"Error in get_intake_form: {str(error_exception)}")
+            return self.helper.construct_error_response(error_exception, request)
+
+    @require_permissions({"intakeFormDefinition:view"})
+    async def render_intake_form(self, request: RenderIntakeFormRequest) -> G2PResponse:
+        try:
+            request_payload = request.request_body.request_payload
+            pagination_request = request.request_body.pagination_request
+            data, _ = await self.service.render_intake_form(request_payload, pagination_request)
+            response_body = RenderIntakeFormDataResponseBody(response_payload=data)
+            return self.helper.construct_success_response(response_body, request)
+        except Exception as error_exception:
+            _logger.error(f"Error in render_intake_form: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, request)
 
     @require_permissions({"intakeFormDefinition:edit"})
