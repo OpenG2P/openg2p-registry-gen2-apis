@@ -11,6 +11,9 @@ from openg2p_registry_core.schemas import (
     DeleteIntakeFormSubmissionRequest,
     FinalizeSubmissionRequest,
     GetSubmissionRequest,
+    GetIntakeFormTabRecordsRequest,
+    GetIntakeFormTabRecordsResponse,
+    GetIntakeFormTabRecordsResponseBody,
     GetDeduplicationIntakeFormRegisterResultsRequest,
     GetDeduplicationIntakeFormIntakeFormResultsRequest,
     DeduplicationIntakeFormRegisterResultsResponse,
@@ -84,6 +87,9 @@ class G2PIntakeFormDataController(BaseController):
             methods=["POST"],
         )
         self.router.add_api_route(
+            "/get_tab_records",
+            self.get_tab_records,
+            responses={200: {"model": GetIntakeFormTabRecordsResponse}},
             "/get_deduplication_intake_form_register_results",
             self.get_deduplication_intake_form_register_results,
             responses={200: {"model": DeduplicationIntakeFormRegisterResultsResponse}},
@@ -225,6 +231,20 @@ class G2PIntakeFormDataController(BaseController):
             _logger.error("Error in search_in_intake_form_submissions: %s", error_exception)
             return self.helper.construct_error_response(error_exception, g2p_request)
 
+    @require_permissions({"intakeForm:view"})
+    async def get_tab_records(
+        self,
+        g2p_request: GetIntakeFormTabRecordsRequest,
+    ) -> GetIntakeFormTabRecordsResponse:
+        try:
+            payload = await self.service.get_tab_records(g2p_request)
+            return self.helper.construct_success_response(
+                GetIntakeFormTabRecordsResponseBody(response_payload=payload),
+                g2p_request,
+            )
+        except Exception as error_exception:
+            _logger.error("Error in get_tab_records: %s", error_exception)
+    
     @require_permissions({"register:view"})
     async def get_deduplication_intake_form_register_results(
         self,
