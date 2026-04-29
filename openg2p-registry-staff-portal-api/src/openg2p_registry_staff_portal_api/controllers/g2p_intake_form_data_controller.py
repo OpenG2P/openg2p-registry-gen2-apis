@@ -26,6 +26,9 @@ from openg2p_registry_core.schemas import (
     SubmissionResponsePayload,
     SubmissionSearchResultsResponse,
     SubmissionSearchResultsResponseBody,
+    IntakeFormSubmissionsSummaryResponse,
+    GetIntakeFormSubmissionsSummaryRequest,
+    IntakeFormSubmissionsSummaryData
 )
 
 from ..config import Settings
@@ -104,6 +107,32 @@ class G2PIntakeFormDataController(BaseController):
             responses={200: {"model": DeduplicationIntakeFormIntakeFormResultsResponse}},
             methods=["POST"],
         )
+        self.router.add_api_route(
+            "/get_intake_form_submissions_summary",
+            self.get_intake_form_submissions_summary,
+            responses={200: {"model": IntakeFormSubmissionsSummaryResponse}},
+            methods=["POST"],
+        )
+    
+    @require_permissions({})
+    async def get_intake_form_submissions_summary(
+        self, get_intake_form_submissions_summary_request: GetIntakeFormSubmissionsSummaryRequest
+    ) -> IntakeFormSubmissionsSummaryResponse:
+        try:
+            summary_data: IntakeFormSubmissionsSummaryData = await self.g2p_intake_form_controller_service.get_intake_form_submissions_summary(
+                get_intake_form_submissions_summary_request
+            )
+            summary_response: IntakeFormSubmissionsSummaryResponse = self.helper.construct_intake_form_submissions_summary_success_response(
+                summary_data=summary_data,
+                g2p_request=get_intake_form_submissions_summary_request,
+            )
+            return summary_response
+        except Exception as error_exception:
+            _logger.error(f"Error in get_intake_form_submissions_summary: {str(error_exception)}")
+            error_response: G2PResponse = self.helper.construct_error_response(
+                error_exception, get_intake_form_submissions_summary_request
+            )
+            return error_response
 
     @require_permissions({"intakeForm:create"})
     async def save_intake_form_submission(
