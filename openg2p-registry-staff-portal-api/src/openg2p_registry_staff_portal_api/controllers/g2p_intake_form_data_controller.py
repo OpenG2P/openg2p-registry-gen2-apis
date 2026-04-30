@@ -119,7 +119,7 @@ class G2PIntakeFormDataController(BaseController):
         self, get_intake_form_submissions_summary_request: GetIntakeFormSubmissionsSummaryRequest
     ) -> IntakeFormSubmissionsSummaryResponse:
         try:
-            summary_data: IntakeFormSubmissionsSummaryData = await self.g2p_intake_form_controller_service.get_intake_form_submissions_summary(
+            summary_data: IntakeFormSubmissionsSummaryData = await self.service.get_intake_form_submissions_summary(
                 get_intake_form_submissions_summary_request
             )
             summary_response: IntakeFormSubmissionsSummaryResponse = self.helper.construct_intake_form_submissions_summary_success_response(
