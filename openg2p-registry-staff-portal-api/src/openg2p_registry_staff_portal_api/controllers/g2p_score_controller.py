@@ -173,7 +173,7 @@ class G2PScoreController(BaseController):
                 error_exception, create_score_definition_request
             )
 
-    @require_permissions({"registerScore:update"})
+    @require_permissions({"registerScore:edit"})
     async def update_score_definition(self, update_score_definition_request: UpdateScoreDefinitionRequest) -> UpdateScoreDefinitionResponse:
         try:
             score_definition_payload = await self.g2p_score_controller_service.update_score_definition(
