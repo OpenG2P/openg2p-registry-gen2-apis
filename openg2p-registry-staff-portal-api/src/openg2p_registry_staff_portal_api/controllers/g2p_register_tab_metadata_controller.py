@@ -87,7 +87,7 @@ class G2PRegisterTabMetadataController(BaseController):
             _logger.error(f"Error in get_tab: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, request)
 
-    @require_permissions({"registerTab:update"})
+    @require_permissions({"registerTab:edit"})
     async def update_tab(self, request: UpdateRegisterTabRequest):
         try:
             data: RegisterTabIdData = await self.service.update_tab(request)
@@ -96,7 +96,7 @@ class G2PRegisterTabMetadataController(BaseController):
             _logger.error(f"Error in update_tab: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, request)
 
-    @require_permissions({"registerTab:update"})
+    @require_permissions({"registerTab:edit"})
     async def add_section(self, request: AddRegisterTabSectionRequest):
         try:
             data: RegisterTabSectionIdData = await self.service.add_section(request)
@@ -114,7 +114,7 @@ class G2PRegisterTabMetadataController(BaseController):
             _logger.error(f"Error in get_sections: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, request)
 
-    @require_permissions({"registerTab:update"})
+    @require_permissions({"registerTab:edit"})
     async def update_section(self, request: UpdateRegisterTabSectionRequest):
         try:
             data: G2PRegisterUITabSectionData = await self.service.update_section(request)
@@ -123,7 +123,7 @@ class G2PRegisterTabMetadataController(BaseController):
             _logger.error(f"Error in update_section: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, request)
 
-    @require_permissions({"registerTab:update"})
+    @require_permissions({"registerTab:edit"})
     async def remove_section(self, request: RemoveRegisterTabSectionRequest):
         try:
             data = await self.service.remove_section(request)

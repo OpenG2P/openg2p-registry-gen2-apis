@@ -91,7 +91,7 @@ class G2PRegisterSectionMetadataController(BaseController):
             _logger.error(f"Error in get_section: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, request)
 
-    @require_permissions({"registerSection:update"})
+    @require_permissions({"registerSection:edit"})
     async def update_section(self, request: UpdateRegisterSectionMetadataRequest):
         try:
             data: RegisterSectionIdData = await self.service.update_section(request)
@@ -100,7 +100,7 @@ class G2PRegisterSectionMetadataController(BaseController):
             _logger.error(f"Error in update_section: {str(error_exception)}")
             return self.helper.construct_error_response(error_exception, request)
 
-    @require_permissions({"registerSection:update"})
+    @require_permissions({"registerSection:edit"})
     async def update_section_ui_schema(self, request: UpdateRegisterSectionMetadataUISchemaRequest):
         try:
             data: RegisterSectionIdData = await self.service.update_section_ui_schema(request)
