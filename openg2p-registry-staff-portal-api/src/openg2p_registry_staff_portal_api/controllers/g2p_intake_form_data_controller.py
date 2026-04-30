@@ -283,14 +283,16 @@ class G2PIntakeFormDataController(BaseController):
         g2p_request: GetDeduplicationIntakeFormRegisterResultsRequest,
     ) -> DeduplicationIntakeFormRegisterResultsResponse:
         try:
-            results, total_items, number_of_pages = await self.service.get_deduplication_intake_form_register_results(
+            results = await self.service.get_deduplication_intake_form_register_results(
                 g2p_request
             )
             return self.helper.construct_success_response(
                 DeduplicationIntakeFormRegisterResultsResponseBody(
                     response_payload=results,
-                    number_of_items=total_items,
-                    number_of_pages=number_of_pages,
+                    pagination_response=G2PPaginationResponse(
+                        number_of_items=len(results),
+                        number_of_pages=1,
+                    ),
                 ),
                 g2p_request,
             )
@@ -304,14 +306,16 @@ class G2PIntakeFormDataController(BaseController):
         g2p_request: GetDeduplicationIntakeFormIntakeFormResultsRequest,
     ) -> DeduplicationIntakeFormIntakeFormResultsResponse:
         try:
-            results, total_items, number_of_pages = await self.service.get_deduplication_intake_form_intake_form_results(
+            results = await self.service.get_deduplication_intake_form_intake_form_results(
                 g2p_request
             )
             return self.helper.construct_success_response(
                 DeduplicationIntakeFormIntakeFormResultsResponseBody(
                     response_payload=results,
-                    number_of_items=total_items,
-                    number_of_pages=number_of_pages,
+                    pagination_response=G2PPaginationResponse(
+                        number_of_items=len(results),
+                        number_of_pages=1,
+                    ),
                 ),
                 g2p_request,
             )
