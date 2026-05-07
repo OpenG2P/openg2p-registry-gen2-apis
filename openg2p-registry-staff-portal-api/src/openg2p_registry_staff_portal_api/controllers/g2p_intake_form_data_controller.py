@@ -134,7 +134,7 @@ class G2PIntakeFormDataController(BaseController):
             )
             return error_response
 
-    @require_permissions({"intakeForm:create"})
+    @require_permissions({"intakeSubmission:edit"})
     async def save_intake_form_submission(
         self,
         request: Request,
@@ -153,7 +153,7 @@ class G2PIntakeFormDataController(BaseController):
             _logger.error("Error in save_intake_form_submission: %s", error_exception)
             return self.helper.construct_error_response(error_exception, g2p_request)
 
-    @require_permissions({"intakeForm:create"})
+    @require_permissions({"intakeSubmission:edit"})
     async def finalize_intake_form_submission(
         self,
         g2p_request: FinalizeSubmissionRequest,
@@ -170,7 +170,7 @@ class G2PIntakeFormDataController(BaseController):
             _logger.error("Error in finalize_intake_form_submission: %s", error_exception)
             return self.helper.construct_error_response(error_exception, g2p_request)
 
-    @require_permissions({"intakeForm:create"})
+    @require_permissions({"intakeSubmission:edit"})
     async def delete_intake_form_submission(
         self,
         g2p_request: DeleteIntakeFormSubmissionRequest,
@@ -187,7 +187,7 @@ class G2PIntakeFormDataController(BaseController):
             _logger.error("Error in delete_intake_form_submission: %s", error_exception)
             return self.helper.construct_error_response(error_exception, g2p_request)
 
-    @require_permissions({"intakeForm:approve"})
+    @require_permissions({"intakeSubmission:approve"})
     async def approve_intake_form_submission(
         self,
         request: Request,
@@ -206,7 +206,7 @@ class G2PIntakeFormDataController(BaseController):
             _logger.error("Error in approve_intake_form_submission: %s", error_exception)
             return self.helper.construct_error_response(error_exception, g2p_request)
 
-    @require_permissions({"intakeForm:approve"})
+    @require_permissions({"intakeSubmission:approve"})
     async def reject_intake_form_submission(
         self,
         request: Request,
@@ -225,7 +225,7 @@ class G2PIntakeFormDataController(BaseController):
             _logger.error("Error in reject_intake_form_submission: %s", error_exception)
             return self.helper.construct_error_response(error_exception, g2p_request)
 
-    @require_permissions({"intakeForm:view"})
+    @require_permissions({"intakeSubmission:view"})
     async def get_intake_form_submission(
         self,
         g2p_request: GetSubmissionRequest,
@@ -242,7 +242,7 @@ class G2PIntakeFormDataController(BaseController):
             _logger.error("Error in get_intake_form_submission: %s", error_exception)
             return self.helper.construct_error_response(error_exception, g2p_request)
 
-    @require_permissions({"intakeForm:view"})
+    @require_permissions({"intakeSubmission:view"})
     async def search_in_intake_form_submissions(
         self,
         g2p_request: SearchInSubmissionRequest,
@@ -263,7 +263,7 @@ class G2PIntakeFormDataController(BaseController):
             _logger.error("Error in search_in_intake_form_submissions: %s", error_exception)
             return self.helper.construct_error_response(error_exception, g2p_request)
 
-    @require_permissions({"intakeForm:view"})
+    @require_permissions({"intakeSubmission:view"})
     async def get_tab_records(
         self,
         g2p_request: GetIntakeFormTabRecordsRequest,
@@ -277,7 +277,7 @@ class G2PIntakeFormDataController(BaseController):
         except Exception as error_exception:
             _logger.error("Error in get_tab_records: %s", error_exception)
     
-    @require_permissions({"intakeForm:view"})
+    @require_permissions({"intakeSubmission:view"})
     async def get_deduplication_intake_form_register_results(
         self,
         g2p_request: GetDeduplicationIntakeFormRegisterResultsRequest,
@@ -300,7 +300,7 @@ class G2PIntakeFormDataController(BaseController):
             _logger.error("Error in get_deduplication_intake_form_register_results: %s", error_exception)
             return self.helper.construct_error_response(error_exception, g2p_request)
 
-    @require_permissions({"intakeForm:view"})
+    @require_permissions({"intakeSubmission:view"})
     async def get_deduplication_intake_form_intake_form_results(
         self,
         g2p_request: GetDeduplicationIntakeFormIntakeFormResultsRequest,

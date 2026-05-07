@@ -89,7 +89,7 @@ class G2PScoreController(BaseController):
                 error_exception, get_scores_request
             )
 
-    @require_permissions({"register:view"})
+    @require_permissions({"registerHistory:view"})
     async def get_score_history(self, get_score_history_request: GetScoreHistoryRequest) -> GetScoreHistoryResponse:
         try:
             history_payload = await self.g2p_score_controller_service.get_score_history(
@@ -117,7 +117,7 @@ class G2PScoreController(BaseController):
                 error_exception, get_score_history_request
             )
 
-    @require_permissions({"registerDefinition:view"})
+    @require_permissions({"registerScore:view"})
     async def get_score_definitions(self, get_score_definitions_request: GetScoreDefinitionsRequest) -> GetScoreDefinitionsResponse:
         try:
             definitions_payload = await self.g2p_score_controller_service.get_score_definitions(
@@ -145,7 +145,7 @@ class G2PScoreController(BaseController):
                 error_exception, get_score_definitions_request
             )
 
-    @require_permissions({"registerDefinition:create"})
+    @require_permissions({"registerScore:create"})
     async def create_score_definition(self, create_score_definition_request: CreateScoreDefinitionRequest) -> CreateScoreDefinitionResponse:
         try:
             score_definition_payload = await self.g2p_score_controller_service.create_score_definition(
@@ -173,7 +173,7 @@ class G2PScoreController(BaseController):
                 error_exception, create_score_definition_request
             )
 
-    @require_permissions({"registerDefinition:edit"})
+    @require_permissions({"registerScore:edit"})
     async def update_score_definition(self, update_score_definition_request: UpdateScoreDefinitionRequest) -> UpdateScoreDefinitionResponse:
         try:
             score_definition_payload = await self.g2p_score_controller_service.update_score_definition(
