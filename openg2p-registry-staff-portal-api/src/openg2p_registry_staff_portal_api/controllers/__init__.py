@@ -21,3 +21,4 @@ from .g2p_intake_form_metadata_controller import G2PIntakeFormMetadataController
 from .g2p_change_request_core_controller import G2PChangeRequestCoreController
 from .g2p_score_controller import G2PScoreController
 from .g2p_completion_score_controller import G2PCompletionScoreController
+from .g2p_registrant_authentication_controller import G2PRegistrantAuthenticationController

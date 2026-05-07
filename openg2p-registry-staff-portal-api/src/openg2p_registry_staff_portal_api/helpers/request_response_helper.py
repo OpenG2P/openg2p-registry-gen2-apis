@@ -77,6 +77,10 @@ from openg2p_registry_core.schemas import (
     AllowedParentsData, AllowedParentsDataResponse, AllowedParentsDataResponseBody,
     G2PRegisterSectionData, G2PRegisterUITabData, G2PRegisterUITabSectionData,
     RegisterSectionIdData, RegisterTabIdData, RegisterTabSectionIdData,
+    RegistrantAuthProvidersResponse, RegistrantAuthProvidersResponseBody, RegistrantAuthProvidersResponsePayload,
+    RegistrantAuthInitiateResponse, RegistrantAuthInitiateResponseBody, RegistrantAuthInitiateResponsePayload,
+    RegistrantAuthStatusResponse, RegistrantAuthStatusResponseBody, RegistrantAuthStatusResponsePayload,
+    RegistrantAuthHistoryResponse, RegistrantAuthHistoryResponseBody, RegistrantAuthHistoryResponsePayload
 )
 
 from openg2p_registry_core.errors import G2PRegistryException
@@ -217,6 +221,86 @@ class RequestResponseHelper(BaseService):
             response_body=response_body
         )
         return search_results_response
+
+    def construct_registrant_auth_providers_success_response(
+        self,
+        response_payload: RegistrantAuthProvidersResponsePayload,
+        g2p_request: G2PRequest,
+    ) -> RegistrantAuthProvidersResponse:
+        g2p_response_header = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now(),
+        )
+        response_body: RegistrantAuthProvidersResponseBody = RegistrantAuthProvidersResponseBody(
+            response_payload=response_payload
+        )
+        return RegistrantAuthProvidersResponse(
+            response_header=g2p_response_header,
+            response_body=response_body,
+        )
+
+    def construct_registrant_auth_initiate_success_response(
+        self,
+        response_payload: RegistrantAuthInitiateResponsePayload,
+        g2p_request: G2PRequest,
+    ) -> RegistrantAuthInitiateResponse:
+        g2p_response_header = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now(),
+        )
+        response_body: RegistrantAuthInitiateResponseBody = RegistrantAuthInitiateResponseBody(
+            response_payload=response_payload
+        )
+        return RegistrantAuthInitiateResponse(
+            response_header=g2p_response_header,
+            response_body=response_body,
+        )
+
+    def construct_registrant_auth_status_success_response(
+        self,
+        response_payload: RegistrantAuthStatusResponsePayload,
+        g2p_request: G2PRequest,
+    ) -> RegistrantAuthStatusResponse:
+        g2p_response_header = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now(),
+        )
+        response_body: RegistrantAuthStatusResponseBody = RegistrantAuthStatusResponseBody(
+            response_payload=response_payload
+        )
+        return RegistrantAuthStatusResponse(
+            response_header=g2p_response_header,
+            response_body=response_body,
+        )
+
+    def construct_registrant_auth_history_success_response(
+        self,
+        response_payload: RegistrantAuthHistoryResponsePayload,
+        g2p_request: G2PRequest,
+    ) -> RegistrantAuthHistoryResponse:
+        g2p_response_header = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now(),
+        )
+        response_body: RegistrantAuthHistoryResponseBody = RegistrantAuthHistoryResponseBody(
+            response_payload=response_payload
+        )
+        return RegistrantAuthHistoryResponse(
+            response_header=g2p_response_header,
+            response_body=response_body,
+        )
 
     def construct_intake_forms_for_register_success_response(
         self,
