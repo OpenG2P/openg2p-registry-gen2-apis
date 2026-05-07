@@ -33,7 +33,7 @@ class G2PRegistrantAuthenticationController(BaseController):
 
         self.router.tags += ["/register-data"]
         self.router.prefix = ""
-        self.svc = G2PRegistrantAuthenticationControllerService.get_component()
+        self.registrant_authentication_service = G2PRegistrantAuthenticationControllerService.get_component()
         self.helper = RequestResponseHelper.get_component()
 
         self.router.add_api_route(
@@ -75,7 +75,7 @@ class G2PRegistrantAuthenticationController(BaseController):
         self, request: RegistrantAuthProvidersRequest
     ) -> RegistrantAuthProvidersResponse:
         try:
-            payload = await self.svc.get_available_providers(request)
+            payload = await self.registrant_authentication_service.get_available_providers(request)
             return self.helper.construct_registrant_auth_providers_success_response(
                 response_payload=payload, g2p_request=request
             )
@@ -88,7 +88,7 @@ class G2PRegistrantAuthenticationController(BaseController):
         self, request: RegistrantAuthInitiateRequest
     ) -> RegistrantAuthInitiateResponse:
         try:
-            payload = await self.svc.initiate_authentication(request)
+            payload = await self.registrant_authentication_service.initiate_authentication(request)
             return self.helper.construct_registrant_auth_initiate_success_response(
                 response_payload=payload, g2p_request=request
             )
@@ -103,7 +103,7 @@ class G2PRegistrantAuthenticationController(BaseController):
     ):
         # OAuth callback: Return HTML page with authentication result, fallback to JSON
         try:
-            result = await self.svc.complete_callback(
+            result = await self.registrant_authentication_service.complete_callback(
                 RegistrantAuthCallbackCompleteRequest(code=code, state=state)
             )
             
@@ -137,7 +137,7 @@ class G2PRegistrantAuthenticationController(BaseController):
         self, request: RegistrantAuthStatusRequest
     ) -> RegistrantAuthStatusResponse:
         try:
-            payload = await self.svc.get_status(request)
+            payload = await self.registrant_authentication_service.get_status(request)
             return self.helper.construct_registrant_auth_status_success_response(
                 response_payload=payload, g2p_request=request
             )
@@ -150,7 +150,7 @@ class G2PRegistrantAuthenticationController(BaseController):
         self, request: RegistrantAuthHistoryRequest
     ) -> RegistrantAuthHistoryResponse:
         try:
-            payload = await self.svc.get_history(request)
+            payload = await self.registrant_authentication_service.get_history(request)
             return self.helper.construct_registrant_auth_history_success_response(
                 response_payload=payload, g2p_request=request
             )
