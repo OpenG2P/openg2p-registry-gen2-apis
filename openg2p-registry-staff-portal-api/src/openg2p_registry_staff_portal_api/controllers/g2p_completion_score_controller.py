@@ -74,7 +74,7 @@ class G2PCompletionScoreController(BaseController):
             methods=["POST"],
         )
 
-    @require_permissions({"completionScore:view"})
+    @require_permissions({"register:view"})
     async def get_ideal_completion_score_for_register(
         self, request: GetIdealCompletionScoreForRegisterRequest
     ) -> IdealRegisterScoreResponse:
@@ -88,7 +88,7 @@ class G2PCompletionScoreController(BaseController):
             _logger.error(f"Error in get_ideal_completion_score_for_register: {e}")
             return self.helper.construct_error_response(e, request)
 
-    @require_permissions({"completionScore:view"})
+    @require_permissions({"register:view"})
     async def get_ideal_completion_score_for_section(
         self, request: GetIdealCompletionScoreForSectionRequest
     ) -> IdealSectionScoreResponse:
@@ -102,7 +102,7 @@ class G2PCompletionScoreController(BaseController):
             _logger.error(f"Error in get_ideal_completion_score_for_section: {e}")
             return self.helper.construct_error_response(e, request)
 
-    @require_permissions({"completionScore:view"})
+    @require_permissions({"register:view"})
     async def get_computed_completion_score_for_section(
         self, request: GetComputedCompletionScoreForSectionRequest
     ) -> SectionCompletionScoreResponse:
@@ -116,7 +116,7 @@ class G2PCompletionScoreController(BaseController):
             _logger.error(f"Error in get_computed_completion_score_for_section: {e}")
             return self.helper.construct_error_response(e, request)
 
-    @require_permissions({"completionScore:view"})
+    @require_permissions({"register:view"})
     async def get_computed_completion_score_for_record(
         self, request: GetComputedCompletionScoreForRecordRequest
     ) -> RecordCompletionScoreResponse:
