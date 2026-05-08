@@ -3,7 +3,7 @@ import logging
 from fastapi import Request
 from iam_core.user_auth.helpers import require_permissions
 from openg2p_fastapi_common.controller import BaseController
-from openg2p_fastapi_common.schemas import G2PPaginationResponse, G2PResponse
+from openg2p_fastapi_common.schemas import G2PPaginationResponse
 from openg2p_registry_core.controller_services import G2PIntakeFormDataControllerService
 from openg2p_registry_core.schemas import (
     ApproveRejectSubmissionRequest,
@@ -90,6 +90,9 @@ class G2PIntakeFormDataController(BaseController):
             "/get_tab_records",
             self.get_tab_records,
             responses={200: {"model": GetIntakeFormTabRecordsResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
             "/get_deduplication_intake_form_register_results",
             self.get_deduplication_intake_form_register_results,
             responses={200: {"model": DeduplicationIntakeFormRegisterResultsResponse}},
