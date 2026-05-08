@@ -1,16 +1,12 @@
 import logging
-import uuid
-import io
 from datetime import datetime
-from fastapi import UploadFile
 from typing import Optional, List, Dict, Any, Tuple
-import httpx
 
 from openg2p_registry_core.schemas import DeepSearchResultData
 from openg2p_fastapi_common.service import BaseService
 from openg2p_fastapi_common.context import dbengine
 
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy import select
 
 from openg2p_registry_core.services import G2PRegisterService
@@ -23,10 +19,10 @@ from ..schemas import (
     DciRequestHeader,
     DciSearchRequest,
     DciSearchResultData,
-    DciPagination,
     DciSearchResultPagination,
     DciStatusCode,
 )
+from ..helpers import DciQueryHelper
 from ....config import Settings
 
 _logger = logging.getLogger("g2p-dci-service")
@@ -65,11 +61,13 @@ class G2PDciService(BaseService):
                     for deep_search_result_datum in deep_search_result_data
                 ]
             )
+
             pagination = DciSearchResultPagination(
                 page_number = current_page,
                 page_size = page_size,
                 total_count = total_count
             )
+
             dci_search_response_item = DciSearchResponseItem(
                 reference_id = search_request_item.reference_id,
                 timestamp = datetime.now().isoformat(),
@@ -130,7 +128,7 @@ class G2PDciService(BaseService):
         search_criteria: DciSearchCriteria
     ) -> Tuple[str, int, int, Optional[str]]:
         # Search text
-        search_text: str = search_criteria.query.value
+        search_text: str = DciQueryHelper.get_search_text(search_criteria)
         
         # Pagination
         current_page: int = 1
@@ -167,7 +165,7 @@ class G2PDciService(BaseService):
             data_model_id: str = (
                 await session.execute(
                     select(DataModel.data_model_id)
-                    .where(DataModel.data_model_mnemonic == "g2p_register")
+                    .where(DataModel.data_model_mnemonic == "DCI")
                 )
             ).scalar_one_or_none()
             return data_model_id
