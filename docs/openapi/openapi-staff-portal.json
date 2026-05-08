@@ -10821,13 +10821,13 @@
         }
       }
     },
-    "/ui_helper/get_all_input_mechanisms": {
+    "/input-mechanism-metadata/get_all_input_mechanisms": {
       "post": {
         "tags": [
-          "/ui_helper"
+          "/input-mechanism-metadata"
         ],
         "summary": "Get All Input Mechanisms",
-        "operationId": "get_all_input_mechanisms_ui_helper_get_all_input_mechanisms_post",
+        "operationId": "get_all_input_mechanisms_input_mechanism_metadata_get_all_input_mechanisms_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -10888,6 +10888,370 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/input-mechanism-metadata/get_vc_configuration": {
+      "post": {
+        "tags": [
+          "/input-mechanism-metadata"
+        ],
+        "summary": "Get Vc Configuration",
+        "operationId": "get_vc_configuration_input_mechanism_metadata_get_vc_configuration_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VcConfigurationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VcConfigurationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/input-mechanism-metadata/get_import_file_configuration": {
+      "post": {
+        "tags": [
+          "/input-mechanism-metadata"
+        ],
+        "summary": "Get Import File Configuration",
+        "operationId": "get_import_file_configuration_input_mechanism_metadata_get_import_file_configuration_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportFileConfigurationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportFileConfigurationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/input-mechanism-data/enqueue_import_file": {
+      "post": {
+        "tags": [
+          "/input-mechanism-data"
+        ],
+        "summary": "Enqueue Import File",
+        "operationId": "enqueue_import_file_input_mechanism_data_enqueue_import_file_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnqueueImportFileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnqueueImportFileResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/input-mechanism-data/ingest-data": {
+      "post": {
+        "tags": [
+          "/input-mechanism-data"
+        ],
+        "summary": "Ingest Data",
+        "operationId": "ingest_data_input_mechanism_data_ingest_data_post",
+        "parameters": [
+          {
+            "name": "data_model",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Data Model"
+            }
+          },
+          {
+            "name": "register_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Register Id"
+            }
+          },
+          {
+            "name": "intake_form_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Intake Form Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngestDataResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           },
           "422": {
             "description": "Validation Error",
@@ -11817,6 +12181,87 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DeduplicationIntakeFormIntakeFormResultsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/intake-form-data/get_intake_form_submissions_summary": {
+      "post": {
+        "tags": [
+          "/intake-form-data"
+        ],
+        "summary": "Get Intake Form Submissions Summary",
+        "operationId": "get_intake_form_submissions_summary_intake_form_data_get_intake_form_submissions_summary_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetIntakeFormSubmissionsSummaryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeFormSubmissionsSummaryResponse"
                 }
               }
             }
@@ -14004,6 +14449,419 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RecordCompletionScoreResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register-data/get_available_authentication_providers": {
+      "post": {
+        "tags": [
+          "/register-data"
+        ],
+        "summary": "Get Available Providers",
+        "operationId": "get_available_providers_register_data_get_available_authentication_providers_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrantAuthProvidersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrantAuthProvidersResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register-data/authenticate_registrant": {
+      "post": {
+        "tags": [
+          "/register-data"
+        ],
+        "summary": "Initiate Authentication",
+        "operationId": "initiate_authentication_register_data_authenticate_registrant_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrantAuthInitiateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrantAuthInitiateResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/registrant-auth/callback": {
+      "get": {
+        "tags": [
+          "/register-data"
+        ],
+        "summary": "Callback",
+        "operationId": "callback_registrant_auth_callback_get",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register-data/get_registrant_authentication_status": {
+      "post": {
+        "tags": [
+          "/register-data"
+        ],
+        "summary": "Get Status",
+        "operationId": "get_status_register_data_get_registrant_authentication_status_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrantAuthStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrantAuthStatusResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register-data/get_registrant_authentication_history": {
+      "post": {
+        "tags": [
+          "/register-data"
+        ],
+        "summary": "Get History",
+        "operationId": "get_history_register_data_get_registrant_authentication_history_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrantAuthHistoryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrantAuthHistoryResponse"
                 }
               }
             }
@@ -19265,6 +20123,144 @@
         "title": "EmptyRequestPayload",
         "description": "Empty payload for requests that don't require any parameters"
       },
+      "EnqueueImportFileData": {
+        "properties": {
+          "import_file_id": {
+            "type": "string",
+            "title": "Import File Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "import_file_id"
+        ],
+        "title": "EnqueueImportFileData"
+      },
+      "EnqueueImportFileRequest": {
+        "properties": {
+          "request_header": {
+            "$ref": "#/components/schemas/G2PRequestHeader"
+          },
+          "request_body": {
+            "$ref": "#/components/schemas/EnqueueImportFileRequestBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_header",
+          "request_body"
+        ],
+        "title": "EnqueueImportFileRequest"
+      },
+      "EnqueueImportFileRequestBody": {
+        "properties": {
+          "pagination_request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "request_payload": {
+            "$ref": "#/components/schemas/EnqueueImportFileRequestPayload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_payload"
+        ],
+        "title": "EnqueueImportFileRequestBody"
+      },
+      "EnqueueImportFileRequestPayload": {
+        "properties": {
+          "document_store_id": {
+            "type": "string",
+            "title": "Document Store Id"
+          },
+          "data_model_id": {
+            "type": "string",
+            "title": "Data Model Id"
+          },
+          "register_id": {
+            "type": "string",
+            "title": "Register Id"
+          },
+          "intake_form_id": {
+            "type": "string",
+            "title": "Intake Form Id"
+          },
+          "queued_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Queued By"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document_store_id",
+          "data_model_id",
+          "register_id",
+          "intake_form_id"
+        ],
+        "title": "EnqueueImportFileRequestPayload"
+      },
+      "EnqueueImportFileResponse": {
+        "properties": {
+          "response_header": {
+            "$ref": "#/components/schemas/G2PResponseHeader"
+          },
+          "response_body": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnqueueImportFileResponseBody"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "response_header"
+        ],
+        "title": "EnqueueImportFileResponse"
+      },
+      "EnqueueImportFileResponseBody": {
+        "properties": {
+          "pagination_response": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "response_payload": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnqueueImportFileData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "EnqueueImportFileResponseBody"
+      },
       "ErrorListResponse": {
         "properties": {
           "errors": {
@@ -19519,8 +20515,7 @@
             "title": "Register Id"
           },
           "mechanism_type": {
-            "type": "string",
-            "title": "Mechanism Type"
+            "$ref": "#/components/schemas/InputMechanismTypeEnum"
           },
           "display_key": {
             "type": "string",
@@ -21673,6 +22668,44 @@
           "form_id"
         ],
         "title": "GetIntakeFormRequestPayload"
+      },
+      "GetIntakeFormSubmissionsSummaryRequest": {
+        "properties": {
+          "request_header": {
+            "$ref": "#/components/schemas/G2PRequestHeader"
+          },
+          "request_body": {
+            "$ref": "#/components/schemas/GetIntakeFormSubmissionsSummaryRequestBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_header",
+          "request_body"
+        ],
+        "title": "GetIntakeFormSubmissionsSummaryRequest"
+      },
+      "GetIntakeFormSubmissionsSummaryRequestBody": {
+        "properties": {
+          "pagination_request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "request_payload": {
+            "$ref": "#/components/schemas/EmptyRequestPayload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_payload"
+        ],
+        "title": "GetIntakeFormSubmissionsSummaryRequestBody"
       },
       "GetIntakeFormTabRecordsRequest": {
         "properties": {
@@ -23995,6 +25028,151 @@
         ],
         "title": "IdealSectionScoreResponseBody"
       },
+      "ImportFileConfigurationData": {
+        "properties": {
+          "import_file_configuration_id": {
+            "type": "string",
+            "title": "Import File Configuration Id"
+          },
+          "register_id": {
+            "type": "string",
+            "title": "Register Id"
+          },
+          "form_id": {
+            "type": "string",
+            "title": "Form Id"
+          },
+          "data_model_id": {
+            "type": "string",
+            "title": "Data Model Id"
+          },
+          "import_file_template_mnemonic": {
+            "type": "string",
+            "title": "Import File Template Mnemonic"
+          },
+          "import_file_template_description": {
+            "type": "string",
+            "title": "Import File Template Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "import_file_configuration_id",
+          "register_id",
+          "form_id",
+          "data_model_id",
+          "import_file_template_mnemonic",
+          "import_file_template_description"
+        ],
+        "title": "ImportFileConfigurationData"
+      },
+      "ImportFileConfigurationRequest": {
+        "properties": {
+          "request_header": {
+            "$ref": "#/components/schemas/G2PRequestHeader"
+          },
+          "request_body": {
+            "$ref": "#/components/schemas/ImportFileConfigurationRequestBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_header",
+          "request_body"
+        ],
+        "title": "ImportFileConfigurationRequest"
+      },
+      "ImportFileConfigurationRequestBody": {
+        "properties": {
+          "pagination_request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "request_payload": {
+            "$ref": "#/components/schemas/ImportFileConfigurationRequestPayload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_payload"
+        ],
+        "title": "ImportFileConfigurationRequestBody"
+      },
+      "ImportFileConfigurationRequestPayload": {
+        "properties": {
+          "register_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Register Id"
+          }
+        },
+        "type": "object",
+        "title": "ImportFileConfigurationRequestPayload"
+      },
+      "ImportFileConfigurationResponse": {
+        "properties": {
+          "response_header": {
+            "$ref": "#/components/schemas/G2PResponseHeader"
+          },
+          "response_body": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImportFileConfigurationResponseBody"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "response_header"
+        ],
+        "title": "ImportFileConfigurationResponse"
+      },
+      "ImportFileConfigurationResponseBody": {
+        "properties": {
+          "pagination_response": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "response_payload": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ImportFileConfigurationData"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Payload"
+          }
+        },
+        "type": "object",
+        "title": "ImportFileConfigurationResponseBody"
+      },
       "IncomingModelKeyPathData": {
         "properties": {
           "key_path_id": {
@@ -25174,6 +26352,67 @@
         "type": "object",
         "title": "IncomingTemplatesResponseBody"
       },
+      "IngestDataPayload": {
+        "properties": {
+          "correlation_id": {
+            "type": "string",
+            "title": "Correlation Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "correlation_id"
+        ],
+        "title": "IngestDataPayload"
+      },
+      "IngestDataResponse": {
+        "properties": {
+          "response_header": {
+            "$ref": "#/components/schemas/G2PResponseHeader"
+          },
+          "response_body": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IngestDataResponseBody"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "response_header"
+        ],
+        "title": "IngestDataResponse"
+      },
+      "IngestDataResponseBody": {
+        "properties": {
+          "pagination_response": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "response_payload": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IngestDataPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "IngestDataResponseBody"
+      },
       "IngestionDataPayload": {
         "properties": {
           "raw_data_json": {
@@ -25662,6 +26901,15 @@
         "type": "object",
         "title": "IngestionSummaryDataResponseBody"
       },
+      "InputMechanismTypeEnum": {
+        "type": "string",
+        "enum": [
+          "INTAKE_FORM",
+          "IMPORT_FILE",
+          "VERIFIABLE_CREDENTIAL"
+        ],
+        "title": "InputMechanismTypeEnum"
+      },
       "IntakeFormDefinitionData": {
         "properties": {
           "form_id": {
@@ -26045,6 +27293,98 @@
           "sections"
         ],
         "title": "IntakeFormRenderedTabData"
+      },
+      "IntakeFormSubmissionsSummaryData": {
+        "properties": {
+          "total_submissions": {
+            "type": "integer",
+            "title": "Total Submissions"
+          },
+          "total_draft_submissions": {
+            "type": "integer",
+            "title": "Total Draft Submissions"
+          },
+          "total_final_submissions": {
+            "type": "integer",
+            "title": "Total Final Submissions"
+          },
+          "total_approval_pending_submissions": {
+            "type": "integer",
+            "title": "Total Approval Pending Submissions"
+          },
+          "total_ingested_submissions": {
+            "type": "integer",
+            "title": "Total Ingested Submissions"
+          },
+          "total_approved_submissions": {
+            "type": "integer",
+            "title": "Total Approved Submissions"
+          },
+          "total_rejected_submissions": {
+            "type": "integer",
+            "title": "Total Rejected Submissions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_submissions",
+          "total_draft_submissions",
+          "total_final_submissions",
+          "total_approval_pending_submissions",
+          "total_ingested_submissions",
+          "total_approved_submissions",
+          "total_rejected_submissions"
+        ],
+        "title": "IntakeFormSubmissionsSummaryData",
+        "description": "Summary statistics for intake form submissions."
+      },
+      "IntakeFormSubmissionsSummaryResponse": {
+        "properties": {
+          "response_header": {
+            "$ref": "#/components/schemas/G2PResponseHeader"
+          },
+          "response_body": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IntakeFormSubmissionsSummaryResponseBody"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "response_header"
+        ],
+        "title": "IntakeFormSubmissionsSummaryResponse"
+      },
+      "IntakeFormSubmissionsSummaryResponseBody": {
+        "properties": {
+          "pagination_response": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "response_payload": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IntakeFormSubmissionsSummaryData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "IntakeFormSubmissionsSummaryResponseBody"
       },
       "IntakeFormTabIdData": {
         "properties": {
@@ -29145,6 +30485,581 @@
           "tab_order"
         ],
         "title": "RegisterUITabData"
+      },
+      "RegistrantAuthHistoryItem": {
+        "properties": {
+          "authentication_id": {
+            "type": "string",
+            "title": "Authentication Id"
+          },
+          "initiated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Initiated At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "authentication_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authentication Method"
+          },
+          "initiated_by_staff_id": {
+            "type": "string",
+            "title": "Initiated By Staff Id"
+          },
+          "claim_verifications": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claim Verifications"
+          },
+          "expiry_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expiry At"
+          },
+          "failure_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "authentication_id",
+          "initiated_at",
+          "status",
+          "initiated_by_staff_id"
+        ],
+        "title": "RegistrantAuthHistoryItem"
+      },
+      "RegistrantAuthHistoryRequest": {
+        "properties": {
+          "request_header": {
+            "$ref": "#/components/schemas/G2PRequestHeader"
+          },
+          "request_body": {
+            "$ref": "#/components/schemas/RegistrantAuthHistoryRequestBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_header",
+          "request_body"
+        ],
+        "title": "RegistrantAuthHistoryRequest"
+      },
+      "RegistrantAuthHistoryRequestBody": {
+        "properties": {
+          "pagination_request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "request_payload": {
+            "$ref": "#/components/schemas/RegistrantAuthHistoryRequestPayload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_payload"
+        ],
+        "title": "RegistrantAuthHistoryRequestBody"
+      },
+      "RegistrantAuthHistoryRequestPayload": {
+        "properties": {
+          "internal_record_id": {
+            "type": "string",
+            "title": "Internal Record Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "internal_record_id"
+        ],
+        "title": "RegistrantAuthHistoryRequestPayload"
+      },
+      "RegistrantAuthHistoryResponse": {
+        "properties": {
+          "response_header": {
+            "$ref": "#/components/schemas/G2PResponseHeader"
+          },
+          "response_body": {
+            "$ref": "#/components/schemas/RegistrantAuthHistoryResponseBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "response_header",
+          "response_body"
+        ],
+        "title": "RegistrantAuthHistoryResponse"
+      },
+      "RegistrantAuthHistoryResponseBody": {
+        "properties": {
+          "pagination_response": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "response_payload": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RegistrantAuthHistoryResponsePayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "RegistrantAuthHistoryResponseBody"
+      },
+      "RegistrantAuthHistoryResponsePayload": {
+        "properties": {
+          "authentications": {
+            "items": {
+              "$ref": "#/components/schemas/RegistrantAuthHistoryItem"
+            },
+            "type": "array",
+            "title": "Authentications"
+          }
+        },
+        "type": "object",
+        "required": [
+          "authentications"
+        ],
+        "title": "RegistrantAuthHistoryResponsePayload"
+      },
+      "RegistrantAuthInitiateRequest": {
+        "properties": {
+          "request_header": {
+            "$ref": "#/components/schemas/G2PRequestHeader"
+          },
+          "request_body": {
+            "$ref": "#/components/schemas/RegistrantAuthInitiateRequestBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_header",
+          "request_body"
+        ],
+        "title": "RegistrantAuthInitiateRequest"
+      },
+      "RegistrantAuthInitiateRequestBody": {
+        "properties": {
+          "pagination_request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "request_payload": {
+            "$ref": "#/components/schemas/RegistrantAuthInitiateRequestPayload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_payload"
+        ],
+        "title": "RegistrantAuthInitiateRequestBody"
+      },
+      "RegistrantAuthInitiateRequestPayload": {
+        "properties": {
+          "register_id": {
+            "type": "string",
+            "title": "Register Id"
+          },
+          "internal_record_id": {
+            "type": "string",
+            "title": "Internal Record Id"
+          },
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id"
+          },
+          "initiated_by_staff_id": {
+            "type": "string",
+            "title": "Initiated By Staff Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "register_id",
+          "internal_record_id",
+          "provider_id",
+          "initiated_by_staff_id"
+        ],
+        "title": "RegistrantAuthInitiateRequestPayload"
+      },
+      "RegistrantAuthInitiateResponse": {
+        "properties": {
+          "response_header": {
+            "$ref": "#/components/schemas/G2PResponseHeader"
+          },
+          "response_body": {
+            "$ref": "#/components/schemas/RegistrantAuthInitiateResponseBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "response_header",
+          "response_body"
+        ],
+        "title": "RegistrantAuthInitiateResponse"
+      },
+      "RegistrantAuthInitiateResponseBody": {
+        "properties": {
+          "pagination_response": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "response_payload": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RegistrantAuthInitiateResponsePayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "RegistrantAuthInitiateResponseBody"
+      },
+      "RegistrantAuthInitiateResponsePayload": {
+        "properties": {
+          "authentication_session_id": {
+            "type": "string",
+            "title": "Authentication Session Id"
+          },
+          "authorization_url": {
+            "type": "string",
+            "title": "Authorization Url"
+          },
+          "provider_name": {
+            "type": "string",
+            "title": "Provider Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "authentication_session_id",
+          "authorization_url",
+          "provider_name"
+        ],
+        "title": "RegistrantAuthInitiateResponsePayload"
+      },
+      "RegistrantAuthProviderSummary": {
+        "properties": {
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id"
+          },
+          "provider_name": {
+            "type": "string",
+            "title": "Provider Name"
+          },
+          "provider_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Description"
+          },
+          "adapter_name": {
+            "type": "string",
+            "title": "Adapter Name"
+          },
+          "display_order": {
+            "type": "integer",
+            "title": "Display Order",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider_id",
+          "provider_name",
+          "adapter_name"
+        ],
+        "title": "RegistrantAuthProviderSummary"
+      },
+      "RegistrantAuthProvidersRequest": {
+        "properties": {
+          "request_header": {
+            "$ref": "#/components/schemas/G2PRequestHeader"
+          },
+          "request_body": {
+            "$ref": "#/components/schemas/RegistrantAuthProvidersRequestBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_header",
+          "request_body"
+        ],
+        "title": "RegistrantAuthProvidersRequest"
+      },
+      "RegistrantAuthProvidersRequestBody": {
+        "properties": {
+          "pagination_request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "request_payload": {
+            "$ref": "#/components/schemas/RegistrantAuthProvidersRequestPayload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_payload"
+        ],
+        "title": "RegistrantAuthProvidersRequestBody"
+      },
+      "RegistrantAuthProvidersRequestPayload": {
+        "properties": {
+          "register_id": {
+            "type": "string",
+            "title": "Register Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "register_id"
+        ],
+        "title": "RegistrantAuthProvidersRequestPayload"
+      },
+      "RegistrantAuthProvidersResponse": {
+        "properties": {
+          "response_header": {
+            "$ref": "#/components/schemas/G2PResponseHeader"
+          },
+          "response_body": {
+            "$ref": "#/components/schemas/RegistrantAuthProvidersResponseBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "response_header",
+          "response_body"
+        ],
+        "title": "RegistrantAuthProvidersResponse"
+      },
+      "RegistrantAuthProvidersResponseBody": {
+        "properties": {
+          "pagination_response": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "response_payload": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RegistrantAuthProvidersResponsePayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "RegistrantAuthProvidersResponseBody"
+      },
+      "RegistrantAuthProvidersResponsePayload": {
+        "properties": {
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/RegistrantAuthProviderSummary"
+            },
+            "type": "array",
+            "title": "Providers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "providers"
+        ],
+        "title": "RegistrantAuthProvidersResponsePayload"
+      },
+      "RegistrantAuthStatusRequest": {
+        "properties": {
+          "request_header": {
+            "$ref": "#/components/schemas/G2PRequestHeader"
+          },
+          "request_body": {
+            "$ref": "#/components/schemas/RegistrantAuthStatusRequestBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_header",
+          "request_body"
+        ],
+        "title": "RegistrantAuthStatusRequest"
+      },
+      "RegistrantAuthStatusRequestBody": {
+        "properties": {
+          "pagination_request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "request_payload": {
+            "$ref": "#/components/schemas/RegistrantAuthStatusRequestPayload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_payload"
+        ],
+        "title": "RegistrantAuthStatusRequestBody"
+      },
+      "RegistrantAuthStatusRequestPayload": {
+        "properties": {
+          "internal_record_id": {
+            "type": "string",
+            "title": "Internal Record Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "internal_record_id"
+        ],
+        "title": "RegistrantAuthStatusRequestPayload"
+      },
+      "RegistrantAuthStatusResponse": {
+        "properties": {
+          "response_header": {
+            "$ref": "#/components/schemas/G2PResponseHeader"
+          },
+          "response_body": {
+            "$ref": "#/components/schemas/RegistrantAuthStatusResponseBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "response_header",
+          "response_body"
+        ],
+        "title": "RegistrantAuthStatusResponse"
+      },
+      "RegistrantAuthStatusResponseBody": {
+        "properties": {
+          "pagination_response": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/G2PPaginationResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "response_payload": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RegistrantAuthStatusResponsePayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "RegistrantAuthStatusResponseBody"
+      },
+      "RegistrantAuthStatusResponsePayload": {
+        "properties": {
+          "authentication": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RegistrantAuthHistoryItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "authentication"
+        ],
+        "title": "RegistrantAuthStatusResponsePayload"
       },
       "RegistryConfigurationData": {
         "properties": {
@@ -33357,6 +35272,28 @@
             "type": "string",
             "title": "Register Id"
           },
+          "intake_form_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intake Form Id"
+          },
+          "data_model_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Model Id"
+          },
           "vc_mnemonic": {
             "type": "string",
             "title": "Vc Mnemonic"
@@ -33437,6 +35374,28 @@
               }
             ],
             "title": "Register Id"
+          },
+          "intake_form_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intake Form Id"
+          },
+          "data_model_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Model Id"
           },
           "vc_mnemonic": {
             "anyOf": [

@@ -37,6 +37,38 @@
               ],
               "title": "Data Model"
             }
+          },
+          {
+            "name": "register_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Register Id"
+            }
+          },
+          {
+            "name": "intake_form_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Intake Form Id"
+            }
           }
         ],
         "responses": {
