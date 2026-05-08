@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenG2P Registry Beneficiary Portal API",
-    "description": "\n        FastAPI Service for OpenG2P Registry Beneficiary Portal API\n        ***********************************\n        Further details goes here\n        ***********************************\n        ",
+    "title": "OpenG2P Registry Partner API",
+    "description": "\n        FastAPI Service for OpenG2P Registry Partner API\n        ***********************************\n        Further details goes here\n        ***********************************\n        ",
     "contact": {
       "url": "https://www.openg2p.org/",
       "email": "info@openg2p.org"
@@ -11,7 +11,7 @@
       "name": "Mozilla Public License 2.0",
       "url": "https://www.mozilla.org/en-US/MPL/2.0/"
     },
-    "version": "2.0.0"
+    "version": "1.1.0"
   },
   "paths": {
     "/partner/ingest_data": {
@@ -450,7 +450,8 @@
             "title": "Type"
           },
           "value": {
-            "type": "string",
+            "additionalProperties": true,
+            "type": "object",
             "title": "Value"
           }
         },
