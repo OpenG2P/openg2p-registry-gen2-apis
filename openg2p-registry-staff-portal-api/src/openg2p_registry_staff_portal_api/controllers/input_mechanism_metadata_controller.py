@@ -68,7 +68,7 @@ class InputMechanismMetadataController(BaseController):
             methods=["POST"],
         )
 
-    # @require_permissions({"referenceData:view"})
+    @require_permissions({"intakeSubmission:edit"})
     async def get_all_input_mechanisms(
         self,
         request: G2PInputMechanismRequest,
@@ -87,7 +87,7 @@ class InputMechanismMetadataController(BaseController):
             _logger.error("Error getting input mechanisms: %s", str(e), exc_info=True)
             return self.helper.construct_error_response(e, request)
 
-    # @require_permissions({"registerDefinition:view"})
+    @require_permissions({"intakeSubmission:edit"})
     async def get_vc_configuration(
         self,
         vc_configuration_request: VcConfigurationRequest,
@@ -112,7 +112,7 @@ class InputMechanismMetadataController(BaseController):
                 error_exception, vc_configuration_request
             )
 
-    # @require_permissions({"registerDefinition:view"})
+    @require_permissions({"intakeSubmission:edit"})
     async def get_import_file_configuration(
         self,
         request: ImportFileConfigurationRequest,

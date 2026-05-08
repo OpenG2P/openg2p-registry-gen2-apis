@@ -55,7 +55,7 @@ class InputMechanismDataController(BaseController):
             methods=["POST"],
         )
 
-    @require_permissions({"registerDefinition:create"})
+    @require_permissions({"intakeSubmission:edit"})
     async def enqueue_import_file(
         self,
         request: EnqueueImportFileRequest,
@@ -82,7 +82,7 @@ class InputMechanismDataController(BaseController):
         )
         return resp
 
-    @require_permissions({"incomingMessage:create"})
+    @require_permissions({"intakeSubmission:edit"})
     async def ingest_data(
         self,
         ingest_data_request: IngestDataRequest,
