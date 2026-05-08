@@ -45,7 +45,6 @@ class G2PDciService(BaseService):
             template_file_id: str = await self._get_template_file_id(register_id, data_model_id)
 
             search_text, current_page, page_size, sort_by = self._get_registry_search_parameters(search_criteria)
-            print("===============", search_text, current_page, page_size, sort_by)
             
             deep_search_result_data, total_count = await self.register_service.deep_search_in_a_register(
                 register_id=register_id,
@@ -54,7 +53,6 @@ class G2PDciService(BaseService):
                 page_size=page_size,
                 sort_by=sort_by,
             )
-            print("++++++++++++++++", deep_search_result_data, total_count)
             dci_deep_search_result_data = DciSearchResultData(
                 reg_type = search_criteria.reg_type,
                 reg_record_type = search_criteria.reg_record_type,
@@ -63,13 +61,13 @@ class G2PDciService(BaseService):
                     for deep_search_result_datum in deep_search_result_data
                 ]
             )
-            print("-----------------", dci_deep_search_result_data)
+
             pagination = DciSearchResultPagination(
                 page_number = current_page,
                 page_size = page_size,
                 total_count = total_count
             )
-            print("*****************", pagination)
+
             dci_search_response_item = DciSearchResponseItem(
                 reference_id = search_request_item.reference_id,
                 timestamp = datetime.now().isoformat(),
@@ -78,7 +76,6 @@ class G2PDciService(BaseService):
                 pagination = pagination,
                 locale="en"
             )
-            print("#################", dci_search_response_item)
             dci_search_response_items.append(dci_search_response_item)
             
             _logger.info(f"Search completed for reference_id: {search_request_item.reference_id}, found {total_count} items")
