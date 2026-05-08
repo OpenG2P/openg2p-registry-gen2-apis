@@ -11,7 +11,7 @@ from openg2p_registry_core.app import Initializer as CoreInitializer
 from openg2p_registry_extensions.app import Initializer as ExtensionsInitializer
 
 from .helpers import RequestResponseHelper
-from .controllers import BenePortalController
+from .controllers import RegisterController
 
 _logger = logging.getLogger(_config.logging_default_logger_name)
 
@@ -20,7 +20,7 @@ class Initializer(BaseInitializer):
     def initialize(self, **kwargs):
         
         RequestResponseHelper()
-        BenePortalController().post_init()
+        RegisterController().post_init()
 
     def migrate_database(self, args):
         _logger.info("Starting database migration")
