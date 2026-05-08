@@ -21,7 +21,8 @@ from .controllers import (
     G2PRegisterVCConfigurationController, G2PRegistryConfigurationController,
     G2PRegistryThemeController,
     G2PRegistryLanguageController,
-    G2PUIHelperController,
+    InputMechanismMetadataController,
+    InputMechanismDataController,
     G2PVerificationController,
     G2PIntakeFormDataController,
     G2PIntakeFormMetadataController,
@@ -55,7 +56,8 @@ class Initializer(BaseInitializer):
         G2PDocumentController().post_init()
         G2PTemplateFileController().post_init()
         G2PAttributeController().post_init()
-        G2PUIHelperController().post_init()
+        InputMechanismMetadataController().post_init()
+        InputMechanismDataController().post_init()
         G2PVerificationController().post_init()
         G2PIntakeFormDataController().post_init()
         G2PIntakeFormMetadataController().post_init()

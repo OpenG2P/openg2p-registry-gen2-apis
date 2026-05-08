@@ -30,14 +30,25 @@ class G2PIngestController(BaseController):
             methods=["POST"],
         )
 
-    async def ingest_data(self, ingest_data_request: IngestDataRequest, data_model: Optional[str] = None) -> Response:
+    async def ingest_data(
+        self,
+        ingest_data_request: IngestDataRequest,
+        data_model: Optional[str] = None,
+        register_id: Optional[str] = None,
+        intake_form_id: Optional[str] = None,
+    ) -> Response:
         response_template_file_id: str | None = None
         try:
             _logger.info(f"Data ingestion request received for data_model: {data_model if data_model else 'No data_model detected in query params...'}")
 
             ingest_data: Dict = await self.request_response_helper.construct_http_request(ingest_data_request)
 
-            ingest_data_payload, response_template_file_id = await self.g2p_ingest_controller_service.ingest_data(data_model, ingest_data)
+            ingest_data_payload, response_template_file_id = await self.g2p_ingest_controller_service.ingest_data(
+                data_model,
+                ingest_data,
+                register_id=register_id,
+                intake_form_id=intake_form_id,
+            )
             injest_data_response = self.request_response_helper.construct_ingest_data_success_response(ingest_data_payload, response_template_file_id)
             return injest_data_response
 
