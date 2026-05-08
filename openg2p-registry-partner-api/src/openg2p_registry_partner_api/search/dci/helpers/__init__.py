@@ -1,2 +1,3 @@
 from .keymanager_helper import DciKeymanagerHelper
+from .query_helper import DciQueryHelper
 from .request_response_helper import DciRequestResponseHelper
