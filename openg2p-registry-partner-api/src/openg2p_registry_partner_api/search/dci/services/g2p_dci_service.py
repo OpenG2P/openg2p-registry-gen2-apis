@@ -149,6 +149,11 @@ class G2PDciService(BaseService):
         return search_text, current_page, page_size, sort_by
 
     async def _get_register_id(self, register_mnemonic: str) -> str:
+        """
+        ``search_criteria.reg_type`` is the root register mnemonic
+        (`G2PRegisterDefinition.register_mnemonic`), not a namespaced vocabulary token
+        unless the deployment stores that verbatim in ``register_mnemonic``.
+        """
         session_maker = async_sessionmaker(dbengine.get(), expire_on_commit=False)
         async with session_maker() as session:
             register_id: str = (
