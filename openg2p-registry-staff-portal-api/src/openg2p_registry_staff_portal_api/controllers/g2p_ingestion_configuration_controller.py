@@ -15,6 +15,12 @@ from openg2p_registry_core.schemas import (
     IncomingModelSemanticPatternUpdateRequest,
     IncomingModelSemanticPatternResponse,
     IncomingModelSemanticPatternsResponse,
+    IncomingModelRegisterSemanticPatternRequest,
+    IncomingModelRegisterSemanticPatternIdRequest,
+    GetAllIncomingRegisterSemanticPatternsRequest,
+    IncomingModelRegisterSemanticPatternUpdateRequest,
+    IncomingModelRegisterSemanticPatternResponse,
+    IncomingModelRegisterSemanticPatternsResponse,
     IncomingTemplateRequest,
     IncomingTemplateIdRequest,
     GetAllIncomingTemplatesRequest,
@@ -112,6 +118,38 @@ class G2PIngestionConfigurationController(BaseController):
             "/delete_semantic_pattern",
             self.delete_semantic_pattern,
             responses={200: {"model": IncomingModelSemanticPatternResponse}},
+            methods=["POST"],
+        )
+
+        # IncomingModelRegisterSemanticPattern
+        self.router.add_api_route(
+            "/create_register_semantic_pattern",
+            self.create_register_semantic_pattern,
+            responses={200: {"model": IncomingModelRegisterSemanticPatternResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/get_register_semantic_pattern",
+            self.get_register_semantic_pattern,
+            responses={200: {"model": IncomingModelRegisterSemanticPatternResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/update_register_semantic_pattern",
+            self.update_register_semantic_pattern,
+            responses={200: {"model": IncomingModelRegisterSemanticPatternResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/get_all_register_semantic_patterns",
+            self.get_all_register_semantic_patterns,
+            responses={200: {"model": IncomingModelRegisterSemanticPatternsResponse}},
+            methods=["POST"],
+        )
+        self.router.add_api_route(
+            "/delete_register_semantic_pattern",
+            self.delete_register_semantic_pattern,
+            responses={200: {"model": IncomingModelRegisterSemanticPatternResponse}},
             methods=["POST"],
         )
 
@@ -332,6 +370,86 @@ class G2PIngestionConfigurationController(BaseController):
             )
             return self.helper.construct_ingestion_config_success_response(
                 pattern_data, IncomingModelSemanticPatternResponse, pattern_request
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, pattern_request)
+
+    @require_permissions({"ingestExpression:create"})
+    async def create_register_semantic_pattern(
+        self, pattern_request: IncomingModelRegisterSemanticPatternRequest
+    ) -> IncomingModelRegisterSemanticPatternResponse:
+        try:
+            pattern_data = await self.ingestion_config_service.create_register_semantic_pattern(
+                pattern_request.request_body.request_payload
+            )
+            return self.helper.construct_ingestion_config_success_response(
+                pattern_data, IncomingModelRegisterSemanticPatternResponse, pattern_request
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, pattern_request)
+
+    @require_permissions({"ingestExpression:view"})
+    async def get_register_semantic_pattern(
+        self, pattern_request: IncomingModelRegisterSemanticPatternIdRequest
+    ) -> IncomingModelRegisterSemanticPatternResponse:
+        try:
+            pattern_data = await self.ingestion_config_service.get_register_semantic_pattern(
+                pattern_request.request_body.request_payload.register_semantic_pattern_id
+            )
+            return self.helper.construct_ingestion_config_success_response(
+                pattern_data, IncomingModelRegisterSemanticPatternResponse, pattern_request
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, pattern_request)
+
+    @require_permissions({"ingestExpression:edit"})
+    async def update_register_semantic_pattern(
+        self, pattern_request: IncomingModelRegisterSemanticPatternUpdateRequest
+    ) -> IncomingModelRegisterSemanticPatternResponse:
+        try:
+            pattern_data = await self.ingestion_config_service.update_register_semantic_pattern(
+                pattern_request.request_body.request_payload
+            )
+            return self.helper.construct_ingestion_config_success_response(
+                pattern_data, IncomingModelRegisterSemanticPatternResponse, pattern_request
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, pattern_request)
+
+    @require_permissions({"ingestExpression:view"})
+    async def get_all_register_semantic_patterns(
+        self, pattern_request: GetAllIncomingRegisterSemanticPatternsRequest
+    ) -> IncomingModelRegisterSemanticPatternsResponse:
+        try:
+            pagination_request = getattr(pattern_request.request_body, "pagination_request", None)
+            current_page = getattr(pagination_request, "current_page", None)
+            page_size = getattr(pagination_request, "page_size", None)
+            pattern_data, total_items, number_of_pages = (
+                await self.ingestion_config_service.get_all_register_semantic_patterns(
+                    current_page,
+                    page_size,
+                )
+            )
+            return self.helper.construct_ingestion_config_success_response(
+                pattern_data,
+                IncomingModelRegisterSemanticPatternsResponse,
+                pattern_request,
+                total_items,
+                number_of_pages,
+            )
+        except Exception as error:
+            return self.helper.construct_error_response(error, pattern_request)
+
+    @require_permissions({"ingestExpression:delete"})
+    async def delete_register_semantic_pattern(
+        self, pattern_request: IncomingModelRegisterSemanticPatternIdRequest
+    ) -> IncomingModelRegisterSemanticPatternResponse:
+        try:
+            pattern_data = await self.ingestion_config_service.delete_register_semantic_pattern(
+                pattern_request.request_body.request_payload.register_semantic_pattern_id
+            )
+            return self.helper.construct_ingestion_config_success_response(
+                pattern_data, IncomingModelRegisterSemanticPatternResponse, pattern_request
             )
         except Exception as error:
             return self.helper.construct_error_response(error, pattern_request)
