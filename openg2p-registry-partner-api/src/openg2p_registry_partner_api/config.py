@@ -37,3 +37,18 @@ class Settings(ExtSettings):
     keymanager_sign_app_id: str = "REGISTRY"
     keymanager_sign_ref_id: str = ""
 
+    # OpenG2P Audit Manager integration
+    # Both `audit_enabled=true` AND a non-empty `audit_manager_url` are
+    # required to actually emit audits. Default = disabled / no-op.
+    audit_enabled: bool = False
+    audit_manager_url: str | None = None
+    audit_timeout_seconds: float = 2.0
+    audit_source: str = "/openg2p/registry-partner-api"
+    audit_module: str = "registry-partner-api"
+
+    # When true, also audit anonymous-looking calls that get rejected
+    # (any non-2xx response without controller-supplied actor enrichment).
+    # Captures attempted unauthorized partner access. Set to false to
+    # revert to "audit only enriched calls" rule.
+    audit_anonymous_failures: bool = True
+
