@@ -16,7 +16,7 @@ from openg2p_registry_core.schemas.awe_proxy import (
     ClaimAweTaskRequest,
     GetAweRequestEventsRequest,
     GetAweRequestRequest,
-    ListMyOpenAweTasksRequest,
+    ListMyAweTasksRequest,
     SubmitAweTaskDecisionRequest,
 )
 
@@ -38,8 +38,8 @@ class G2PAweProxyController(BaseController):
         self.helper = RequestResponseHelper.get_component()
 
         self.router.add_api_route(
-            "/list_my_open_tasks",
-            self.list_my_open_tasks,
+            "/list_my_tasks",
+            self.list_my_tasks,
             responses={200: {"model": AweProxyDataResponse}},
             methods=["POST"],
         )
@@ -79,13 +79,13 @@ class G2PAweProxyController(BaseController):
         return credentials
 
     @require_permissions({""})
-    async def list_my_open_tasks(
+    async def list_my_tasks(
         self,
         request: Request,
-        g2p_request: ListMyOpenAweTasksRequest,
+        g2p_request: ListMyAweTasksRequest,
     ) -> G2PResponse:
         try:
-            data = await self.service.list_my_open_tasks(
+            data = await self.service.list_my_tasks(
                 g2p_request.request_body.request_payload,
                 bearer_token=self._bearer(request),
             )
@@ -94,7 +94,7 @@ class G2PAweProxyController(BaseController):
                 g2p_request,
             )
         except Exception as exc:
-            _logger.error("Error in list_my_open_tasks: %s", exc)
+            _logger.error("Error in list_my_tasks: %s", exc)
             return self.helper.construct_error_response(exc, g2p_request)
 
     @require_permissions({""})
