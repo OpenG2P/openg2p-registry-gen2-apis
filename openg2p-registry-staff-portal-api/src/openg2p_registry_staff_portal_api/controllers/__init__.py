@@ -25,3 +25,4 @@ from .g2p_completion_score_controller import G2PCompletionScoreController
 from .g2p_registrant_authentication_controller import G2PRegistrantAuthenticationController
 from .g2p_awe_policy_configuration_controller import G2PAwePolicyConfigurationController
 from .g2p_awe_webhook_controller import G2PAWEWebhookController
+from .g2p_awe_proxy_controller import G2PAweProxyController
