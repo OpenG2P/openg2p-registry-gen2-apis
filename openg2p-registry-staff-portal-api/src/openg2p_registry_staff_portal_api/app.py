@@ -28,6 +28,8 @@ from .controllers import (
     G2PIntakeFormMetadataController,
     G2PChangeRequestCoreController,
     G2PScoreController,
+    G2PScoreDefinitionController,
+    G2PScoreContributingAttributeController,
     G2PCompletionScoreController,
     G2PRegistrantAuthenticationController,
 )
@@ -63,6 +65,8 @@ class Initializer(BaseInitializer):
         G2PIntakeFormMetadataController().post_init()
         G2PChangeRequestCoreController().post_init()
         G2PScoreController().post_init()
+        G2PScoreDefinitionController().post_init()
+        G2PScoreContributingAttributeController().post_init()
         G2PCompletionScoreController().post_init()
         G2PRegistrantAuthenticationController().post_init()
 
