@@ -115,7 +115,7 @@ class InputMechanismDataController(BaseController):
                 response_header=g2p_response_header,
                 response_body=response_body,
             )
-            return JSONResponse(content=response.model_dump())
+            return JSONResponse(content=response.model_dump(mode="json"))
         except Exception as error_exception:
             _logger.error("Error in ingest_data: %s", str(error_exception), exc_info=True)
             g2p_response_header = G2PResponseHeader(
@@ -132,5 +132,5 @@ class InputMechanismDataController(BaseController):
                     response_payload=None,
                 ),
             )
-            return JSONResponse(content=error_response.model_dump())
+            return JSONResponse(content=error_response.model_dump(mode="json"))
 
