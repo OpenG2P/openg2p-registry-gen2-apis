@@ -25,6 +25,20 @@ class Settings(ExtSettings):
     db_port: int = 5432
     db_dbname: str = "registrydb"
 
+    # DCI Expression Search
+    dci_expression_allowed_fields: list[str] = [
+        "functional_record_id",
+        "first_name",
+        "middle_name",
+        "last_name",
+        "given_name",
+        "gender",
+        "birth_date",
+        "foundational_id",
+        "record_name",
+        "record_status",
+    ]
+
     # Keymanager settings
     keymanager_api_base_url: str = ""
     keymanager_api_timeout: int = 10
