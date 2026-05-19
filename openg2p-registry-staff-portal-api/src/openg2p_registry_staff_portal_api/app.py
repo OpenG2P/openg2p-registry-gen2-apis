@@ -16,7 +16,8 @@ from .controllers import (
     G2PRegisterMetadataController, G2PRegisterTabMetadataController, G2PRegisterSectionMetadataController,
     G2PIngestionConfigurationController, G2POutgestionConfigurationController,
     G2PDataModelController,
-    G2PDocumentController, G2PAttributeController, G2PIngestionDataController, 
+    G2PDocumentController, G2PAttributeController, G2PIngestionDataController,
+    G2POutgestionDataController,
     G2PTemplateFileController,
     G2PRegisterVCConfigurationController, G2PRegistryConfigurationController,
     G2PRegistryThemeController,
@@ -52,6 +53,7 @@ class Initializer(BaseInitializer):
         G2PIngestionConfigurationController().post_init()
         G2PDataModelController().post_init()
         G2PIngestionDataController().post_init()
+        G2POutgestionDataController().post_init()
         G2POutgestionConfigurationController().post_init()
         G2PDocumentController().post_init()
         G2PTemplateFileController().post_init()
