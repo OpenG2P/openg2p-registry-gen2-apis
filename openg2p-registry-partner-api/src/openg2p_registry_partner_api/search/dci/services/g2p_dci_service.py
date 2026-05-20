@@ -1,6 +1,6 @@
 import importlib
 import logging
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List, Dict, Any, Tuple
 
 from openg2p_registry_core.schemas import DeepSearchResultData
@@ -126,6 +126,11 @@ class G2PDciService(BaseService):
             search_results = []
             for record in results:
                 record_dict = record.to_dict()
+                for key, val in record_dict.items():
+                    if isinstance(val, datetime):
+                        record_dict[key] = val.isoformat()
+                    elif isinstance(val, date):
+                        record_dict[key] = val.isoformat()
                 search_results.append(DeepSearchResultData(**record_dict))
 
             return search_results, total_count
