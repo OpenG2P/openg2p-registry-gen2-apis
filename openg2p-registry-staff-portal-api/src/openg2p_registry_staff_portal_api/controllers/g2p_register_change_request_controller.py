@@ -5,6 +5,7 @@ from openg2p_fastapi_common.controller import BaseController
 from openg2p_fastapi_common.schemas import G2PResponse
 
 from openg2p_registry_core.controller_services import G2PRegisterChangerequestControllerService
+from openg2p_registry_core.helpers.auth_token import bearer_from_request, requester_sub_from_request
 from openg2p_registry_core.schemas.change_request import (
     ChangeRequestRequest, ChangeRequestResponse, ChangeRequestResponseBody, ChangeRequestResponsePayload,
     GetNumberOfPendingChangeRequestsRequest,
@@ -131,7 +132,11 @@ class G2PRegisterChangerequestController(BaseController):
     async def create_change_request(self, request: Request, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
         try:
             change_request_request.request_body.request_payload.created_by = getattr(request.state.auth, "name", "Unknown")
-            change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.create_change_request(change_request_request)
+            change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.create_change_request(
+                change_request_request,
+                bearer_token=bearer_from_request(request),
+                requester_sub=requester_sub_from_request(request),
+            )
             response_body = ChangeRequestResponseBody(response_payload=change_request_response_payload)
             return self.helper.construct_success_response(response_body, change_request_request)
         except Exception as error_exception:

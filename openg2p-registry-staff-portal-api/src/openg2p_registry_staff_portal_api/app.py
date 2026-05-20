@@ -32,6 +32,9 @@ from .controllers import (
     G2PScoreController,
     G2PCompletionScoreController,
     G2PRegistrantAuthenticationController,
+    G2PAwePolicyConfigurationController,
+    G2PAWEWebhookController,
+    G2PAweProxyController,
 )
 
 _logger = logging.getLogger(_config.logging_default_logger_name)
@@ -67,6 +70,9 @@ class Initializer(BaseInitializer):
         G2PCompletionScoreController().post_init()
         G2PScoreController().post_init()
         G2PRegistrantAuthenticationController().post_init()
+        G2PAwePolicyConfigurationController().post_init()
+        G2PAWEWebhookController().post_init()
+        G2PAweProxyController().post_init()
 
     def migrate_database(self, args):
         _logger.info("Starting database migration")
