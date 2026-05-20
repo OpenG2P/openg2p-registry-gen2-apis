@@ -6,13 +6,9 @@ from pydantic import BaseModel, Field
 # Query models
 # ----------------------------
 
-class DciQueryValue(BaseModel):
-    expression: str
-
-
 class DciQuery(BaseModel):
     type: str
-    value: str
+    value: Dict[str, Any]
 
 
 # ----------------------------

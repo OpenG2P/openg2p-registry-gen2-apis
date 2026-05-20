@@ -65,7 +65,7 @@ class G2PScoreController(BaseController):
             methods=["POST"],
         )
 
-    @require_permissions({"registerScore:view"})
+    @require_permissions({"register:view"})
     async def get_scores(self, get_scores_request: GetScoresRequest) -> GetScoresResponse:
         try:
             scores_payload = await self.g2p_score_controller_service.get_scores_for_record(
@@ -89,7 +89,7 @@ class G2PScoreController(BaseController):
                 error_exception, get_scores_request
             )
 
-    @require_permissions({"registerScore:view"})
+    @require_permissions({"registerHistory:view"})
     async def get_score_history(self, get_score_history_request: GetScoreHistoryRequest) -> GetScoreHistoryResponse:
         try:
             history_payload = await self.g2p_score_controller_service.get_score_history(
@@ -173,7 +173,7 @@ class G2PScoreController(BaseController):
                 error_exception, create_score_definition_request
             )
 
-    @require_permissions({"registerScore:update"})
+    @require_permissions({"registerScore:edit"})
     async def update_score_definition(self, update_score_definition_request: UpdateScoreDefinitionRequest) -> UpdateScoreDefinitionResponse:
         try:
             score_definition_payload = await self.g2p_score_controller_service.update_score_definition(

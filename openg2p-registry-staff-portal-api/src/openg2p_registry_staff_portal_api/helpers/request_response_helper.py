@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from openg2p_fastapi_common.service import BaseService
 from openg2p_fastapi_common.schemas import G2PRequest, G2PResponse, G2PResponseHeader, G2PResponseStatus, G2PResponseBody, G2PPaginationResponse
 from openg2p_registry_core.schemas import (
@@ -45,6 +45,13 @@ from openg2p_registry_core.schemas import (
     RegisterSectionUISchemaData, RegisterSectionUISchemaDataResponse, RegisterSectionUISchemaDataResponseBody,
     RegisterUITabData, RegisterTabsDataResponse, RegisterTabsDataResponseBody,
     RegisterTabDataResponse, RegisterTabDataResponseBody,
+    RegisterTabSectionDataResponse, RegisterTabSectionDataResponseBody,
+    RegisterTabSectionsDataResponse, RegisterTabSectionsDataResponseBody,
+    RegisterTabMetadataDataResponse, RegisterTabMetadataDataResponseBody,
+    RegisterTabMetadataListResponse, RegisterTabMetadataListResponseBody,
+    RegisterSectionMetadataDataResponse, RegisterSectionMetadataDataResponseBody,
+    RegisterSectionMetadataListResponse, RegisterSectionMetadataListResponseBody,
+    RegisterSectionMetadataUISchemaDataResponse, RegisterSectionMetadataUISchemaDataResponseBody,
     SectionRecordsDataResponse, SectionRecordsDataResponseBody,
     RegisterTabRecordData, RegisterTabRecordsDataResponse, RegisterTabRecordsDataResponseBody,
     UploadDocumentsResponseData, UploadDocumentsResponse, UploadDocumentsResponseBody,
@@ -67,7 +74,13 @@ from openg2p_registry_core.schemas import (
     DeleteFileData, DeleteFileResponse, DeleteFileResponseBody,
     VcConfigurationResponse, VcConfigurationResponseBody, VcConfigurationData,
     G2PInputMechanismResponse, G2PInputMechanismResponseBody, G2PInputMechanismData,
-    AllowedParentsData, AllowedParentsDataResponse, AllowedParentsDataResponseBody
+    AllowedParentsData, AllowedParentsDataResponse, AllowedParentsDataResponseBody,
+    G2PRegisterSectionData, G2PRegisterUITabData, G2PRegisterUITabSectionData,
+    RegisterSectionIdData, RegisterTabIdData, RegisterTabSectionIdData,
+    RegistrantAuthProvidersResponse, RegistrantAuthProvidersResponseBody, RegistrantAuthProvidersResponsePayload,
+    RegistrantAuthInitiateResponse, RegistrantAuthInitiateResponseBody, RegistrantAuthInitiateResponsePayload,
+    RegistrantAuthStatusResponse, RegistrantAuthStatusResponseBody, RegistrantAuthStatusResponsePayload,
+    RegistrantAuthHistoryResponse, RegistrantAuthHistoryResponseBody, RegistrantAuthHistoryResponsePayload
 )
 
 from openg2p_registry_core.errors import G2PRegistryException
@@ -107,6 +120,30 @@ class RequestResponseHelper(BaseService):
         )
 
         return error_response
+
+    def construct_success_response(
+        self,
+        response_body: G2PResponseBody,
+        request: G2PRequest,
+        pagination_response: Optional[G2PPaginationResponse] = None,
+    ) -> G2PResponse:
+        request_id = request.request_header.request_id if request else ""
+
+        if pagination_response is not None:
+            response_body.pagination_response = pagination_response
+
+        g2p_response_header = G2PResponseHeader(
+            request_id=request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now(),
+        )
+
+        return G2PResponse(
+            response_header=g2p_response_header,
+            response_body=response_body,
+        )
 
     def construct_change_request_success_response(self, change_request_response_payload: ChangeRequestResponsePayload, g2p_request: G2PRequest) -> ChangeRequestResponse:
 
@@ -184,6 +221,86 @@ class RequestResponseHelper(BaseService):
             response_body=response_body
         )
         return search_results_response
+
+    def construct_registrant_auth_providers_success_response(
+        self,
+        response_payload: RegistrantAuthProvidersResponsePayload,
+        g2p_request: G2PRequest,
+    ) -> RegistrantAuthProvidersResponse:
+        g2p_response_header = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now(),
+        )
+        response_body: RegistrantAuthProvidersResponseBody = RegistrantAuthProvidersResponseBody(
+            response_payload=response_payload
+        )
+        return RegistrantAuthProvidersResponse(
+            response_header=g2p_response_header,
+            response_body=response_body,
+        )
+
+    def construct_registrant_auth_initiate_success_response(
+        self,
+        response_payload: RegistrantAuthInitiateResponsePayload,
+        g2p_request: G2PRequest,
+    ) -> RegistrantAuthInitiateResponse:
+        g2p_response_header = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now(),
+        )
+        response_body: RegistrantAuthInitiateResponseBody = RegistrantAuthInitiateResponseBody(
+            response_payload=response_payload
+        )
+        return RegistrantAuthInitiateResponse(
+            response_header=g2p_response_header,
+            response_body=response_body,
+        )
+
+    def construct_registrant_auth_status_success_response(
+        self,
+        response_payload: RegistrantAuthStatusResponsePayload,
+        g2p_request: G2PRequest,
+    ) -> RegistrantAuthStatusResponse:
+        g2p_response_header = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now(),
+        )
+        response_body: RegistrantAuthStatusResponseBody = RegistrantAuthStatusResponseBody(
+            response_payload=response_payload
+        )
+        return RegistrantAuthStatusResponse(
+            response_header=g2p_response_header,
+            response_body=response_body,
+        )
+
+    def construct_registrant_auth_history_success_response(
+        self,
+        response_payload: RegistrantAuthHistoryResponsePayload,
+        g2p_request: G2PRequest,
+    ) -> RegistrantAuthHistoryResponse:
+        g2p_response_header = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id,
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now(),
+        )
+        response_body: RegistrantAuthHistoryResponseBody = RegistrantAuthHistoryResponseBody(
+            response_payload=response_payload
+        )
+        return RegistrantAuthHistoryResponse(
+            response_header=g2p_response_header,
+            response_body=response_body,
+        )
 
     def construct_intake_forms_for_register_success_response(
         self,
@@ -1250,6 +1367,147 @@ class RequestResponseHelper(BaseService):
             response_body=response_body
         )
         return register_tab_response
+
+    def construct_register_tab_metadata_success_response(
+        self,
+        register_tab_data: G2PRegisterUITabData | RegisterTabIdData | None,
+        g2p_request: G2PRequest = None,
+    ) -> RegisterTabMetadataDataResponse:
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id if g2p_request else "",
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+        response_body = RegisterTabMetadataDataResponseBody(response_payload=register_tab_data)
+        return RegisterTabMetadataDataResponse(response_header=g2p_response_header, response_body=response_body)
+
+    def construct_register_tab_metadata_list_success_response(
+        self,
+        register_tabs_list: List[G2PRegisterUITabData],
+        g2p_request: G2PRequest = None,
+        number_of_items: int = None,
+        number_of_pages: int = None,
+    ) -> RegisterTabMetadataListResponse:
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id if g2p_request else "",
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+        pagination_response = None
+        if number_of_items is not None and number_of_pages is not None:
+            pagination_response = G2PPaginationResponse(
+                number_of_items=number_of_items,
+                number_of_pages=number_of_pages
+            )
+        response_body = RegisterTabMetadataListResponseBody(
+            response_payload=register_tabs_list,
+            pagination_response=pagination_response,
+        )
+        return RegisterTabMetadataListResponse(response_header=g2p_response_header, response_body=response_body)
+
+    def construct_register_tab_section_success_response(
+        self,
+        register_tab_section_data: G2PRegisterUITabSectionData | RegisterTabSectionIdData | None,
+        g2p_request: G2PRequest = None,
+    ) -> RegisterTabSectionDataResponse:
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id if g2p_request else "",
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+        response_body = RegisterTabSectionDataResponseBody(response_payload=register_tab_section_data)
+        return RegisterTabSectionDataResponse(response_header=g2p_response_header, response_body=response_body)
+
+    def construct_register_tab_sections_success_response(
+        self,
+        register_tab_sections_list: List[G2PRegisterUITabSectionData],
+        g2p_request: G2PRequest = None,
+        number_of_items: int = None,
+        number_of_pages: int = None,
+    ) -> RegisterTabSectionsDataResponse:
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id if g2p_request else "",
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+        pagination_response = None
+        if number_of_items is not None and number_of_pages is not None:
+            pagination_response = G2PPaginationResponse(
+                number_of_items=number_of_items,
+                number_of_pages=number_of_pages
+            )
+        response_body = RegisterTabSectionsDataResponseBody(
+            response_payload=register_tab_sections_list,
+            pagination_response=pagination_response,
+        )
+        return RegisterTabSectionsDataResponse(response_header=g2p_response_header, response_body=response_body)
+
+    def construct_register_section_metadata_success_response(
+        self,
+        register_section_data: G2PRegisterSectionData | RegisterSectionIdData | None,
+        g2p_request: G2PRequest = None,
+    ) -> RegisterSectionMetadataDataResponse:
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id if g2p_request else "",
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+        response_body = RegisterSectionMetadataDataResponseBody(response_payload=register_section_data)
+        return RegisterSectionMetadataDataResponse(response_header=g2p_response_header, response_body=response_body)
+
+    def construct_register_section_metadata_list_success_response(
+        self,
+        register_sections_list: List[G2PRegisterSectionData],
+        g2p_request: G2PRequest = None,
+        number_of_items: int = None,
+        number_of_pages: int = None,
+    ) -> RegisterSectionMetadataListResponse:
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id if g2p_request else "",
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+        pagination_response = None
+        if number_of_items is not None and number_of_pages is not None:
+            pagination_response = G2PPaginationResponse(
+                number_of_items=number_of_items,
+                number_of_pages=number_of_pages
+            )
+        response_body = RegisterSectionMetadataListResponseBody(
+            response_payload=register_sections_list,
+            pagination_response=pagination_response,
+        )
+        return RegisterSectionMetadataListResponse(response_header=g2p_response_header, response_body=response_body)
+
+    def construct_register_section_metadata_ui_schema_success_response(
+        self, register_section_ui_schema_data: RegisterSectionUISchemaData, g2p_request: G2PRequest = None
+    ) -> RegisterSectionMetadataUISchemaDataResponse:
+        g2p_response_header: G2PResponseHeader = G2PResponseHeader(
+            request_id=g2p_request.request_header.request_id if g2p_request else "",
+            response_status=G2PResponseStatus.SUCCESS,
+            response_error_code="",
+            response_error_message="",
+            response_timestamp=datetime.now()
+        )
+        response_body = RegisterSectionMetadataUISchemaDataResponseBody(
+            response_payload=register_section_ui_schema_data
+        )
+        return RegisterSectionMetadataUISchemaDataResponse(
+            response_header=g2p_response_header,
+            response_body=response_body,
+        )
 
     def construct_section_records_success_response(
         self,

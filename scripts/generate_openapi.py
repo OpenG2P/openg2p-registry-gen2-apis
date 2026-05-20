@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
 Generate OpenAPI JSON for each portal API and write to docs/openapi/.
-If one API fails (import or openapi()), it is skipped and the rest are generated.
 Usage: python scripts/generate_openapi.py [output_dir]
 Default output_dir: docs/openapi
 """
 import json
+import subprocess
 import sys
-import traceback
 from pathlib import Path
 
 
@@ -20,7 +19,32 @@ def generate_openapi(module_name: str, app_attr: str, out_path: Path) -> None:
         json.dump(schema, f, indent=2)
 
 
+def generate_openapi_in_subprocess(module_name: str, app_attr: str, out_path: Path) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            __file__,
+            "--generate-one",
+            module_name,
+            app_attr,
+            str(out_path),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        if result.stdout:
+            print(result.stdout, file=sys.stdout, end="")
+        if result.stderr:
+            print(result.stderr, file=sys.stderr, end="")
+        raise RuntimeError(f"Failed to generate {out_path.name}")
+
+
 def main() -> None:
+    if len(sys.argv) == 5 and sys.argv[1] == "--generate-one":
+        generate_openapi(sys.argv[2], sys.argv[3], Path(sys.argv[4]))
+        return
+
     out_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("docs/openapi")
     apis = [
         ("openg2p_registry_bene_portal_api.main", "app", "openapi-bene-portal.json"),
@@ -29,12 +53,8 @@ def main() -> None:
     ]
     for module_name, app_attr, filename in apis:
         out_path = out_dir / filename
-        try:
-            generate_openapi(module_name, app_attr, out_path)
-            print(f"Wrote {out_path}")
-        except Exception as e:
-            print(f"Skipped {filename}: {e}", file=sys.stderr)
-            traceback.print_exc(file=sys.stderr)
+        generate_openapi_in_subprocess(module_name, app_attr, out_path)
+        print(f"Wrote {out_path}")
 
 
 if __name__ == "__main__":

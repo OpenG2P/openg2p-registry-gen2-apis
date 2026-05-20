@@ -13,7 +13,7 @@ from openg2p_registry_extensions.app import Initializer as ExtensionsInitializer
 from .helpers import RequestResponseHelper
 from .controllers import (
     G2PRegisterDataController, G2PRegisterChangerequestController,
-    G2PRegisterMetadataController,
+    G2PRegisterMetadataController, G2PRegisterTabMetadataController, G2PRegisterSectionMetadataController,
     G2PIngestionConfigurationController, G2POutgestionConfigurationController,
     G2PDataModelController,
     G2PDocumentController, G2PAttributeController, G2PIngestionDataController, 
@@ -21,13 +21,17 @@ from .controllers import (
     G2PRegisterVCConfigurationController, G2PRegistryConfigurationController,
     G2PRegistryThemeController,
     G2PRegistryLanguageController,
-    G2PUIHelperController,
+    InputMechanismMetadataController,
+    InputMechanismDataController,
     G2PVerificationController,
     G2PIntakeFormDataController,
     G2PIntakeFormMetadataController,
     G2PChangeRequestCoreController,
     G2PCompletionScoreController,
     G2PScoreController,
+    G2PScoreController,
+    G2PCompletionScoreController,
+    G2PRegistrantAuthenticationController,
 )
 
 _logger = logging.getLogger(_config.logging_default_logger_name)
@@ -42,6 +46,8 @@ class Initializer(BaseInitializer):
         G2PRegistryThemeController().post_init()
         G2PRegistryLanguageController().post_init()
         G2PRegisterMetadataController().post_init()
+        G2PRegisterTabMetadataController().post_init()
+        G2PRegisterSectionMetadataController().post_init()
         G2PRegisterVCConfigurationController().post_init()
         G2PRegisterDataController().post_init()
         G2PRegisterChangerequestController().post_init()
@@ -52,13 +58,15 @@ class Initializer(BaseInitializer):
         G2PDocumentController().post_init()
         G2PTemplateFileController().post_init()
         G2PAttributeController().post_init()
-        G2PUIHelperController().post_init()
+        InputMechanismMetadataController().post_init()
+        InputMechanismDataController().post_init()
         G2PVerificationController().post_init()
         G2PIntakeFormDataController().post_init()
         G2PIntakeFormMetadataController().post_init()
         G2PChangeRequestCoreController().post_init()
         G2PCompletionScoreController().post_init()
         G2PScoreController().post_init()
+        G2PRegistrantAuthenticationController().post_init()
 
     def migrate_database(self, args):
         _logger.info("Starting database migration")
