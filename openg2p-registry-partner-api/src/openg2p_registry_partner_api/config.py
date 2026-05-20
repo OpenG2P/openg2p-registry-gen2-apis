@@ -37,6 +37,13 @@ class Settings(ExtSettings):
         "foundational_id",
         "record_name",
         "record_status",
+        "search_text",
+        "marital_status",
+        "income_level",
+        "education_level",
+        "residency_status",
+        "disability_status",
+        "displacement_status"
     ]
 
     # Keymanager settings

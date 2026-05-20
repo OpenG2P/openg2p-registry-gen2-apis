@@ -51,12 +51,12 @@ class DciQueryHelper:
         if not query:
             cls._raise_invalid_request("expression.query is required and must be non-empty.")
 
-        # Legacy: single field "search_text" with "$eq" only
-        if list(query.keys()) == ["search_text"] and isinstance(query["search_text"], dict) and list(query["search_text"].keys()) == ["$eq"]:
-            value = query["search_text"]["$eq"]
-            return DciQueryResult(
-                search_text=cls._validate_search_text(value, "query.value.expression.query.search_text.$eq")
-            )
+        # # Legacy: single field "search_text" with "$eq" only
+        # if list(query.keys()) == ["search_text"] and isinstance(query["search_text"], dict) and list(query["search_text"].keys()) == ["$eq"]:
+        #     value = query["search_text"]["$eq"]
+        #     return DciQueryResult(
+        #         search_text=cls._validate_search_text(value, "query.value.expression.query.search_text.$eq")
+        #     )
 
         if model_class is None:
             cls._raise_invalid_request("Expression queries require a valid register model.")
