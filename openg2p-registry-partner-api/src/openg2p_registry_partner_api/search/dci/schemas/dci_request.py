@@ -76,9 +76,22 @@ class DciAuthorize(BaseModel):
 # ----------------------------
 
 class DciSearchCriteria(BaseModel):
+    """
+    When performing deep search against this platform, ``reg_type`` is the deployer's
+    register mnemonic (same value as ``g2p_register_definitions.register_mnemonic``),
+    e.g. Farmer, Household, Individual — not an ``ns:org:RegistryType:`` URI unless the
+    DB is configured that way intentionally.
+    """
+
     version: str = "1.0.0"
-    reg_type: str
-    reg_record_type: str
+    reg_type: str = Field(
+        ...,
+        description="Root register mnemonic to search (`g2p_register_definitions.register_mnemonic`). Example values: Farmer, Household, Individual.",
+    )
+    reg_record_type: str = Field(
+        ...,
+        description="DCI record type for the outbound payload shape (often an ``spdci-extensions-dci:`` type key). Does not substitute for ``reg_type``.",
+    )
     query_type: str
     query: DciQuery
     sort: Optional[List[DciSortItem]] = None
