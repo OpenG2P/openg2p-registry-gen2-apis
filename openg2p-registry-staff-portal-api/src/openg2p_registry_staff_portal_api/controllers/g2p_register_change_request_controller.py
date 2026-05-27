@@ -13,13 +13,16 @@ from openg2p_registry_core.schemas.change_request import (
     GetCrossRegisterChangesRequest,
     GetChangeRequestsRequest,
     GetChangeRequestRequest,
+    CheckChangeRequestSequenceRequest,
     GetVerificationsRequest,
     AddVerificationRequest,
     GetChangeRequestSummaryDataRequest,
     NumberOfPendingChangeRequestsResponse, NumberOfPendingChangeRequestsResponseBody, NumberOfPendingChangeRequestsData,
     NumberOfCrossRegisterChangesResponse, NumberOfCrossRegisterChangesResponseBody, NumberOfCrossRegisterChangesData,
     CrossRegisterChangeRequestData, CrossRegisterChangesData, CrossRegisterChangesDataResponse, CrossRegisterChangesDataResponseBody,
-    ChangeRequestDataResponse, ChangeRequestDataResponseBody, ChangeRequestData,
+    ChangeRequestDataResponse, ChangeRequestDataResponseBody,
+    ChangeRequestSequenceCheckData,
+    ChangeRequestSequenceCheckResponse, ChangeRequestSequenceCheckResponseBody, ChangeRequestData,
     ChangeRequestFlattenedDataResponse, ChangeRequestFlattenedDataResponseBody,
     VerificationsData, VerificationsDataResponse, VerificationsDataResponseBody,
     VerificationDataResponse, VerificationDataResponseBody, VerificationData,
@@ -97,6 +100,13 @@ class G2PRegisterChangerequestController(BaseController):
             "/get_change_request",
             self.get_change_request,
             responses={200: {"model": ChangeRequestDataResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
+            "/check_change_request_sequence",
+            self.check_change_request_sequence,
+            responses={200: {"model": ChangeRequestSequenceCheckResponse}},
             methods=["POST"],
         )
 
@@ -227,6 +237,27 @@ class G2PRegisterChangerequestController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in get_change_request: {str(error_exception)}")
             error_response: ChangeRequestDataResponse = self.helper.construct_error_response(error_exception, get_change_request_request)
+            return error_response
+
+    @require_permissions({"changeRequest:view"})
+    async def check_change_request_sequence(
+        self, check_change_request_sequence_request: CheckChangeRequestSequenceRequest
+    ) -> ChangeRequestSequenceCheckResponse:
+        try:
+            sequence_check_data: ChangeRequestSequenceCheckData = (
+                await self.g2p_register_change_request_controller_service.check_change_request_sequence(
+                    check_change_request_sequence_request
+                )
+            )
+            response_body = ChangeRequestSequenceCheckResponseBody(response_payload=sequence_check_data)
+            return self.helper.construct_success_response(
+                response_body, check_change_request_sequence_request
+            )
+        except Exception as error_exception:
+            _logger.error("Error in check_change_request_sequence: %s", error_exception)
+            error_response: ChangeRequestSequenceCheckResponse = self.helper.construct_error_response(
+                error_exception, check_change_request_sequence_request
+            )
             return error_response
 
     @require_permissions({"verificationChangeRequest:view"})
