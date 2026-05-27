@@ -5,6 +5,7 @@ from openg2p_fastapi_common.controller import BaseController
 from openg2p_fastapi_common.schemas import G2PResponse
 
 from openg2p_registry_core.controller_services import G2PRegisterChangerequestControllerService
+from openg2p_registry_core.helpers.auth_token import bearer_from_request, requester_sub_from_request
 from openg2p_registry_core.schemas.change_request import (
     ChangeRequestRequest, ChangeRequestResponse, ChangeRequestResponseBody, ChangeRequestResponsePayload,
     GetNumberOfPendingChangeRequestsRequest,
@@ -12,13 +13,16 @@ from openg2p_registry_core.schemas.change_request import (
     GetCrossRegisterChangesRequest,
     GetChangeRequestsRequest,
     GetChangeRequestRequest,
+    CheckChangeRequestSequenceRequest,
     GetVerificationsRequest,
     AddVerificationRequest,
     GetChangeRequestSummaryDataRequest,
     NumberOfPendingChangeRequestsResponse, NumberOfPendingChangeRequestsResponseBody, NumberOfPendingChangeRequestsData,
     NumberOfCrossRegisterChangesResponse, NumberOfCrossRegisterChangesResponseBody, NumberOfCrossRegisterChangesData,
     CrossRegisterChangeRequestData, CrossRegisterChangesData, CrossRegisterChangesDataResponse, CrossRegisterChangesDataResponseBody,
-    ChangeRequestDataResponse, ChangeRequestDataResponseBody, ChangeRequestData,
+    ChangeRequestDataResponse, ChangeRequestDataResponseBody,
+    ChangeRequestSequenceCheckData,
+    ChangeRequestSequenceCheckResponse, ChangeRequestSequenceCheckResponseBody, ChangeRequestData,
     ChangeRequestFlattenedDataResponse, ChangeRequestFlattenedDataResponseBody,
     VerificationsData, VerificationsDataResponse, VerificationsDataResponseBody,
     VerificationDataResponse, VerificationDataResponseBody, VerificationData,
@@ -100,6 +104,13 @@ class G2PRegisterChangerequestController(BaseController):
         )
 
         self.router.add_api_route(
+            "/check_change_request_sequence",
+            self.check_change_request_sequence,
+            responses={200: {"model": ChangeRequestSequenceCheckResponse}},
+            methods=["POST"],
+        )
+
+        self.router.add_api_route(
             "/get_verifications_for_change_request",
             self.get_verifications_for_change_request,
             responses={200: {"model": VerificationsDataResponse}},
@@ -131,7 +142,11 @@ class G2PRegisterChangerequestController(BaseController):
     async def create_change_request(self, request: Request, change_request_request: ChangeRequestRequest) -> ChangeRequestResponse:
         try:
             change_request_request.request_body.request_payload.created_by = getattr(request.state.auth, "name", "Unknown")
-            change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.create_change_request(change_request_request)
+            change_request_response_payload: ChangeRequestResponsePayload = await self.g2p_register_change_request_controller_service.create_change_request(
+                change_request_request,
+                bearer_token=bearer_from_request(request),
+                requester_sub=requester_sub_from_request(request),
+            )
             response_body = ChangeRequestResponseBody(response_payload=change_request_response_payload)
             return self.helper.construct_success_response(response_body, change_request_request)
         except Exception as error_exception:
@@ -222,6 +237,27 @@ class G2PRegisterChangerequestController(BaseController):
         except Exception as error_exception:
             _logger.error(f"Error in get_change_request: {str(error_exception)}")
             error_response: ChangeRequestDataResponse = self.helper.construct_error_response(error_exception, get_change_request_request)
+            return error_response
+
+    @require_permissions({"changeRequest:view"})
+    async def check_change_request_sequence(
+        self, check_change_request_sequence_request: CheckChangeRequestSequenceRequest
+    ) -> ChangeRequestSequenceCheckResponse:
+        try:
+            sequence_check_data: ChangeRequestSequenceCheckData = (
+                await self.g2p_register_change_request_controller_service.check_change_request_sequence(
+                    check_change_request_sequence_request
+                )
+            )
+            response_body = ChangeRequestSequenceCheckResponseBody(response_payload=sequence_check_data)
+            return self.helper.construct_success_response(
+                response_body, check_change_request_sequence_request
+            )
+        except Exception as error_exception:
+            _logger.error("Error in check_change_request_sequence: %s", error_exception)
+            error_response: ChangeRequestSequenceCheckResponse = self.helper.construct_error_response(
+                error_exception, check_change_request_sequence_request
+            )
             return error_response
 
     @require_permissions({"verificationChangeRequest:view"})
