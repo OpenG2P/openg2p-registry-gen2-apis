@@ -1,11 +1,13 @@
 import logging
 
+from fastapi import Request
 from openg2p_fastapi_common.controller import BaseController
 from openg2p_fastapi_common.schemas import G2PResponse
 
 from openg2p_registry_core.controller_services import (
     G2PChangeRequestCoreControllerService,
 )
+from openg2p_registry_core.helpers.auth_token import bearer_from_request, requester_sub_from_request
 from openg2p_registry_core.schemas import (
     ChangeRequestRequest,
     ChangeRequestResponse,
@@ -54,11 +56,18 @@ class G2PChangeRequestCoreController(BaseController):
 
     @require_permissions({"changeRequest:create"})
     async def create_change_request_for_core_data(
-        self, change_request_request: ChangeRequestRequest
+        self,
+        request: Request,
+        change_request_request: ChangeRequestRequest,
     ) -> ChangeRequestResponse:
         try:
+            change_request_request.request_body.request_payload.created_by = getattr(
+                request.state.auth, "name", "Unknown"
+            )
             payload: ChangeRequestResponsePayload = await self.g2p_change_request_core_controller_service.create_change_request_for_core_data(
-                change_request_request
+                change_request_request,
+                bearer_token=bearer_from_request(request),
+                requester_sub=requester_sub_from_request(request),
             )
             return self.helper.construct_change_request_success_response(
                 change_request_response_payload=payload,

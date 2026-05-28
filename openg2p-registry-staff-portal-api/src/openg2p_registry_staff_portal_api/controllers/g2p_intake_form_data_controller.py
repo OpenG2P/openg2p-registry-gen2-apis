@@ -3,8 +3,9 @@ import logging
 from fastapi import Request
 from iam_core.user_auth.helpers import require_permissions
 from openg2p_fastapi_common.controller import BaseController
-from openg2p_fastapi_common.schemas import G2PPaginationResponse
+from openg2p_fastapi_common.schemas import G2PPaginationResponse, G2PResponse
 from openg2p_registry_core.controller_services import G2PIntakeFormDataControllerService
+from openg2p_registry_core.helpers.auth_token import bearer_from_request, requester_sub_from_request
 from openg2p_registry_core.schemas import (
     ApproveRejectSubmissionRequest,
     SaveIntakeFormSubmissionRequest,
@@ -156,11 +157,14 @@ class G2PIntakeFormDataController(BaseController):
     @require_permissions({"intakeSubmission:edit"})
     async def finalize_intake_form_submission(
         self,
+        request: Request,
         g2p_request: FinalizeSubmissionRequest,
     ) -> SubmissionResponse:
         try:
             payload: SubmissionResponsePayload = await self.service.finalize_intake_form_submission(
-                g2p_request
+                g2p_request,
+                bearer_token=bearer_from_request(request),
+                requester_sub=requester_sub_from_request(request),
             )
             return self.helper.construct_success_response(
                 SubmissionResponseBody(response_payload=payload),
@@ -195,9 +199,7 @@ class G2PIntakeFormDataController(BaseController):
     ) -> SubmissionResponse:
         try:
             g2p_request.request_body.request_payload.approved_by = getattr(request.state.auth, "name", "Unknown")
-            payload: SubmissionResponsePayload = await self.service.approve_intake_form_submission(
-                g2p_request
-            )
+            payload: SubmissionResponsePayload = await self.service.approve_intake_form_submission(g2p_request)
             return self.helper.construct_success_response(
                 SubmissionResponseBody(response_payload=payload),
                 g2p_request,
@@ -214,9 +216,7 @@ class G2PIntakeFormDataController(BaseController):
     ) -> SubmissionResponse:
         try:
             g2p_request.request_body.request_payload.approved_by = getattr(request.state.auth, "name", "Unknown")
-            payload: SubmissionResponsePayload = await self.service.reject_intake_form_submission(
-                g2p_request
-            )
+            payload: SubmissionResponsePayload = await self.service.reject_intake_form_submission(g2p_request)
             return self.helper.construct_success_response(
                 SubmissionResponseBody(response_payload=payload),
                 g2p_request,

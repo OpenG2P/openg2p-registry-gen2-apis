@@ -43,7 +43,10 @@ class DciSearchResultData(BaseModel):
 
     reg_type: Optional[str] = Field(
         default=None,
-        description="Registry type, e.g. ns:org:RegistryType:FR",
+        description=(
+            "Register mnemonic echoed from the search request (`g2p_register_definitions.register_mnemonic`), "
+            "e.g. Farmer, Household, Individual."
+        ),
     )
 
     reg_record_type: Optional[str] = Field(
