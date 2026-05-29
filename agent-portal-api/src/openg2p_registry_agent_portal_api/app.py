@@ -14,6 +14,7 @@ from .helpers import RequestResponseHelper
 from .services import (
     CertifyIssuanceService,
     PdfRenderService,
+    PhotoService,
     RegistryLookupService,
 )
 
@@ -25,6 +26,7 @@ class Initializer(BaseInitializer):
         RequestResponseHelper()
         RegistryLookupService()
         CertifyIssuanceService()
+        PhotoService()
         PdfRenderService()
         VcIssuanceController().post_init()
 

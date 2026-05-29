@@ -39,25 +39,27 @@ class CertifyIssuanceService(BaseService):
 
     PRE_AUTH_GRANT = "urn:ietf:params:oauth:grant-type:pre-authorized_code"
 
-    async def issue(self, claims: dict[str, Any]) -> Any:
+    async def issue(
+        self, claims: dict[str, Any], config_id: str, credential_types: list[str]
+    ) -> Any:
         base = _config.certify_base_url.rstrip("/")
         async with httpx.AsyncClient(timeout=_config.certify_http_timeout) as client:
-            offer_id = await self._create_offer(client, base, claims)
+            offer_id = await self._create_offer(client, base, claims, config_id)
             pre_auth_code = await self._read_offer(client, base, offer_id)
             access_token, c_nonce = await self._exchange_token(
                 client, base, pre_auth_code
             )
             return await self._request_credential(
-                client, base, access_token, c_nonce
+                client, base, access_token, c_nonce, credential_types
             )
 
     async def _create_offer(
-        self, client: httpx.AsyncClient, base: str, claims: dict[str, Any]
+        self, client: httpx.AsyncClient, base: str, claims: dict[str, Any], config_id: str
     ) -> str:
         resp = await client.post(
             f"{base}/pre-authorized-data",
             json={
-                "credential_configuration_id": _config.certify_credential_config_id,
+                "credential_configuration_id": config_id,
                 "claims": claims,
                 "expires_in": _config.certify_offer_expires_in,
                 "tx_code": _config.certify_tx_code,
@@ -96,6 +98,7 @@ class CertifyIssuanceService(BaseService):
         base: str,
         access_token: str,
         c_nonce: str,
+        credential_types: list[str],
     ) -> Any:
         proof = self._make_proof_jwt(c_nonce)
         resp = await client.post(
@@ -105,7 +108,7 @@ class CertifyIssuanceService(BaseService):
                 "format": _config.certify_credential_format,
                 "credential_definition": {
                     "@context": _config.certify_credential_context,
-                    "type": _config.certify_credential_types,
+                    "type": credential_types,
                 },
                 "proof": {"proof_type": "jwt", "jwt": proof},
             },

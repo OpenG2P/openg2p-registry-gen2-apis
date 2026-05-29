@@ -13,6 +13,9 @@ class IssueVcRequestPayload(BaseModel):
     """
 
     phone: str
+    # Which VC to issue (a vc_definitions config_id). Defaults to the first
+    # configured definition when omitted.
+    vc_type: Optional[str] = None
 
 
 class IssueVcRequestBody(BaseModel):

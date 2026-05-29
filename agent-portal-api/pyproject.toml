@@ -23,7 +23,9 @@ dependencies = [
   "cryptography",
   "qrcode",
   "pillow",
-  "fpdf2"
+  "fpdf2",
+  "minio",
+  "cairosvg"
 ]
 dynamic = ["version"]
 

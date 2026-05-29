@@ -8,6 +8,7 @@ from ..schemas import IssueVcRequest, IssueVcResponse
 from ..services import (
     CertifyIssuanceService,
     PdfRenderService,
+    PhotoService,
     RegistryLookupService,
 )
 from ..services.certify_issuance_service import CertifyIssuanceError
@@ -26,6 +27,7 @@ class VcIssuanceController(BaseController):
 
         self.registry_lookup_service = RegistryLookupService.get_component()
         self.certify_issuance_service = CertifyIssuanceService.get_component()
+        self.photo_service = PhotoService.get_component()
         self.pdf_render_service = PdfRenderService.get_component()
         self.request_response_helper = RequestResponseHelper.get_component()
 
@@ -37,12 +39,25 @@ class VcIssuanceController(BaseController):
         )
 
     async def issue_vc(self, request: IssueVcRequest) -> IssueVcResponse:
-        phone = request.request_body.request_payload.phone
-        _logger.debug("Issue VC request for phone: %s", phone)
+        payload = request.request_body.request_payload
+        phone, vc_type = payload.phone, payload.vc_type
+        _logger.debug("Issue VC request for phone %s (vc_type=%s)", phone, vc_type)
         try:
-            claims = await self.registry_lookup_service.get_claims_by_phone(phone)
-            credential = await self.certify_issuance_service.issue(claims)
-            pdf_path = self.pdf_render_service.render(claims, credential)
+            vc = _config.get_vc_definition(vc_type)
+            claims, photo_key = await self.registry_lookup_service.get_claims_by_phone(
+                phone, vc
+            )
+            # Fetch the photo from MINIO (by key) → thumbnail → push as the
+            # `face` claim so Certify embeds it in the signed claim-169 QR.
+            photo_bytes = None
+            if vc.photo_key_column and photo_key:
+                photo_bytes = self.photo_service.fetch(photo_key)
+                if vc.face_claim:
+                    claims[vc.face_claim] = self.photo_service.thumbnail_b64(photo_bytes)
+            credential = await self.certify_issuance_service.issue(
+                claims, vc.config_id, vc.credential_types
+            )
+            pdf_path = self.pdf_render_service.render(claims, credential, vc, photo_bytes)
             return self.request_response_helper.construct_success_response(
                 claims, credential, pdf_path, request
             )

@@ -1,3 +1,4 @@
 from .certify_issuance_service import CertifyIssuanceService
 from .pdf_render_service import PdfRenderService
+from .photo_service import PhotoService
 from .registry_lookup_service import RegistryLookupService
